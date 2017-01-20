@@ -30,4 +30,4 @@ Please visit our premium support site at http://www.paidmembershipspro.com for m
 
 == Changelog ==
 = .1 =
-* Originanl version.
+* Original version.
