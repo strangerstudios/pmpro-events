@@ -9,25 +9,44 @@
 */
 function pmpro_events_page_meta_wrapper()
 {
-	add_meta_box('pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event', 'side');	
-	add_meta_box('pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event-recurring', 'side');	
+	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event', 'side' );
+	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event-recurring', 'side' );	
 }
+
+/*
+	Stuff to run on init
+*/
 function pmpro_events_init()
 {
-	if (is_admin())
+	/*
+		Filter searches and redirect single event page if PMPro Option to filter is set.
+	*/
+	if(function_exists('pmpro_getOption')) {
+		$filterqueries = pmpro_getOption("filterqueries");
+		if(!empty($filterqueries))
+		{
+			add_filter('em_events_get','pmpro_events_manager_em_events_get', 10, 2);
+			add_action('wp', 'pmpro_events_manager_template_redirect');
+		}
+	}
+	
+	/*
+		Add meta boxes to edit events page
+	*/
+	if( is_admin() )
 	{
-		add_action('admin_menu', 'pmpro_events_page_meta_wrapper');
+		add_action( 'admin_menu', 'pmpro_events_page_meta_wrapper' );
 	}
 }
-add_action("init", "pmpro_events_init", 20);
+add_action( 'init', 'pmpro_events_init', 20 );
 
 /*
 	Add pmpro content message for non-members before event details.
 */
-function pmpro_events_manager_em_event_output($event_string, $post, $format, $target) {
-	if(function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->id ))
+function pmpro_events_manager_em_event_output( $event_string, $post, $format, $target ) {
+	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) )
 	{
-		$hasaccess = pmpro_has_membership_access($post->id, NULL, true);
+		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);
 		if(is_array($hasaccess))
 		{
 			//returned an array to give us the membership level values
@@ -74,8 +93,8 @@ function pmpro_events_manager_em_event_output($event_string, $post, $format, $ta
 			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
 		}
 		$event_string = $content . $event_string;
-		return $event_string;
 	}
+	return $event_string;
 }
 add_action('em_event_output','pmpro_events_manager_em_event_output', 1, 4);
 
@@ -83,7 +102,7 @@ add_action('em_event_output','pmpro_events_manager_em_event_output', 1, 4);
 	Hide booking form and replace with the pmpro content message for non-members.
 */
 function pmpro_events_manager_output_placeholder($replace, $EM_Event, $result){
-	global $wp_query, $wp_rewrite, $post, $current_user;
+	global $wp_query, $wp_rewrite, $post, $current_user, $hasaccess;
 	switch( $result ){
 		case '#_BOOKINGFORM':
 			if(empty($hasaccess))
@@ -142,14 +161,4 @@ function pmpro_events_manager_em_events_get($events, $args)
 	}
 	
 	return $newevents;
-}
-
-/*
-	Filter searches and redirect sinle event page if PMPro Option to filter is set.
-*/
-$filterqueries = pmpro_getOption("filterqueries");
-if(!empty($filterqueries))
-{
-	add_filter('em_events_get','pmpro_events_manager_em_events_get', 10, 2);
-	add_action('wp', 'pmpro_events_manager_template_redirect');
 }
