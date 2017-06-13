@@ -13,21 +13,32 @@ function pmpro_events_plugin_init() {
 	$path = dirname(__FILE__);
 
 	//Events Manager (https://wordpress.org/plugins/events-manager/) 
-	if(defined('EM_VERSION'))
-		require_once($path . "/modules/events-manager.php");
+	if(defined('EM_VERSION')) {
+		require_once($path . '/modules/events-manager.php');
+	}
 	
 	//The Events Calendar by Modern Tribe (https://wordpress.org/plugins/the-events-calendar/)
-	if(class_exists('Tribe__Events__Main'))
-		require_once($path . "/modules/the-events-calendar.php"); 
+	if(class_exists('Tribe__Events__Main')) {
+		require_once($path . '/modules/the-events-calendar.php');
+	}
 }
 add_action( 'plugins_loaded', 'pmpro_events_plugin_init' );
-	
+
+function pmpro_events_pmpro_text_filter( $text ) {
+	global $post;
+	if( is_singular( array( 'event' ) ) ) {
+		$text = str_replace( 'content', 'event', $text );
+	}
+	return $text;
+}
+add_filter( 'pmpro_non_member_text_filter', 'pmpro_events_pmpro_text_filter' );
+add_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' );
+
 /*
 Function to add links to the plugin row meta
 */
 function pmpro_events_plugin_row_meta($links, $file) {
-	if(strpos($file, 'pmpro-events.php') !== false)
-	{
+	if(strpos($file, 'pmpro-events.php') !== false) {
 		$new_links = array(
 			'<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plus-add-ons/members-events/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',			
 			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
@@ -36,4 +47,4 @@ function pmpro_events_plugin_row_meta($links, $file) {
 	}
 	return $links;
 }
-add_filter('plugin_row_meta', 'pmpro_events_plugin_row_meta', 10, 2);
+add_filter( 'plugin_row_meta', 'pmpro_events_plugin_row_meta', 10, 2 );
