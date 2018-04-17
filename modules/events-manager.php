@@ -23,7 +23,7 @@ function pmpro_events_manager_init() {
 		$filterqueries = pmpro_getOption("filterqueries");
 		if(!empty($filterqueries)) {
 			add_filter('em_events_get','pmpro_events_manager_em_events_get', 10, 2);
-			add_action('wp', 'pmpro_events_manager_template_redirect');
+			// add_action('wp', 'pmpro_events_manager_template_redirect');
 		}
 	}
 	
@@ -170,4 +170,29 @@ function pmpro_events_manager_em_events_get($events, $args) {
 	*/
 	
 	return $newevents;
+}
+
+/**
+ * Remove template parts from Events Manager for non-members.
+ * @return boolean $hasaccess returns the current access for a user for an event.
+ */
+function pmpro_events_manager_has_access( $hasaccess, $post, $user, $levels ) {
+
+	if ( ! is_admin() && is_single() && ! $hasaccess ) {
+		remove_filter( 'the_content', array( 'EM_Event_Post','the_content' ) );
+		add_filter( 'em_event_output', 'pmpro_events_manager_event_output', 10, 4);
+	}
+
+	return $hasaccess;
+
+}
+add_filter( 'pmpro_has_membership_access_filter_event', 'pmpro_events_manager_has_access', 10, 4 );
+
+/**
+ * Only return the event's title for non-members.
+ * @todo if this is not called, the PMPro restricted content message appends to the event's title.
+ * @return object $content->post_title The events title.
+ */
+function pmpro_events_manager_event_output( $event_string, $content, $format, $target ) {
+	return $content->post_title;
 }
