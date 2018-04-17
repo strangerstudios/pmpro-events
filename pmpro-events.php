@@ -10,16 +10,21 @@ Author URI: http://www.strangerstudios.com
 
 function pmpro_events_plugin_init() {
 	//Load module based on active events plugin
-	$path = dirname(__FILE__);
+	$path = dirname( __FILE__ );
 
 	//Events Manager (https://wordpress.org/plugins/events-manager/) 
-	if(defined('EM_VERSION')) {
-		require_once($path . '/modules/events-manager.php');
+	if ( defined( 'EM_VERSION' ) ) {
+		require_once( $path . '/modules/events-manager.php' );
 	}
 	
 	//The Events Calendar by Modern Tribe (https://wordpress.org/plugins/the-events-calendar/)
-	if(class_exists('Tribe__Events__Main')) {
-		require_once($path . '/modules/the-events-calendar.php');
+	if ( class_exists( 'Tribe__Events__Main' ) ) {
+		require_once( $path . '/modules/the-events-calendar.php' );
+	}
+
+	//All in One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
+	if ( defined( 'AI1EC_PATH' ) ) {
+		require_once( $path . '/modules/all-in-one-event-calendar.php' );
 	}
 }
 add_action( 'plugins_loaded', 'pmpro_events_plugin_init' );
