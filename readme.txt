@@ -2,13 +2,15 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5
-Tested up to: 4.4.2
+Tested up to: 4.9.5
 Stable tag: .1
 
 Offer members-only events using popular events plugins and Paid Memberships Pro.
 
 == Description ==
-This add on offers integration for two popular events plugins: Events Manager (https://wordpress.org/plugins/events-manager/) and The Events Calendar (https://wordpress.org/plugins/the-events-calendar/). Events that are restricted by membership level will not allow non-members to complete event registration. Additionally, you can hide member-restricted events to non-members via the Memberships > Advanced Settings > Filter setting.
+This add on offers integration for two popular events plugins: All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/), The Events Calendar (https://wordpress.org/plugins/the-events-calendar/), and Events Manager (https://wordpress.org/plugins/events-manager/). 
+
+Events that are restricted by membership level will not allow non-members to complete event registration. Additionally, you can hide member-restricted events to non-members via the Memberships > Advanced Settings > Filter setting.
 
 == Installation ==
 
@@ -26,7 +28,7 @@ For immediate help, also post to our premium support site at http://www.paidmemb
 
 = I need help installing, configuring, or customizing the plugin. =
 
-Please visit our premium support site at http://www.paidmembershipspro.com for more documentation and our support forums.
+Please visit our premium support site at https://www.paidmembershipspro.com for more documentation and our support forums.
 
 == Changelog ==
 = .1 =

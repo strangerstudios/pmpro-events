@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Paid Memberships Pro - Events Add On
-Plugin URI: http://www.paidmembershipspro.com/pmpro-events/
+Plugin URI: http://www.paidmembershipspro.com/add-ons/pmpro-events/
 Description: Offer Members-only Events using PMPro and popular events plugins.
 Version: .1
-Author: Stranger Studios
-Author URI: http://www.strangerstudios.com
+Author: Paid Memberships Pro
+Author URI: https://www.paidmembershipspro.com
 */
 
 function pmpro_events_plugin_init() {
@@ -45,8 +45,8 @@ Function to add links to the plugin row meta
 function pmpro_events_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-events.php') !== false) {
 		$new_links = array(
-			'<a href="' . esc_url('http://www.paidmembershipspro.com/add-ons/plus-add-ons/members-events/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',			
-			'<a href="' . esc_url('http://paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/pmpro-events/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',			
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
 		);
 		$links = array_merge($links, $new_links);
 	}
