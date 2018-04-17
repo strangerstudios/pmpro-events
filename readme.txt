@@ -8,7 +8,10 @@ Stable tag: .1
 Offer members-only events using popular events plugins and Paid Memberships Pro.
 
 == Description ==
-This add on offers integration for two popular events plugins: All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/), The Events Calendar (https://wordpress.org/plugins/the-events-calendar/), and Events Manager (https://wordpress.org/plugins/events-manager/). 
+This add on offers integration for popular events plugins, including: 
+* All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
+* The Events Calendar (https://wordpress.org/plugins/the-events-calendar/)
+* Events Manager (https://wordpress.org/plugins/events-manager/)
 
 Events that are restricted by membership level will not allow non-members to complete event registration. Additionally, you can hide member-restricted events to non-members via the Memberships > Advanced Settings > Filter setting.
 
