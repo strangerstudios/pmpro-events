@@ -2,7 +2,7 @@
 /*
 Plugin Name: Paid Memberships Pro - Events Add On
 Plugin URI: http://www.paidmembershipspro.com/add-ons/pmpro-events/
-Description: Offer Members-only Events using PMPro and popular events plugins.
+Description: Offer Members-only events using PMPro and popular events plugins.
 Version: .1
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
@@ -25,6 +25,11 @@ function pmpro_events_plugin_init() {
 	//All in One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
 	if ( defined( 'AI1EC_PATH' ) ) {
 		require_once( $path . '/modules/all-in-one-event-calendar.php' );
+	}
+	
+	//Sugar Calendar Lite (https://wordpress.org/plugins/sugar-calendar-lite/)
+	if ( class_exists( 'Sugar_Calendar\\Plugin' ) ) {
+		require_once( $path . '/modules/sugar-calendar.php' );
 	}
 }
 add_action( 'plugins_loaded', 'pmpro_events_plugin_init' );
