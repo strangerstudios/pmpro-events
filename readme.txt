@@ -8,18 +8,27 @@ Stable tag: .1
 Offer members-only events using popular events plugins and Paid Memberships Pro.
 
 == Description ==
-This add on offers integration for popular events plugins, including: 
+
+This Add On offers integration for popular events plugins, including: 
 * All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
 * The Events Calendar (https://wordpress.org/plugins/the-events-calendar/)
 * Events Manager (https://wordpress.org/plugins/events-manager/)
+* Sugar Calendar (https://wordpress.org/plugins/sugar-calendar-lite/)
 
-Events that are restricted by membership level will not allow non-members to complete event registration. Additionally, you can hide member-restricted events to non-members via the Memberships > Advanced Settings > Filter setting.
+Events that are restricted by membership level will not display full event details. Additionally, you can hide member-restricted events to non-members via the Memberships > Advanced Settings > Filter setting.
 
 == Installation ==
 
 1. Make sure you have the Paid Memberships Pro plugin installed and activated.
 1. Upload the `pmpro-events` directory to the `/wp-content/plugins/` directory of your site.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
+
+== Setup ==
+
+1. Once the plugin is active, it will automatically detect which events module to load for your site.
+1. Edit any event in your site to restrict access via the "Require Membership" meta box.
+1. Events will be display or be hidden from calendar (archive) view according to your settings under Memberships > Settings > Advanced Settings.
+1. Event excerpts will be shown or hidden from non-members according to your settings under Memberships > Settings > Advanced Settings.
 
 == Frequently Asked Questions ==
 
