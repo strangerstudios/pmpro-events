@@ -7,7 +7,7 @@
 /*
 	Add Membership Levels box to The Events Calendar CPTs
 */
-function pmpro_events_page_meta_wrapper( ) {
+function pmpro_events_calendar_page_meta_wrapper( ) {
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'tribe_events', 'side' );
 }
 
@@ -33,7 +33,7 @@ function pmpro_events_calendar_init() {
 		Add meta boxes to edit events page
 	*/
 	if( is_admin() ) {
-		add_action( 'admin_menu', 'pmpro_events_page_meta_wrapper' );
+		add_action( 'admin_menu', 'pmpro_events_calendar_page_meta_wrapper' );
 	}
 }
 add_action( 'init', 'pmpro_events_calendar_init', 20 );
