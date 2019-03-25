@@ -7,7 +7,7 @@
 /*
 	Add Membership Levels box to Events Manager CPTs
 */
-function pmpro_events_manager_page_meta_wrapper() {
+function pmpro_events_events_manager_page_meta_wrapper() {
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event', 'side' );
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event-recurring', 'side' );	
 }
@@ -15,15 +15,15 @@ function pmpro_events_manager_page_meta_wrapper() {
 /*
 	Stuff to run on init
 */
-function pmpro_events_manager_init() {
+function pmpro_events_events_manager_init() {
 	/*
 		Filter searches and redirect single event page if PMPro Option to filter is set.
 	*/
 	if(function_exists('pmpro_getOption')) {
 		$filterqueries = pmpro_getOption("filterqueries");
 		if(!empty($filterqueries)) {
-			add_filter('em_events_get','pmpro_events_manager_em_events_get', 10, 2);
-			// add_action('wp', 'pmpro_events_manager_template_redirect');
+			add_filter('em_events_get','pmpro_events_events_manager_em_events_get', 10, 2);
+			// add_action('wp', 'pmpro_events_events_manager_template_redirect');
 		}
 	}
 	
@@ -31,15 +31,15 @@ function pmpro_events_manager_init() {
 		Add meta boxes to edit events page
 	*/
 	if( is_admin() ) {
-		add_action( 'admin_menu', 'pmpro_events_manager_page_meta_wrapper' );
+		add_action( 'admin_menu', 'pmpro_events_events_manager_page_meta_wrapper' );
 	}
 }
-add_action( 'init', 'pmpro_events_manager_init', 20 );
+add_action( 'init', 'pmpro_events_events_manager_init', 20 );
 
 /*
 	Add pmpro content message for non-members before event details.
 */
-function pmpro_events_manager_em_event_output( $event_string, $post, $format, $target ) {
+function pmpro_events_events_manager_em_event_output( $event_string, $post, $format, $target ) {
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) && is_singular( array( 'event' ) ) && in_the_loop() ) {
 		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);
 		if(is_array($hasaccess)) {
@@ -86,12 +86,12 @@ function pmpro_events_manager_em_event_output( $event_string, $post, $format, $t
 	}
 	return $event_string;
 }
-add_action( 'em_event_output', 'pmpro_events_manager_em_event_output', 1, 4 );
+add_action( 'em_event_output', 'pmpro_events_events_manager_em_event_output', 1, 4 );
 
 /*
 	Hide booking form and replace with the pmpro content message for non-members.
 */
-function pmpro_events_manager_output_placeholder( $replace, $EM_Event, $result ) {
+function pmpro_events_events_manager_output_placeholder( $replace, $EM_Event, $result ) {
 	global $wp_query, $wp_rewrite, $post, $current_user;
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) ) {
 		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);		
@@ -111,12 +111,12 @@ function pmpro_events_manager_output_placeholder( $replace, $EM_Event, $result )
 	}
 	return $replace;
 }
-add_filter( 'em_event_output_placeholder', 'pmpro_events_manager_output_placeholder', 1, 3 );
+add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_output_placeholder', 1, 3 );
 
 /*
 	Hide member events from non-members.
 */
-function pmpro_events_manager_template_redirect() {
+function pmpro_events_events_manager_template_redirect() {
 	global $post;	
 	if(!is_admin() && isset($post->post_type) && ($post->post_type == "event" || $post->post_type == "event-recurring") && !pmpro_has_membership_access()) {
 		wp_redirect(pmpro_url("levels"));
@@ -127,7 +127,7 @@ function pmpro_events_manager_template_redirect() {
 /*
  	Hide member content from searches.
 */
-function pmpro_events_manager_em_events_get($events, $args) {
+function pmpro_events_events_manager_em_events_get($events, $args) {
 	//don't do anything in the admin
 	if(is_admin()) {
 		return $events;
@@ -176,23 +176,23 @@ function pmpro_events_manager_em_events_get($events, $args) {
  * Remove template parts from Events Manager for non-members.
  * @return boolean $hasaccess returns the current access for a user for an event.
  */
-function pmpro_events_manager_has_access( $hasaccess, $post, $user, $levels ) {
+function pmpro_events_events_manager_has_access( $hasaccess, $post, $user, $levels ) {
 
 	if ( ! is_admin() && is_single() && ! $hasaccess ) {
 		remove_filter( 'the_content', array( 'EM_Event_Post','the_content' ) );
-		add_filter( 'em_event_output', 'pmpro_events_manager_event_output', 10, 4);
+		add_filter( 'em_event_output', 'pmpro_events_events_manager_event_output', 10, 4);
 	}
 
 	return $hasaccess;
 
 }
-add_filter( 'pmpro_has_membership_access_filter_event', 'pmpro_events_manager_has_access', 10, 4 );
+add_filter( 'pmpro_has_membership_access_filter_event', 'pmpro_events_events_manager_has_access', 10, 4 );
 
 /**
  * Only return the event's title for non-members.
  * @todo if this is not called, the PMPro restricted content message appends to the event's title.
  * @return object $content->post_title The events title.
  */
-function pmpro_events_manager_event_output( $event_string, $content, $format, $target ) {
+function pmpro_events_events_manager_event_output( $event_string, $content, $format, $target ) {
 	return $content->post_title;
 }
