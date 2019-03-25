@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Events Add On
 Plugin URI: http://www.paidmembershipspro.com/add-ons/pmpro-events/
 Description: Offer Members-only events using PMPro and popular events plugins.
-Version: .1
+Version: 1.0
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 */
