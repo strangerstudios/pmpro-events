@@ -7,14 +7,14 @@
 /*
 	Add Membership Levels box to The Events Calendar CPTs
 */
-function pmpro_events_calendar_page_meta_wrapper( ) {
+function pmpro_events_tribe_events_page_meta_wrapper( ) {
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'tribe_events', 'side' );
 }
 
 /*
 	Stuff to run on init
 */
-function pmpro_events_calendar_init() {		
+function pmpro_events_tribe_events_init() {		
 
 	/*
 		If PMPro Option to filter is set.
@@ -24,7 +24,7 @@ function pmpro_events_calendar_init() {
 	if(function_exists('pmpro_getOption')) {
 		$filterqueries = pmpro_getOption("filterqueries");
 		if(!empty($filterqueries)) {			
-			add_filter('tribe_get_events', 'pmpro_events_tribe_get_events', 10, 3);
+			add_filter('tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3);
 			add_filter('tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day');
 		}
 	}
@@ -33,24 +33,24 @@ function pmpro_events_calendar_init() {
 		Add meta boxes to edit events page
 	*/
 	if( is_admin() ) {
-		add_action( 'admin_menu', 'pmpro_events_calendar_page_meta_wrapper' );
+		add_action( 'admin_menu', 'pmpro_events_tribe_events_page_meta_wrapper' );
 	}
 }
-add_action( 'init', 'pmpro_events_calendar_init', 20 );
+add_action( 'init', 'pmpro_events_tribe_events_calendar_init', 20 );
 
 /*
  	Hide member content from searches via PMPro's pre_get_posts filter.
 */
-function pmpro_events_calendar_pmpro_search_filter_post_types( $post_types ) {
+function pmpro_events_tribe_events_pmpro_search_filter_post_types( $post_types ) {
 	$post_types[] = 'tribe_events';
 	return $post_types;
 }
-add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_calendar_pmpro_search_filter_post_types' );
+add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_tribe_events_pmpro_search_filter_post_types' );
 
 /*
 	Hide member content from other event lists/etc
 */
-function pmpro_events_tribe_get_events( $events, $args, $full ) {
+function pmpro_events_tribe_events_get_events( $events, $args, $full ) {
 	
 	//make sure PMPro is active
 	if(!function_exists('pmpro_has_membership_access'))
@@ -85,36 +85,36 @@ function pmpro_events_tribe_events_get_current_month_day($day) {
 /**
  * Remove all Tribe Events Post Meta/Data for non-members.
  */
-function pmpro_events_has_access( $hasaccess, $post, $user, $levels ){
+function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels ){
 
 	if ( ! is_admin() && is_single() && ! $hasaccess ) {
 
 		// remove sections of single event if the user doesn't have access.
-		add_filter( 'tribe_get_template_part_templates', 'pmpro_events_remove_post_meta_section', 10, 3 );
+		add_filter( 'tribe_get_template_part_templates', 'pmpro_events_tribe_events_remove_post_meta_section', 10, 3 );
 		add_filter( 'tribe_events_ical_single_event_links', '__return_false' );
 		add_filter( 'tribe_get_cost', '__return_false' );
 		add_filter( 'tribe_events_event_schedule_details', '__return_false' );
 
 		// Integrates with Events Tickets Extension for The Events Calendar. Hides RSVP/Ticket purchase.
 		if( class_exists( 'Tribe__Tickets__Main' ) ) {
-			add_filter( 'tribe_events_tickets_template_tickets/rsvp.php', 'pmpro_events_tickets_remove_module' );
-			add_filter( 'tribe_events_tickets_template_tickets/tpp.php', 'pmpro_events_tickets_remove_module' );
+			add_filter( 'tribe_events_tickets_template_tickets/rsvp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
+			add_filter( 'tribe_events_tickets_template_tickets/tpp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
 
 		}	
 	}
 
 	return $hasaccess;
 }
-add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_has_access', 10, 4 );
+add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tribe_events_has_access', 10, 4 );
 
 /**
  * This is called if the user does not have membership level.
  * Sets the template to none.
  * @return a blank array.
  */
-function pmpro_events_remove_post_meta_section( $templates, $slug, $name ) {
+function pmpro_events_tribe_events_remove_post_meta_section( $templates, $slug, $name ) {
 	$r = array();
-	$r = apply_filters( 'pmpro_events_page_modules', $r, $templates );
+	$r = apply_filters( 'pmpro_events_tribe_events_page_modules', $r, $templates );
 	return $r;		
 }
 
@@ -123,8 +123,8 @@ function pmpro_events_remove_post_meta_section( $templates, $slug, $name ) {
  * Sets the template to none.
  * @return a blank string.
  */
-function pmpro_events_tickets_remove_module( $modules ) {
+function pmpro_events_tribe_events_tickets_remove_module( $modules ) {
 	$r = '';
-	$r = apply_filters( 'pmpro_events_tickets_page_modules', $r, $modules );
+	$r = apply_filters( 'pmpro_events_tribe_events_tickets_page_modules', $r, $modules );
 	return $r;
 }
