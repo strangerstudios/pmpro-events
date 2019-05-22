@@ -196,3 +196,21 @@ add_filter( 'pmpro_has_membership_access_filter_event', 'pmpro_events_events_man
 function pmpro_events_events_manager_event_output( $event_string, $content, $format, $target ) {
 	return $content->post_title;
 }
+
+/**
+ * Hide excerpt for non-members if set in Paid Memberships Pro Advanced settings. 
+ * @return string The excerpt string.
+ */
+function pmpro_events_events_manager_hide_excerpts( $result, $event, $placeholder, $target='html' ) {
+	
+	$showexcerpts = apply_filters( 'pmpro_events_events_manager_show_excerpts', pmpro_getOption( "showexcerpts" ), $event );
+
+	if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT','#_EVENTEXCERPTCUT', "#_LOCATIONEXCERPT")) && $target == 'html' && !pmpro_has_membership_access( $event->ID ) && '1' !== $showexcerpts ){
+		$result = '';
+	}
+
+	return $result;
+}
+add_filter('em_category_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
+add_filter('em_event_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
+add_filter('em_location_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
