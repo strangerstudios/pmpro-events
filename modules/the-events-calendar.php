@@ -21,11 +21,12 @@ function pmpro_events_tribe_events_init() {
 		- Redirect single event page
 		- Filter tripe_get_events
 	*/
-	if(function_exists('pmpro_getOption')) {
-		$filterqueries = pmpro_getOption("filterqueries");
-		if(!empty($filterqueries)) {			
-			add_filter('tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3);
-			add_filter('tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day');
+	if ( function_exists( 'pmpro_getOption' ) ) {
+		$filterqueries = pmpro_getOption( "filterqueries" );
+		$filter_archives = apply_filters( 'pmpro_events_tribe_events_filter_archives', true );
+		if ( $filter_archives && ! empty( $filterqueries ) ) {			
+			add_filter( 'tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3 );
+			add_filter( 'tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day' );
 		}
 	}
 	
@@ -36,13 +37,19 @@ function pmpro_events_tribe_events_init() {
 		add_action( 'admin_menu', 'pmpro_events_tribe_events_page_meta_wrapper' );
 	}
 }
-add_action( 'init', 'pmpro_events_tribe_events_calendar_init', 20 );
+add_action( 'init', 'pmpro_events_tribe_events_init', 20 );
 
 /*
  	Hide member content from searches via PMPro's pre_get_posts filter.
 */
 function pmpro_events_tribe_events_pmpro_search_filter_post_types( $post_types ) {
-	$post_types[] = 'tribe_events';
+
+	$filter_archives = apply_filters( 'pmpro_events_tribe_events_filter_archives', true );
+
+	if ( $filter_archives ) {
+		$post_types[] = 'tribe_events';
+	}
+
 	return $post_types;
 }
 add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_tribe_events_pmpro_search_filter_post_types' );
@@ -75,6 +82,7 @@ function pmpro_events_tribe_events_get_events( $events, $args, $full ) {
 	We need to filter the count to keep events from showing up there.
 */
 function pmpro_events_tribe_events_get_current_month_day($day) {
+
 	if($day['total_events'] > 0 && !empty($day['events']->posts)) {
 		$day['total_events'] = count($day['events']->posts);
 	}	
