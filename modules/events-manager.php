@@ -40,6 +40,8 @@ add_action( 'init', 'pmpro_events_events_manager_init', 20 );
 	Add pmpro content message for non-members before event details.
 */
 function pmpro_events_events_manager_em_event_output( $event_string, $post, $format, $target ) {
+	global $current_user;
+	
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) && is_singular( array( 'event' ) ) && in_the_loop() ) {
 		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);
 		if(is_array($hasaccess)) {
