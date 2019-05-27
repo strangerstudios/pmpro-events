@@ -13,24 +13,39 @@ add_action( 'admin_menu', 'pmpro_events_ai1ec_page_meta_wrapper' );
  */
 function pmpro_events_ai1ec_remove_event_meta( $r, $event ) {
 
-	if ( ! pmpro_has_membership_access( $event->ID ) ){
-		$r = '';
+	$event_id = get_the_ID();
+
+	if ( ! pmpro_has_membership_access( $event_id ) && ! empty( $r ) ){
+		$r = __('This information is restricted to members only.', 'pmpro-events' );
 	}
 
 	return $r;
 }
-add_filter( 'ai1ec_rendering_single_event_actions', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
+// add_filter( 'ai1ec_rendering_single_event_actions', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
 add_filter( 'ai1ec_rendering_single_event_venues', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
 
-/**
- * Remove event time for non-members.
- */
-function pmpro_events_ai1ec_remove_event_time( $output, $event, $start_date_display ) {
+function pmpro_events_ai1ec_filter_archives( $args ) {
 
-	if ( ! pmpro_has_membership_access( $event->ID ) ){
-		$output = '';
+	$filter_ai1ec_events_archive = apply_filters( 'pmpro_events_ai1ec_filter_archive', true );
+
+	$filterqueries = pmpro_getOption("filterqueries");
+	if ( empty( $filterqueries ) && $filter_ai1ec_events_archive ) {
+		return $args;
 	}
 
-	return $output;
+	$events_query_args = apply_filters( 'pmpro_events_ai1ec_query_args', 
+		array(
+			'post_type' => 'ai1ec_event',
+			'limit' => '50'
+		)
+	);
+	$events = get_posts( $events_query_args );
+
+	foreach ( $events as $key => $post ) {
+		if ( pmpro_has_membership_access( $post->ID ) ) {
+			$args['post_ids'][] = $post->ID;
+		}
+	}
+	return $args;
 }
-add_filter( 'ai1ec_get_timespan_html', 'pmpro_events_ai1ec_remove_event_time', 10, 3 );
+add_filter( 'ai1ec_view_args_array', 'pmpro_events_ai1ec_filter_archives', 10, 1 );
