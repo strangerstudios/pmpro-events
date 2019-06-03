@@ -203,12 +203,14 @@ function pmpro_events_events_manager_event_output( $event_string, $content, $for
  */
 function pmpro_events_events_manager_hide_excerpts( $result, $event, $placeholder, $target='html' ) {
 	
-	$showexcerpts = apply_filters( 'pmpro_events_events_manager_show_excerpts', pmpro_getOption( "showexcerpts" ), $event );
-
-	if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT','#_EVENTEXCERPTCUT', "#_LOCATIONEXCERPT")) && $target == 'html' && !pmpro_has_membership_access( $event->ID ) && '1' !== $showexcerpts ){
-		$result = '';
+	if ( function_exists( 'pmpro_getOption' ) ) {
+		$showexcerpts = apply_filters( 'pmpro_events_events_manager_show_excerpts', pmpro_getOption( "showexcerpts" ), $event );
+	
+		if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT','#_EVENTEXCERPTCUT', "#_LOCATIONEXCERPT")) && $target == 'html' && !pmpro_has_membership_access( $event->ID ) && '1' !== $showexcerpts ){
+			$result = '';
+		}
 	}
-
+	
 	return $result;
 }
 add_filter('em_category_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
@@ -222,14 +224,16 @@ add_filter('em_location_output_placeholder','pmpro_events_events_manager_hide_ex
  */
 function pmpro_events_em_filter_calendar_page( $event ) {
 
-	$filter_event_archives = apply_filters( 'pmpro_events_em_filter_calendar', true );
-	$filterqueries = pmpro_getOption("filterqueries");
+	if ( function_exists( 'pmpro_getOption' ) ) {
+		$filter_event_archives = apply_filters( 'pmpro_events_em_filter_calendar', true );
+		$filterqueries = pmpro_getOption("filterqueries");
 
-	// Filter events from calendar page if the member doesn't meet the requirements.
-	if ( ! pmpro_has_membership_access( $event['post_id'] ) && $filter_event_archives && ! empty( $filterqueries ) ) {
-		unset( $event );
+		// Filter events from calendar page if the member doesn't meet the requirements.
+		if ( ! pmpro_has_membership_access( $event['post_id'] ) && $filter_event_archives && ! empty( $filterqueries ) ) {
+			unset( $event );
+		}
 	}
-
+	
 	return $event;
 }
 add_filter( 'em_calendar_output_loop_start', 'pmpro_events_em_filter_calendar_page', 10, 1 );
