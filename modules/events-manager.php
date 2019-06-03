@@ -23,7 +23,6 @@ function pmpro_events_events_manager_init() {
 		$filterqueries = pmpro_getOption("filterqueries");
 		if(!empty($filterqueries)) {
 			add_filter('em_events_get','pmpro_events_events_manager_em_events_get', 10, 2);
-			// add_action('wp', 'pmpro_events_events_manager_template_redirect');
 		}
 	}
 	
