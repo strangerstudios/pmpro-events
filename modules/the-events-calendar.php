@@ -148,3 +148,38 @@ function pmpro_events_tribe_events_excerpt_filter( $excerpt ) {
 	return $excerpt;	
 }
 add_filter( 'tribe_events_get_the_excerpt', 'pmpro_events_tribe_events_excerpt_filter' );
+
+/**
+ * Add a new column "Requires Membership" to the all events view to show required levels.
+ *
+ * @since 1.0
+ */
+function pmpro_events_tribe_events_requires_membership_columns_head( $defaults ) {
+    $defaults['requires_membership'] = 'Requires Membership';
+    return $defaults;
+}
+
+/**
+ * Get the column data for the "Requires Membership" custom column.
+ *
+ * @since 1.0
+ */
+function pmpro_events_tribe_events_requires_membership_columns_content( $column_name, $post_ID ) {
+	if ( $column_name == 'requires_membership' ) {
+	    global $membership_levels, $wpdb;
+		$post_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post_ID}'");
+		$protected_levels = array();
+		foreach ( $membership_levels as $level ) {
+			if ( in_array( $level->id, $post_levels ) ) {
+				$protected_levels[] = $level->name;
+			}
+		}
+		if ( ! empty( $protected_levels ) ) {
+			echo implode( ', ', $protected_levels);
+		} else {
+			echo '&mdash;';
+		}
+	}
+}
+add_filter( 'manage_tribe_events_posts_columns', 'pmpro_events_tribe_events_requires_membership_columns_head' );
+add_action( 'manage_tribe_events_posts_custom_column', 'pmpro_events_tribe_events_requires_membership_columns_content', 10, 2 );
