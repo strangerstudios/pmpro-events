@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Paid Memberships Pro - Events Add On
-Plugin URI: http://www.paidmembershipspro.com/add-ons/pmpro-events/
+Plugin URI: https://www.paidmembershipspro.com/add-ons/events-for-members-only/
 Description: Offer Members-only events using PMPro and popular events plugins.
 Version: 1.0
 Author: Paid Memberships Pro
@@ -11,25 +11,25 @@ Author URI: https://www.paidmembershipspro.com
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
 
 function pmpro_events_plugin_init() {
-	//Load module based on active events plugin
+	// Load module based on active events plugin
 	$path = dirname( __FILE__ );
 
-	//Events Manager (https://wordpress.org/plugins/events-manager/) 
+	// Events Manager (https://wordpress.org/plugins/events-manager/) 
 	if ( defined( 'EM_VERSION' ) ) {
 		require_once( $path . '/modules/events-manager.php' );
 	}
 	
-	//The Events Calendar by Modern Tribe (https://wordpress.org/plugins/the-events-calendar/)
+	// The Events Calendar by Modern Tribe (https://wordpress.org/plugins/the-events-calendar/)
 	if ( class_exists( 'Tribe__Events__Main' ) ) {
 		require_once( $path . '/modules/the-events-calendar.php' );
 	}
 
-	//All in One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
+	// All in One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
 	if ( defined( 'AI1EC_PATH' ) ) {
 		require_once( $path . '/modules/all-in-one-event-calendar.php' );
 	}
 	
-	//Sugar Calendar Lite (https://wordpress.org/plugins/sugar-calendar-lite/)
+	// Sugar Calendar Lite (https://wordpress.org/plugins/sugar-calendar-lite/)
 	if ( class_exists( 'Sugar_Calendar\\Plugin' ) ) {
 		require_once( $path . '/modules/sugar-calendar.php' );
 	}
@@ -74,13 +74,13 @@ function pmpro_events_activation_admin_notice() {
 		if (  ! defined( 'EM_VERSION' ) && ! class_exists( 'Tribe__Events__Main' ) && ! defined( 'AI1EC_PATH' ) && ! class_exists( 'Sugar_Calendar\\Plugin' ) ) {
 		?>
 			<div class="notice notice-warning is-dismissible">
-			<p><?php printf( __( "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>", 'pmpro-events' ), "https://paidmembershipspro.com" ); ?></p>
+			<p><?php printf( __( "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>", 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ); ?></p>
 		</div>
 		<?php
 		}else{
 		?>
 		<div class="updated notice is-dismissible">
-			<p><?php printf( __( 'Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the "Require Membership" box in the sidebar. <a href="%s">View more documentation here.</a>', 'pmpro-events' ), "https://paidmembershipspro.com" ); ?></p>
+			<p><?php printf( __( 'Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the "Require Membership" box in the sidebar. <a href="%s">View more documentation here.</a>', 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ); ?></p>
 		</div>
 		<?php
 		}
@@ -96,7 +96,7 @@ Function to add links to the plugin row meta
 function pmpro_events_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-events.php') !== false) {
 		$new_links = array(
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/pmpro-events/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',			
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/events-for-members-only/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
 			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
 		);
 

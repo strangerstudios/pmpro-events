@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5
-Tested up to: 4.9.5
+Tested up to: 5.2.1
 Stable tag: 1.0
 
 Offer members-only events using popular events plugins and Paid Memberships Pro.
@@ -10,10 +10,10 @@ Offer members-only events using popular events plugins and Paid Memberships Pro.
 == Description ==
 
 This Add On offers integration for popular events plugins, including: 
-* All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
-* The Events Calendar (https://wordpress.org/plugins/the-events-calendar/)
 * Events Manager (https://wordpress.org/plugins/events-manager/)
+* The Events Calendar (https://wordpress.org/plugins/the-events-calendar/)
 * Sugar Calendar (https://wordpress.org/plugins/sugar-calendar-lite/)
+* All-in-One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
 
 Events that are restricted by membership level will not display full event details. Additionally, you can hide member-restricted events to non-members via the Memberships > Advanced Settings > Filter setting.
 
@@ -27,7 +27,7 @@ Events that are restricted by membership level will not display full event detai
 
 1. Once the plugin is active, it will automatically detect which events module to load for your site.
 1. Edit any event in your site to restrict access via the "Require Membership" meta box.
-1. Events will be display or be hidden from calendar (archive) view according to your settings under Memberships > Settings > Advanced Settings.
+1. Events will be displayed or hidden from calendar (archive) view according to your settings under Memberships > Settings > Advanced Settings.
 1. Event excerpts will be shown or hidden from non-members according to your settings under Memberships > Settings > Advanced Settings.
 
 == Frequently Asked Questions ==
