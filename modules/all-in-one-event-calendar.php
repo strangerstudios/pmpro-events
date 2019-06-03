@@ -4,7 +4,9 @@
  * Add metabox to All-In-One-Event Calendar CPT.
  */
 function pmpro_events_ai1ec_page_meta_wrapper( ) {
-	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'ai1ec_event', 'side' );
+	if ( defined( 'PMPRO_VERSION' ) ) {
+		add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'ai1ec_event', 'side' );
+	}
 }
 add_action( 'admin_menu', 'pmpro_events_ai1ec_page_meta_wrapper' );
 
@@ -56,7 +58,9 @@ add_filter( 'ai1ec_view_args_array', 'pmpro_events_ai1ec_filter_archives', 10, 1
  * @since 1.0
  */
 function pmpro_events_ai1ec_requires_membership_columns_head( $defaults ) {
-    $defaults['requires_membership'] = 'Requires Membership';
+	if ( defined( 'PMPRO_VERSION' ) ) {
+		$defaults['requires_membership'] = 'Requires Membership';
+	}
     return $defaults;
 }
 
