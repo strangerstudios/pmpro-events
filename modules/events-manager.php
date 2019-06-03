@@ -41,7 +41,6 @@ add_action( 'init', 'pmpro_events_events_manager_init', 20 );
 */
 function pmpro_events_events_manager_em_event_output( $event_string, $post, $format, $target ) {
 	global $current_user;
-	
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) && is_singular( array( 'event' ) ) && in_the_loop() ) {
 		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);
 		if(is_array($hasaccess)) {
@@ -216,6 +215,25 @@ function pmpro_events_events_manager_hide_excerpts( $result, $event, $placeholde
 add_filter('em_category_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
 add_filter('em_event_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
 add_filter('em_location_output_placeholder','pmpro_events_events_manager_hide_excerpts',1,4);
+
+/**
+ * Filter the Calendar page to hide events for non-members.
+ * @since 1.0
+ * @return array $event The event array object.
+ */
+function pmpro_events_em_filter_calendar_page( $event ) {
+
+	$filter_event_archives = apply_filters( 'pmpro_events_em_filter_calendar', true );
+	$filterqueries = pmpro_getOption("filterqueries");
+
+	// Filter events from calendar page if the member doesn't meet the requirements.
+	if ( ! pmpro_has_membership_access( $event['post_id'] ) && $filter_event_archives && ! empty( $filterqueries ) ) {
+		unset( $event );
+	}
+
+	return $event;
+}
+add_filter( 'em_calendar_output_loop_start', 'pmpro_events_em_filter_calendar_page', 10, 1 );
 
 /**
  * Add a new column "Requires Membership" to the all events view to show required levels.
