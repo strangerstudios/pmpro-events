@@ -33,12 +33,9 @@ add_filter( 'pmpro_has_membership_access_filter', 'pmpro_events_sugar_calendar_h
  * Filters on https://www.paidmembershipspro.com/hook/pmpro_search_filter_post_types/
  */
 function pmpro_events_sugar_calendar_filter_archives( $post_types ) {
-
-	$filter_archives = apply_filters( 'pmpro_events_sugar_calendar_filter_archives', true );
-
-	if ( $filter_archives ) {
-		$post_types[] = 'sc_event';
-	}
+	
+	// Add the sc_event post type to the post type filter in PMPro.
+	$post_types[] = 'sc_event';
 
 	return $post_types;
 }
