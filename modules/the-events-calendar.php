@@ -143,7 +143,14 @@ function pmpro_events_tribe_events_tickets_remove_module( $modules ) {
  */
 function pmpro_events_tribe_events_excerpt_filter( $excerpt ) {
 
-	$excerpt = get_the_excerpt();
+	// TODO: Hide the excerpt if PMPro hide's the excerpt.
+	$showexcerpts = apply_filters( 'pmpro_events_tribe_events_show_excerpts', pmpro_getOption( "showexcerpts" ), $event );
+
+	if ( $showexcerpts ) {
+		$excerpt = get_the_excerpt();
+	} else {
+		$excerpt = '';
+	}
 
 	return $excerpt;	
 }
