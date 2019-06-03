@@ -155,8 +155,10 @@ add_filter( 'tribe_events_get_the_excerpt', 'pmpro_events_tribe_events_excerpt_f
  * @since 1.0
  */
 function pmpro_events_tribe_events_requires_membership_columns_head( $defaults ) {
-    $defaults['requires_membership'] = 'Requires Membership';
-    return $defaults;
+    if ( defined( 'PMPRO_VERSION' ) ) {
+		$defaults['requires_membership'] = 'Requires Membership';
+    }
+	return $defaults;
 }
 
 /**
