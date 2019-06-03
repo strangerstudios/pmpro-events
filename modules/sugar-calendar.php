@@ -48,11 +48,14 @@ add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_sugar_calendar_filte
  */
 function pmpro_events_sugar_calendar_filter_calendar_events( $link, $event, $size ) {
 	
-	$filterqueries = pmpro_getOption( "filterqueries" );
+	if ( ! function_exists( 'pmpro_has_membership_access' ) ) {
+		return $link;
+	}
+	
+	$hide_events = pmpro_getOption( 'filterqueries' );
+	$hide_events = apply_filters( 'pmpro_events_sugar_calendar_filter_calendar_events', $hide_events );
 
-	$hide_events = apply_filters( 'pmpro_events_sugar_calendar_filter_calendar_events', true );
-
-	if ( ! pmpro_has_membership_access( $event ) && ! empty( $filterqueries ) && $hide_events ) {
+	if ( ! pmpro_has_membership_access( $event ) && $hide_events ) {
 		$link = NULL;
 	}
 	
