@@ -222,10 +222,10 @@ add_filter('em_location_output_placeholder','pmpro_events_events_manager_hide_ex
  * @since 1.0
  * @return array $event The event array object.
  */
-function pmpro_events_em_filter_calendar_page( $event ) {
+function pmpro_events_events_manager_filter_calendar_page( $event ) {
 
 	if ( function_exists( 'pmpro_getOption' ) ) {
-		$filter_event_archives = apply_filters( 'pmpro_events_em_filter_calendar', true );
+		$filter_event_archives = apply_filters( 'pmpro_events_events_manager_filter_calendar_events', true );
 		$filterqueries = pmpro_getOption("filterqueries");
 
 		// Filter events from calendar page if the member doesn't meet the requirements.
@@ -236,7 +236,7 @@ function pmpro_events_em_filter_calendar_page( $event ) {
 	
 	return $event;
 }
-add_filter( 'em_calendar_output_loop_start', 'pmpro_events_em_filter_calendar_page', 10, 1 );
+add_filter( 'em_calendar_output_loop_start', 'pmpro_events_events_manager_filter_calendar_page', 10, 1 );
 
 /**
  * Add a new column "Requires Membership" to the all events view to show required levels.
