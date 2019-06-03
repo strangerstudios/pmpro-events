@@ -29,7 +29,7 @@ function pmpro_events_events_manager_init() {
 	/*
 		Add meta boxes to edit events page
 	*/
-	if( is_admin() ) {
+	if ( is_admin() && defined( 'PMPRO_VERSION' ) ) {
 		add_action( 'admin_menu', 'pmpro_events_events_manager_page_meta_wrapper' );
 	}
 }
@@ -244,7 +244,9 @@ add_filter( 'em_calendar_output_loop_start', 'pmpro_events_em_filter_calendar_pa
  * @since 1.0
  */
 function pmpro_events_events_manager_requires_membership_columns_head( $defaults ) {
-    $defaults['requires_membership'] = 'Requires Membership';
+	if ( defined( 'PMPRO_VERSION' ) ) {
+		$defaults['requires_membership'] = 'Requires Membership';
+	}
     return $defaults;
 }
 
