@@ -33,7 +33,7 @@ function pmpro_events_tribe_events_init() {
 	/*
 		Add meta boxes to edit events page
 	*/
-	if( is_admin() ) {
+	if( is_admin() && defined( 'PMPRO_VERSION' ) ) {
 		add_action( 'admin_menu', 'pmpro_events_tribe_events_page_meta_wrapper' );
 	}
 }
