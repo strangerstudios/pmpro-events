@@ -5,7 +5,7 @@
  */
 function pmpro_events_ai1ec_page_meta_wrapper( ) {
 	if ( defined( 'PMPRO_VERSION' ) ) {
-		add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'ai1ec_event', 'side' );
+		add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'ai1ec_event', 'side', 'high' );
 	}
 }
 add_action( 'admin_menu', 'pmpro_events_ai1ec_page_meta_wrapper' );

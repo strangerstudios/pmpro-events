@@ -8,7 +8,7 @@
 	Add Membership Levels box to The Events Calendar CPTs
 */
 function pmpro_events_tribe_events_page_meta_wrapper( ) {
-	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'tribe_events', 'side' );
+	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'tribe_events', 'side', 'high' );
 }
 
 /*

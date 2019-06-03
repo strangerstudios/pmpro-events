@@ -8,8 +8,8 @@
 	Add Membership Levels box to Events Manager CPTs
 */
 function pmpro_events_events_manager_page_meta_wrapper() {
-	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event', 'side' );
-	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event-recurring', 'side' );	
+	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event', 'side', 'high' );
+	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event-recurring', 'side', 'high' );	
 }
 
 /*
