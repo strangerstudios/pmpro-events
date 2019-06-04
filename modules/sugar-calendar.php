@@ -28,37 +28,23 @@ function pmpro_events_sugar_calendar_has_membership_access( $hasaccess, $post, $
 add_filter( 'pmpro_has_membership_access_filter', 'pmpro_events_sugar_calendar_has_membership_access', 10, 4 );
 
 /**
- * Removes restricted events from search and archives pages if filtering archives set inside Paid Memberships Pro.
- * @since 1.0
- * Filters on https://www.paidmembershipspro.com/hook/pmpro_search_filter_post_types/
- */
-function pmpro_events_sugar_calendar_filter_archives( $post_types ) {
-
-	$filter_archives = apply_filters( 'pmpro_events_sugar_calendar_filter_archives', true );
-
-	if ( $filter_archives ) {
-		$post_types[] = 'sc_event';
-	}
-
-	return $post_types;
-}
-add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_sugar_calendar_filter_archives', 10, 1 );
-
-/**
- *  Removes restricted events from Calendar View if the user doesn't have access to an event and filtering
+ *  Removes restricted events from Calendar/List View if the user doesn't have access to an event and filtering
  * @since 1.0
  * 
  */
-function pmpro_events_sugar_calendar_filter_calendar_events( $link, $event, $size ) {
-	
-	$filterqueries = pmpro_getOption( "filterqueries" );
+function pmpro_events_sc_filter_events_archive( $events ) {
 
-	$hide_events = apply_filters( 'pmpro_events_sugar_calendar_filter_calendar_events', true );
+	$filterqueries = pmpro_getOption( 'filterqueries' );
 
-	if ( ! pmpro_has_membership_access( $event ) && ! empty( $filterqueries ) && $hide_events ) {
-		$link = NULL;
+	if ( empty( $filterqueries ) ) {
+		return $events;
 	}
-	
-	return $link;
+
+	foreach ( $events as $key => $value ) {
+		if ( ! pmpro_has_membership_access( $value->object_id ) ) {
+			unset( $events[$key] ); // remove from the events array if the user doesn't have access.
+		}
+	}
+	return $events;
 }
-add_filter( 'sc_event_calendar_link', 'pmpro_events_sugar_calendar_filter_calendar_events', 10, 3 );
+add_action( 'sc_the_events', 'pmpro_events_sc_filter_events_archive' );
