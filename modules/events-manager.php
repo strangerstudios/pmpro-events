@@ -189,7 +189,7 @@ function pmpro_events_events_manager_event_output( $event_string, $content, $for
 function pmpro_events_events_manager_hide_excerpts( $result, $event, $placeholder, $target='html' ) {
 	
 	if ( function_exists( 'pmpro_getOption' ) ) {
-		$showexcerpts = apply_filters( 'pmpro_events_events_manager_show_excerpts', pmpro_getOption( "showexcerpts" ), $event );
+		$showexcerpts = pmpro_getOption( "showexcerpts" );
 	
 		if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT','#_EVENTEXCERPTCUT', "#_LOCATIONEXCERPT")) && $target == 'html' && !pmpro_has_membership_access( $event->ID ) && '1' !== $showexcerpts ){
 			$result = '';
@@ -209,12 +209,11 @@ add_filter('em_location_output_placeholder','pmpro_events_events_manager_hide_ex
  */
 function pmpro_events_events_manager_filter_calendar_page( $event ) {
 
-	if ( function_exists( 'pmpro_getOption' ) ) {
-		$filter_event_archives = apply_filters( 'pmpro_events_events_manager_filter_calendar_events', true );
+	if ( function_exists( 'pmpro_getOption' ) ) {		
 		$filterqueries = pmpro_getOption("filterqueries");
 
 		// Filter events from calendar page if the member doesn't meet the requirements.
-		if ( ! pmpro_has_membership_access( $event['post_id'] ) && $filter_event_archives && ! empty( $filterqueries ) ) {
+		if ( ! pmpro_has_membership_access( $event['post_id'] ) && ! empty( $filterqueries ) ) {
 			unset( $event );
 		}
 	}
