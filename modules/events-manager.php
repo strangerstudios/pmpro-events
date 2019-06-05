@@ -4,17 +4,19 @@
 	* Hide member events from non-members.
 */
 
-/*
-	Add Membership Levels box to Events Manager CPTs
-*/
+/**
+ * Add Membership Levels box to Events Manager CPTs
+ * @since 1.0
+ */
 function pmpro_events_events_manager_page_meta_wrapper() {
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event', 'side', 'high' );
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'event-recurring', 'side', 'high' );	
 }
 
-/*
-	Stuff to run on init
-*/
+/**
+ * Stuff to run on init
+ * @since 1.0
+ */
 function pmpro_events_events_manager_init() {
 	/*
 		Filter searches and redirect single event page if PMPro Option to filter is set.
@@ -35,9 +37,10 @@ function pmpro_events_events_manager_init() {
 }
 add_action( 'init', 'pmpro_events_events_manager_init', 20 );
 
-/*
-	Add pmpro content message for non-members before event details.
-*/
+/**
+ * Add pmpro content message for non-members before event details.
+ * @since 1.0
+ */
 function pmpro_events_events_manager_em_event_output( $event_string, $post, $format, $target ) {
 	global $current_user;
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) && is_singular( array( 'event' ) ) && in_the_loop() ) {
@@ -88,9 +91,10 @@ function pmpro_events_events_manager_em_event_output( $event_string, $post, $for
 }
 add_action( 'em_event_output', 'pmpro_events_events_manager_em_event_output', 1, 4 );
 
-/*
-	Hide booking form and replace with the pmpro content message for non-members.
-*/
+/**
+ * Hide booking form and replace with the pmpro content message for non-members.
+ * @since 1.0
+ */
 function pmpro_events_events_manager_output_placeholder( $replace, $EM_Event, $result ) {
 	global $wp_query, $wp_rewrite, $post, $current_user;
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) ) {
@@ -113,9 +117,10 @@ function pmpro_events_events_manager_output_placeholder( $replace, $EM_Event, $r
 }
 add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_output_placeholder', 1, 3 );
 
-/*
-	Hide member events from non-members.
-*/
+/**
+ * Hide member events from non-members.
+ * @since 1.0
+ */
 function pmpro_events_events_manager_template_redirect() {
 	global $post;	
 	if(!is_admin() && isset($post->post_type) && ($post->post_type == "event" || $post->post_type == "event-recurring") && !pmpro_has_membership_access()) {
@@ -124,9 +129,10 @@ function pmpro_events_events_manager_template_redirect() {
 	}
 }
 
-/*
- 	Hide member content from searches.
-*/
+/**
+ * Hide member content from searches.
+ * @since 1.0
+ */
 function pmpro_events_events_manager_em_events_get($events, $args) {
 	//don't do anything in the admin
 	if(is_admin()) {
@@ -143,37 +149,14 @@ function pmpro_events_events_manager_em_events_get($events, $args) {
 		 if( pmpro_has_membership_access( $event->post_id ) ) {
 			$newevents[] = $event;
 		}
-	}
-
-	/*
-	//which events are restricted
-	global $wpdb, $current_user;	
-	$sqlQuery = "SELECT DISTINCT(mp.page_id) FROM $wpdb->pmpro_memberships_pages mp LEFT JOIN $wpdb->posts p ON mp.page_id = p.ID WHERE p.post_type IN('event', 'event-recurring') ";
-	if(!empty($current_user->membership_level->id))
-		$sqlQuery .= " AND mp.membership_id <> '" . $current_user->membership_level->id . "' ";
-	$restricted_events = $wpdb->get_col($sqlQuery);
-	
-	//remove restricted events	
-	$recurrence_events = array();
-	$newevents = array();
-	foreach($events as $event) {
-		//if the event is recurring, get the post id of it's parent
-		if(!empty($event->recurrence_id) && empty($recurrence_events[$event->recurrence_id])) {
-			//set post id for recurrence event in the recurrence events array
-			$recurrence_events[$event->recurrence_id] = $wpdb->get_var("SELECT post_id FROM " . $wpdb->prefix . "em_events WHERE event_id = '" . $event->recurrence_id . "' LIMIT 1");						
-		}
-		
-		if(!in_array($event->post_id, $restricted_events) && (empty($recurrence_events[$event->recurrence_id]) || !in_array($recurrence_events[$event->recurrence_id], $restricted_events))) {
-			$newevents[] = $event;
-		}
-	}
-	*/
+	}	
 	
 	return $newevents;
 }
 
 /**
  * Remove template parts from Events Manager for non-members.
+ * @since 1.0
  * @return boolean $hasaccess returns the current access for a user for an event.
  */
 function pmpro_events_events_manager_has_access( $hasaccess, $post, $user, $levels ) {
@@ -190,6 +173,7 @@ add_filter( 'pmpro_has_membership_access_filter_event', 'pmpro_events_events_man
 
 /**
  * Only return the event's title for non-members.
+ * @since 1.0
  * @todo if this is not called, the PMPro restricted content message appends to the event's title.
  * @return object $content->post_title The events title.
  */
@@ -199,6 +183,7 @@ function pmpro_events_events_manager_event_output( $event_string, $content, $for
 
 /**
  * Hide excerpt for non-members if set in Paid Memberships Pro Advanced settings. 
+ * @since 1.0
  * @return string The excerpt string.
  */
 function pmpro_events_events_manager_hide_excerpts( $result, $event, $placeholder, $target='html' ) {
