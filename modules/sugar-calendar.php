@@ -2,6 +2,7 @@
 
 /**
  * Add metabox to Sugar Calendar  CPT.
+ * @since 1.0
  */
 function pmpro_events_sugar_calendar_page_meta_wrapper( ) {
 	if ( defined( 'PMPRO_VERSION' ) ) {
@@ -28,9 +29,8 @@ function pmpro_events_sugar_calendar_has_membership_access( $hasaccess, $post, $
 add_filter( 'pmpro_has_membership_access_filter', 'pmpro_events_sugar_calendar_has_membership_access', 10, 4 );
 
 /**
- *  Removes restricted events from Calendar/List View if the user doesn't have access to an event and filtering
+ * Removes restricted events from Calendar/List View if the user doesn't have access to an event and filtering
  * @since 1.0
- * 
  */
 function pmpro_events_sc_filter_events_archive( $events ) {
 	if ( ! function_exists( 'pmpro_has_membership_access' ) ) {
