@@ -15,9 +15,8 @@ function pmpro_events_tribe_events_init() {
 
 	// Add filters for tribe events if filterqueries option is set in PMPro.
 	if ( function_exists( 'pmpro_getOption' ) ) {
-		$filterqueries = pmpro_getOption( "filterqueries" );
-		$filter_archives = apply_filters( 'pmpro_events_tribe_events_filter_archives', true );
-		if ( $filter_archives && ! empty( $filterqueries ) ) {			
+		$filterqueries = pmpro_getOption( "filterqueries" );		
+		if ( ! empty( $filterqueries ) ) {			
 			add_filter( 'tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3 );
 			add_filter( 'tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day' );
 		}
@@ -35,12 +34,7 @@ add_action( 'init', 'pmpro_events_tribe_events_init', 20 );
  * @since 1.0
  */
 function pmpro_events_tribe_events_pmpro_search_filter_post_types( $post_types ) {
-
-	$filter_archives = apply_filters( 'pmpro_events_tribe_events_filter_archives', true );
-
-	if ( $filter_archives ) {
-		$post_types[] = 'tribe_events';
-	}
+	$post_types[] = 'tribe_events';	
 
 	return $post_types;
 }
@@ -102,7 +96,6 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 		if( class_exists( 'Tribe__Tickets__Main' ) ) {
 			add_filter( 'tribe_events_tickets_template_tickets/rsvp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
 			add_filter( 'tribe_events_tickets_template_tickets/tpp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
-
 		}	
 	}
 
