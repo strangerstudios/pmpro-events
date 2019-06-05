@@ -17,10 +17,8 @@ add_action( 'admin_menu', 'pmpro_events_sugar_calendar_page_meta_wrapper' );
  * Filters on https://www.paidmembershipspro.com/hook/pmpro_has_membership_access_filter/
  */
 function pmpro_events_sugar_calendar_has_membership_access( $hasaccess, $post, $user, $levels ) {
-
-	$hide_meta = apply_filters( 'pmpro_events_sugar_calendar_hide_event_details', true );
-
-	if ( $hide_meta && $post->post_type == 'sc_event' && ! $hasaccess ) {
+	
+	if ( $post->post_type == 'sc_event' && ! $hasaccess ) {
 		remove_action( 'sc_before_event_content', 'sc_add_event_details' );
 	}
 
