@@ -32,11 +32,8 @@ add_filter( 'ai1ec_rendering_single_event_venues', 'pmpro_events_ai1ec_remove_ev
  * @since 1.0
  */
 function pmpro_events_ai1ec_filter_archives( $args ) {
-
-	$filter_ai1ec_events_archive = apply_filters( 'pmpro_events_ai1ec_filter_archives', true );
-
 	$filterqueries = pmpro_getOption("filterqueries");
-	if ( empty( $filterqueries ) && $filter_ai1ec_events_archive ) {
+	if ( empty( $filterqueries ) ) {
 		return $args;
 	}
 
