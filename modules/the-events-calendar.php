@@ -144,7 +144,7 @@ function pmpro_events_tribe_events_excerpt_filter( $excerpt ) {
 		$excerpt = '';
 	}
 
-	return $excerpt;	
+	return $excerpt;
 }
 add_filter( 'tribe_events_get_the_excerpt', 'pmpro_events_tribe_events_excerpt_filter' );
 
