@@ -111,7 +111,7 @@ add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tri
  */
 function pmpro_events_tribe_events_remove_post_meta_section( $templates, $slug, $name ) {
 	$r = array();
-	$r = apply_filters( 'pmpro_events_tribe_events_page_modules', $r, $templates );
+	$r = apply_filters( 'pmpro_events_tribe_events_page_modules', $r, $templates, $slug, $name );
 	return $r;		
 }
 
