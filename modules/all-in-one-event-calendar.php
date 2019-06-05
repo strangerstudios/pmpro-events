@@ -2,6 +2,7 @@
 
 /**
  * Add metabox to All-In-One-Event Calendar CPT.
+ * @since 1.0
  */
 function pmpro_events_ai1ec_page_meta_wrapper( ) {
 	if ( defined( 'PMPRO_VERSION' ) ) {
@@ -12,6 +13,7 @@ add_action( 'admin_menu', 'pmpro_events_ai1ec_page_meta_wrapper' );
 
 /**
  * Remove event meta data.
+ * @since 1.0
  */
 function pmpro_events_ai1ec_remove_event_meta( $r, $event ) {
 
@@ -23,9 +25,12 @@ function pmpro_events_ai1ec_remove_event_meta( $r, $event ) {
 
 	return $r;
 }
-// add_filter( 'ai1ec_rendering_single_event_actions', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
 add_filter( 'ai1ec_rendering_single_event_venues', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
 
+/**
+ * Hide member events from event archives.
+ * @since 1.0
+ */
 function pmpro_events_ai1ec_filter_archives( $args ) {
 
 	$filter_ai1ec_events_archive = apply_filters( 'pmpro_events_ai1ec_filter_archives', true );
