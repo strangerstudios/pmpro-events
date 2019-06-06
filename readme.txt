@@ -1,4 +1,4 @@
-=== Paid Memberships Pro - Events Add On ===
+=== PMPro Events ===
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5

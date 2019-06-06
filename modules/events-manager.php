@@ -71,7 +71,7 @@ function pmpro_events_events_manager_em_event_output( $event_string, $post, $for
 		$pmpro_content_message_post = '</div>';
 		$content = '';
 		$sr_search = array("!!levels!!", "!!referrer!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), urlencode(site_url($_SERVER['REQUEST_URI'])));
+		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), esc_url(site_url($_SERVER['REQUEST_URI'])));
 		//get the correct message to show at the bottom
 		if($current_user->ID) {
 			//not a member
@@ -266,7 +266,7 @@ function pmpro_events_events_manager_requires_membership_columns_content( $colum
 			}
 		}
 		if ( ! empty( $protected_levels ) ) {
-			echo implode( ', ', $protected_levels);
+			echo wp_kses_post( implode( ', ', $protected_levels) );
 		} else {
 			echo '&mdash;';
 		}
