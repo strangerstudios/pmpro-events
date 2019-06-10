@@ -20,7 +20,7 @@ function pmpro_events_ai1ec_remove_event_meta( $r, $event ) {
 	$event_id = get_the_ID();
 
 	if ( ! pmpro_has_membership_access( $event_id ) && ! empty( $r ) ){
-		$r = __('This information is restricted to members only.', 'pmpro-events' );
+		$r = __( 'This content is for members only.', 'pmpro-events' );
 	}
 
 	return $r;
@@ -82,7 +82,7 @@ function pmpro_events_ai1ec_requires_membership_columns_content( $column_name, $
 			}
 		}
 		if ( ! empty( $protected_levels ) ) {
-			echo implode( ', ', $protected_levels);
+			echo wp_kses_post( implode( ', ', $protected_levels) );
 		} else {
 			echo '&mdash;';
 		}

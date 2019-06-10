@@ -176,7 +176,7 @@ function pmpro_events_tribe_events_requires_membership_columns_content( $column_
 			}
 		}
 		if ( ! empty( $protected_levels ) ) {
-			echo implode( ', ', $protected_levels);
+			echo wp_kses_post( implode( ', ', $protected_levels) );
 		} else {
 			echo '&mdash;';
 		}
