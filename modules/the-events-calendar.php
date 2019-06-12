@@ -1,62 +1,49 @@
 <?php
-/*
-	* Add Membership Levels box to The Events Calendar by Modern Tribe CPTs
-	* Hide member events from non-members.
-*/
-
-/*
-	Add Membership Levels box to The Events Calendar CPTs
-*/
+/**
+ * Add Membership Levels box to The Events Calendar CPTs
+ * @since 1.0
+ */
 function pmpro_events_tribe_events_page_meta_wrapper( ) {
 	add_meta_box( 'pmpro_page_meta', 'Require Membership', 'pmpro_page_meta', 'tribe_events', 'side', 'high' );
 }
 
-/*
-	Stuff to run on init
-*/
+/**
+ * Stuff to run on init
+ * @since 1.0
+ */
 function pmpro_events_tribe_events_init() {		
 
-	/*
-		If PMPro Option to filter is set.
-		- Redirect single event page
-		- Filter tripe_get_events
-	*/
+	// Add filters for tribe events if filterqueries option is set in PMPro.
 	if ( function_exists( 'pmpro_getOption' ) ) {
-		$filterqueries = pmpro_getOption( "filterqueries" );
-		$filter_archives = apply_filters( 'pmpro_events_tribe_events_filter_archives', true );
-		if ( $filter_archives && ! empty( $filterqueries ) ) {			
+		$filterqueries = pmpro_getOption( "filterqueries" );		
+		if ( ! empty( $filterqueries ) ) {			
 			add_filter( 'tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3 );
 			add_filter( 'tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day' );
 		}
 	}
 	
-	/*
-		Add meta boxes to edit events page
-	*/
+	// Add meta boxes to edit events page
 	if( is_admin() && defined( 'PMPRO_VERSION' ) ) {
 		add_action( 'admin_menu', 'pmpro_events_tribe_events_page_meta_wrapper' );
 	}
 }
 add_action( 'init', 'pmpro_events_tribe_events_init', 20 );
 
-/*
- 	Hide member content from searches via PMPro's pre_get_posts filter.
-*/
+/**
+ * Hide member content from searches via PMPro's pre_get_posts filter.
+ * @since 1.0
+ */
 function pmpro_events_tribe_events_pmpro_search_filter_post_types( $post_types ) {
-
-	$filter_archives = apply_filters( 'pmpro_events_tribe_events_filter_archives', true );
-
-	if ( $filter_archives ) {
-		$post_types[] = 'tribe_events';
-	}
+	$post_types[] = 'tribe_events';	
 
 	return $post_types;
 }
 add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_tribe_events_pmpro_search_filter_post_types' );
 
-/*
-	Hide member content from other event lists/etc
-*/
+/**
+ * Hide member content from other event lists/etc
+ * @since 1.0
+ */
 function pmpro_events_tribe_events_get_events( $events, $args, $full ) {
 	
 	//make sure PMPro is active
@@ -77,10 +64,11 @@ function pmpro_events_tribe_events_get_events( $events, $args, $full ) {
 	return $events;
 }
 
-/*
-	The tribe_events_get_current_month_day function is also used when generating the calendar view.
-	We need to filter the count to keep events from showing up there.
-*/
+/**
+ * The tribe_events_get_current_month_day function is also used when generating the calendar view.
+ * We need to filter the count to keep events from showing up there.
+ * @since 1.0
+ */
 function pmpro_events_tribe_events_get_current_month_day($day) {
 
 	if($day['total_events'] > 0 && !empty($day['events']->posts)) {
@@ -92,6 +80,7 @@ function pmpro_events_tribe_events_get_current_month_day($day) {
 
 /**
  * Remove all Tribe Events Post Meta/Data for non-members.
+ * @since 1.0
  */
 function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels ){
 
@@ -107,7 +96,6 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 		if( class_exists( 'Tribe__Tickets__Main' ) ) {
 			add_filter( 'tribe_events_tickets_template_tickets/rsvp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
 			add_filter( 'tribe_events_tickets_template_tickets/tpp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
-
 		}	
 	}
 
@@ -118,17 +106,19 @@ add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tri
 /**
  * This is called if the user does not have membership level.
  * Sets the template to none.
+ * @since 1.0
  * @return a blank array.
  */
 function pmpro_events_tribe_events_remove_post_meta_section( $templates, $slug, $name ) {
 	$r = array();
-	$r = apply_filters( 'pmpro_events_tribe_events_page_modules', $r, $templates );
+	$r = apply_filters( 'pmpro_events_tribe_events_page_modules', $r, $templates, $slug, $name );
 	return $r;		
 }
 
 /**
  * This is called if the user does not have membership level. Requires Event Tickets Plugin to be installed.
  * Sets the template to none.
+ * @since 1.0
  * @return a blank string.
  */
 function pmpro_events_tribe_events_tickets_remove_module( $modules ) {
@@ -154,7 +144,7 @@ function pmpro_events_tribe_events_excerpt_filter( $excerpt ) {
 		$excerpt = '';
 	}
 
-	return $excerpt;	
+	return $excerpt;
 }
 add_filter( 'tribe_events_get_the_excerpt', 'pmpro_events_tribe_events_excerpt_filter' );
 
@@ -186,7 +176,7 @@ function pmpro_events_tribe_events_requires_membership_columns_content( $column_
 			}
 		}
 		if ( ! empty( $protected_levels ) ) {
-			echo implode( ', ', $protected_levels);
+			echo wp_kses_post( implode( ', ', $protected_levels) );
 		} else {
 			echo '&mdash;';
 		}

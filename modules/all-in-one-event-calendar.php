@@ -2,6 +2,7 @@
 
 /**
  * Add metabox to All-In-One-Event Calendar CPT.
+ * @since 1.0
  */
 function pmpro_events_ai1ec_page_meta_wrapper( ) {
 	if ( defined( 'PMPRO_VERSION' ) ) {
@@ -12,26 +13,27 @@ add_action( 'admin_menu', 'pmpro_events_ai1ec_page_meta_wrapper' );
 
 /**
  * Remove event meta data.
+ * @since 1.0
  */
 function pmpro_events_ai1ec_remove_event_meta( $r, $event ) {
 
 	$event_id = get_the_ID();
 
 	if ( ! pmpro_has_membership_access( $event_id ) && ! empty( $r ) ){
-		$r = __('This information is restricted to members only.', 'pmpro-events' );
+		$r = __( 'This content is for members only.', 'pmpro-events' );
 	}
 
 	return $r;
 }
-// add_filter( 'ai1ec_rendering_single_event_actions', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
 add_filter( 'ai1ec_rendering_single_event_venues', 'pmpro_events_ai1ec_remove_event_meta', 10, 2 );
 
+/**
+ * Hide member events from event archives.
+ * @since 1.0
+ */
 function pmpro_events_ai1ec_filter_archives( $args ) {
-
-	$filter_ai1ec_events_archive = apply_filters( 'pmpro_events_ai1ec_filter_archives', true );
-
 	$filterqueries = pmpro_getOption("filterqueries");
-	if ( empty( $filterqueries ) && $filter_ai1ec_events_archive ) {
+	if ( empty( $filterqueries ) ) {
 		return $args;
 	}
 
@@ -80,7 +82,7 @@ function pmpro_events_ai1ec_requires_membership_columns_content( $column_name, $
 			}
 		}
 		if ( ! empty( $protected_levels ) ) {
-			echo implode( ', ', $protected_levels);
+			echo wp_kses_post( implode( ', ', $protected_levels) );
 		} else {
 			echo '&mdash;';
 		}

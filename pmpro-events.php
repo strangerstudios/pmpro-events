@@ -6,6 +6,7 @@ Description: Offer Members-only events using PMPro and popular events plugins.
 Version: 1.0
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
+Text Domain: pmpro-events
 */
 
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
