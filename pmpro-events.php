@@ -1,6 +1,6 @@
 <?php
 /*
-Plugin Name: PMPro Events
+Plugin Name: Paid Memberships Pro - Events Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/events-for-members-only/
 Description: Offer Members-only events using PMPro and popular events plugins.
 Version: 1.0
