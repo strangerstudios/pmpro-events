@@ -2,7 +2,7 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5
-Tested up to: 5.2.1
+Tested up to: 5.4
 Stable tag: 1.0
 
 Offer members-only events using popular events plugins and Paid Memberships Pro.
