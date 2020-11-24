@@ -7,7 +7,14 @@ Version: 1.0
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-events
+Domain Path: /languages
+
 */
+
+function pmpro_events_load_plugin_text_domain() {
+	load_plugin_textdomain( 'pmpro-events', false, basename( dirname( __FILE__ ) ) . '/languages' ); 
+}
+add_action( 'plugins_loaded', 'pmpro_events_load_plugin_text_domain');
 
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
 
