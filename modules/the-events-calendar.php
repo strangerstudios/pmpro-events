@@ -104,6 +104,20 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tribe_events_has_access', 10, 4 );
 
 /**
+ * Hide content if user doesn't have access to the event.
+ * @since 1.1
+ */
+function pmpro_events_tribe_events_hide_post_meta( $html, $file, $name, $template ) {
+	global $post;
+	if ( ! pmpro_has_membership_access( $post->ID ) ) {
+		$html = false;
+	}
+	
+	return $html;
+}
+add_filter( 'tribe_template_pre_html:tickets/v2/rsvp', 'pmpro_events_tribe_events_hide_post_meta', 10, 4 );
+add_filter( 'tribe_template_pre_html:tickets/blocks/tickets', 'pmpro_events_tribe_events_hide_post_meta', 10, 4 );
+/**
  * This is called if the user does not have membership level.
  * Sets the template to none.
  * @since 1.0
