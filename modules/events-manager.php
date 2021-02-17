@@ -215,6 +215,7 @@ function pmpro_events_events_manager_filter_calendar_page( $event ) {
 		// Filter events from calendar page if the member doesn't meet the requirements.
 		if ( ! pmpro_has_membership_access( $event['post_id'] ) && ! empty( $filterqueries ) ) {
 			unset( $event );
+			$event = null;
 		}
 	}
 	
