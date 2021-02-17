@@ -131,10 +131,9 @@ function pmpro_events_tribe_events_tickets_remove_module( $modules ) {
  * Adjust the filter of the the events to ensure it sticks to what we've set inside the event settings.
  * @since 1.0
  */
-function pmpro_events_tribe_events_excerpt_filter( $excerpt ) {
-	global $post;
+function pmpro_events_tribe_events_excerpt_filter( $excerpt, $post ) {
 
-	$showexcerpts = apply_filters( 'pmpro_events_tribe_events_show_excerpts', pmpro_getOption( "showexcerpts" ), $event );
+	$showexcerpts = apply_filters( 'pmpro_events_tribe_events_show_excerpts', pmpro_getOption( "showexcerpts" ), $post );
 
 	if ( pmpro_has_membership_access( $post->ID ) ) {
 		$excerpt = get_the_excerpt();
@@ -146,7 +145,7 @@ function pmpro_events_tribe_events_excerpt_filter( $excerpt ) {
 
 	return $excerpt;
 }
-add_filter( 'tribe_events_get_the_excerpt', 'pmpro_events_tribe_events_excerpt_filter' );
+add_filter( 'tribe_events_get_the_excerpt', 'pmpro_events_tribe_events_excerpt_filter', 10, 2 );
 
 /**
  * Add a new column "Requires Membership" to the all events view to show required levels.
