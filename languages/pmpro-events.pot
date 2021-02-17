@@ -1,0 +1,56 @@
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Paid Memberships Pro - Events Add On\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-11-24 11:52+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: \n"
+"Language: \n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Version: 2.4.6; wp-5.5.3"
+
+#. Author URI of the plugin
+msgid "https://www.paidmembershipspro.com"
+msgstr ""
+
+#. URI of the plugin
+msgid "https://www.paidmembershipspro.com/add-ons/events-for-members-only/"
+msgstr ""
+
+#. Description of the plugin
+msgid "Offer Members-only events using PMPro and popular events plugins."
+msgstr ""
+
+#. Author of the plugin
+msgid "Paid Memberships Pro"
+msgstr ""
+
+#. Name of the plugin
+msgid "Paid Memberships Pro - Events Add On"
+msgstr ""
+
+#: pmpro-events.php:91
+#, php-format
+msgid ""
+"Thank you for activating the Events Add On for Paid Memberships Pro. To get "
+"started, edit an event and look for the \"Require Membership\" box in the "
+"sidebar. <a href=\"%s\">View more documentation here.</a>"
+msgstr ""
+
+#: pmpro-events.php:85
+#, php-format
+msgid ""
+"Thank you for activating the Events Add On for Paid Memberships Pro. "
+"Unfortunately it seems we weren't able to find any supported events plugin. "
+"<a href='%s' target='_blank'>For more information click here.</a>"
+msgstr ""
+
+#: modules/all-in-one-event-calendar.php:23
+msgid "This content is for members only."
+msgstr ""
