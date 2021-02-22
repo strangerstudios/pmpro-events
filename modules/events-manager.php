@@ -259,3 +259,56 @@ function pmpro_events_events_manager_requires_membership_columns_content( $colum
 }
 add_filter( 'manage_event_posts_columns', 'pmpro_events_events_manager_requires_membership_columns_head' );
 add_action( 'manage_event_posts_custom_column', 'pmpro_events_events_manager_requires_membership_columns_content', 10, 2 );
+
+/**
+ * Apply membership requirements to recurring event posts.
+ *
+ * @param bool      $save_ok   Save OK?
+ * @param \EM_Event $event     Event
+ * @param array     $event_ids Event IDs
+ * @param array     $post_ids  Post IDs
+ * @return bool     $save_ok
+ */
+function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $event_ids, $post_ids) {
+	global $wpdb;
+
+	if ( empty ( $event->post_id ) ) {
+		return $save_ok;
+	}
+
+	// fetch membership requirements for main event entry
+	$membership_requirements = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT * FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %s",
+			$event->post_id
+		)
+	);
+	if ( empty( $membership_requirements ) ) {
+		return $save_ok;
+	}
+
+	// remove all memberships for the individual event posts
+	$deletion_query = sprintf(
+		"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN (%s)",
+		implode( ",", $post_ids )
+	);
+	$wpdb->query( $deletion_query );
+
+	// prepare a bulk insert since we may have up to hundreds of recurring events
+	$inserts = array();
+	foreach( $post_ids as $event_post_id ) {
+		foreach( $membership_requirements as $membership_requirement ) {
+			$inserts[] = $wpdb->prepare(
+				"('%s', '%s')",
+				intval( $membership_requirement->membership_id ),
+				intval( $event_post_id )
+			);
+		}
+	}
+
+	$inserts_sql = "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $inserts );
+	$wpdb->query( $inserts_sql );
+
+	return $save_ok;
+}
+add_filter( 'em_event_save_events', 'pmpro_events_events_manager_em_event_save_events', 10, 4 );
