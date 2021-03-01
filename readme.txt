@@ -2,8 +2,8 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5
-Tested up to: 5.4
-Stable tag: 1.0
+Tested up to: 5.6
+Stable tag: 1.1
 
 Offer members-only events using popular events plugins and Paid Memberships Pro.
 
@@ -50,5 +50,14 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site. 
 
 == Changelog ==
+= 1.1 - 2021-03-01 =
+* BUG FIX: Fixed an issue in Sugar Calendar hiding events in the WordPress dashboard for non-members.
+* BUG FIX: Fixed a warning for undefined variable for The Events Calendar for event excerpts.
+* BUG FIX: Fixed an issue where event meta (event tickets and RSVP blocks) were showing on restricted events for The Events Calendar.
+* ENHANCEMENT: Added in a new filter for The Events Calendar, to adjust the event meta if the user doesn't have access to the event. `pmpro_events_tribe_post_single_html`.
+* ENHANCEMENT: Added in a new filter for Sugar Calendar, to show/hide event meta to non-members. `pmpro_events_sc_hide_event_meta`.
+* ENHANCEMENT: General improvements to localization and internationalization.
+* ENHANCEMENT: Support recurring events for all modules, this will now automatically copy over membership requirements from the 'parent' event.
+
 = 1.0 =
 * Original version.
