@@ -110,6 +110,10 @@ add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tri
 function pmpro_events_tribe_events_hide_post_meta( $html, $file, $name, $template ) {
 	global $post;
 
+	if ( has_blocks( $post->ID ) ) {
+		return $html;
+	}
+
 	if ( is_single() && get_post_type() === 'tribe_events' && ! pmpro_has_membership_access( $post->ID )) {
 		$html = false;
 	}
