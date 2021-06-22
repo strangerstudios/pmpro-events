@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Events Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/events-for-members-only/
 Description: Offer Members-only events using PMPro and popular events plugins.
-Version: 1.1
+Version: 1.2
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-events
@@ -16,11 +16,11 @@ function pmpro_events_plugin_init() {
 	// Load module based on active events plugin
 	$path = dirname( __FILE__ );
 
-	// Events Manager (https://wordpress.org/plugins/events-manager/) 
+	// Events Manager (https://wordpress.org/plugins/events-manager/)
 	if ( defined( 'EM_VERSION' ) ) {
 		require_once( $path . '/modules/events-manager.php' );
 	}
-	
+
 	// The Events Calendar by Modern Tribe (https://wordpress.org/plugins/the-events-calendar/)
 	if ( class_exists( 'Tribe__Events__Main' ) ) {
 		require_once( $path . '/modules/the-events-calendar.php' );
@@ -30,7 +30,7 @@ function pmpro_events_plugin_init() {
 	if ( defined( 'AI1EC_PATH' ) ) {
 		require_once( $path . '/modules/all-in-one-event-calendar.php' );
 	}
-	
+
 	// Sugar Calendar Lite (https://wordpress.org/plugins/sugar-calendar-lite/)
 	if ( class_exists( 'Sugar_Calendar\\Plugin' ) ) {
 		require_once( $path . '/modules/sugar-calendar.php' );
@@ -43,7 +43,7 @@ add_action( 'plugins_loaded', 'pmpro_events_plugin_init' );
  * @since 1.1
  */
 function pmpro_events_load_plugin_text_domain() {
-	load_plugin_textdomain( 'pmpro-events', false, basename( dirname( __FILE__ ) ) . '/languages' ); 
+	load_plugin_textdomain( 'pmpro-events', false, basename( dirname( __FILE__ ) ) . '/languages' );
 }
 add_action( 'init', 'pmpro_events_load_plugin_text_domain');
 

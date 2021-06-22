@@ -2,13 +2,13 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5
-Tested up to: 5.6
-Stable tag: 1.1
+Tested up to: 5.7.2
+Stable tag: 1.2
 
 Offer members-only events using popular events plugins and Paid Memberships Pro.
 
 == Description ==
-This Add On offers integration for popular events plugins, including: 
+This Add On offers integration for popular events plugins, including:
 
 * [Events Manager](https://wordpress.org/plugins/events-manager/)
 * [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/)
@@ -47,9 +47,13 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 == Screenshots ==
 
 1. Set Membership Requirements when editing a single event.
-2. Event information is hidden on the site. 
+2. Event information is hidden on the site.
 
 == Changelog ==
+= 1.2 - 2021-06-21 =
+* BUG FIX: Fixed a problem where events for The Events Calendar would get the wrong excerpt when they were protected.
+* ENHANCEMENT: Improved integration for Sugar Calendar and the Event Ticketing Add On so that the Event Ticketing box is not displayed if the event is protected.
+
 = 1.1 - 2021-03-01 =
 * BUG FIX: Fixed an issue in Sugar Calendar hiding events in the WordPress dashboard for non-members.
 * BUG FIX: Fixed a warning for undefined variable for The Events Calendar for event excerpts.
