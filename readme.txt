@@ -51,17 +51,17 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 
 == Changelog ==
 = 1.2 - 2021-06-21 =
-* BUG FIX: Fixed a problem where events for The Events Calendar would get the wrong excerpt when they were protected.
 * ENHANCEMENT: Improved integration for Sugar Calendar and the Event Ticketing Add On so that the Event Ticketing box is not displayed if the event is protected.
+* BUG FIX: Fixed a problem where events for The Events Calendar would get the wrong excerpt when they were protected.
 
 = 1.1 - 2021-03-01 =
-* BUG FIX: Fixed an issue in Sugar Calendar hiding events in the WordPress dashboard for non-members.
-* BUG FIX: Fixed a warning for undefined variable for The Events Calendar for event excerpts.
-* BUG FIX: Fixed an issue where event meta (event tickets and RSVP blocks) were showing on restricted events for The Events Calendar.
 * ENHANCEMENT: Added in a new filter for The Events Calendar, to adjust the event meta if the user doesn't have access to the event. `pmpro_events_tribe_post_single_html`.
 * ENHANCEMENT: Added in a new filter for Sugar Calendar, to show/hide event meta to non-members. `pmpro_events_sc_hide_event_meta`.
 * ENHANCEMENT: General improvements to localization and internationalization.
 * ENHANCEMENT: Support recurring events for all modules, this will now automatically copy over membership requirements from the 'parent' event.
+* BUG FIX: Fixed an issue in Sugar Calendar hiding events in the WordPress dashboard for non-members.
+* BUG FIX: Fixed a warning for undefined variable for The Events Calendar for event excerpts.
+* BUG FIX: Fixed an issue where event meta (event tickets and RSVP blocks) were showing on restricted events for The Events Calendar.
 
 = 1.0 =
 * Original version.
