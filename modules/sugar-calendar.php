@@ -21,7 +21,11 @@ function pmpro_events_sugar_calendar_has_membership_access( $hasaccess, $post, $
 	if ( $post->post_type == 'sc_event' && ! $hasaccess ) {
 		// Filter to show event details to non-members for restricted events.
 		if ( apply_filters( 'pmpro_events_sc_hide_event_meta', true ) ) {
+			// Remove the event details.
 			remove_action( 'sc_before_event_content', 'sc_add_event_details' );
+
+			// Remove the ticketing.
+			remove_action( 'sc_after_event_content', 'Sugar_Calendar\AddOn\Ticketing\Frontend\Single\display' );
 		}
 	}
 

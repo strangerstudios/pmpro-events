@@ -155,9 +155,9 @@ function pmpro_events_tribe_events_excerpt_filter( $excerpt, $post ) {
 	$showexcerpts = apply_filters( 'pmpro_events_tribe_events_show_excerpts', pmpro_getOption( "showexcerpts" ), $post );
 
 	if ( pmpro_has_membership_access( $post->ID ) ) {
-		$excerpt = get_the_excerpt();
+		$excerpt = get_the_excerpt( $post );
 	} elseif ( $showexcerpts && !pmpro_has_membership_access( $post->ID ) ) {
-		$excerpt = get_the_excerpt();
+		$excerpt = get_the_excerpt( $post );
 	} else {
 		$excerpt = '';
 	}
