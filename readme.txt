@@ -51,7 +51,7 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 
 == Changelog ==
 
-= 1.3 - 2021-12-14 =
+= 1.3 - 2021-12-15 =
 * ENHANCEMENT: New integration with The Events Calendar new "v2" calendar views for filtering protected events.
 
 = 1.2 - 2021-06-21 =
