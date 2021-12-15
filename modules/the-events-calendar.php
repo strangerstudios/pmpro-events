@@ -10,7 +10,7 @@ function pmpro_events_tribe_events_page_meta_wrapper( ) {
 /**
  * Hook in before getting the posts from WP_Query to automatically add the membership level check to the posts queried.
  *
- * @since TBD
+ * @since 1.3
  *
  * @param WP_Query $query The query object.
  */
@@ -59,7 +59,7 @@ global $pmpro_events_tribe_repository;
 /**
  * Hook into the repository object (TEC ORM) when query arguments are set up to store the object for future integration in other hooks.
  *
- * @since TBD
+ * @since 1.3
  *
  * @param array                                                $query_args The query args to use when fetching events.
  * @param WP_Query                                             $query      The query object.
