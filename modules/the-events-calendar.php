@@ -8,20 +8,100 @@ function pmpro_events_tribe_events_page_meta_wrapper( ) {
 }
 
 /**
+ * Hook in before getting the posts from WP_Query to automatically add the membership level check to the posts queried.
+ *
+ * @since 1.3
+ *
+ * @param WP_Query $query The query object.
+ */
+function pmpro_events_tribe_events_repository_handle_posts( WP_Query $query ) {
+	/** @var Tribe__Events__Repositories__Event|null $pmpro_events_tribe_repository */
+	global $pmpro_events_tribe_repository;
+
+	// Only integrate if we have the repository tracked.
+	if ( empty( $pmpro_events_tribe_repository ) ) {
+		return;
+	}
+
+	global $wpdb;
+
+	// Join the membership pages table to reference restrictions on.
+	$join = "
+	    LEFT JOIN `{$wpdb->pmpro_memberships_pages}` AS `pmpro_mp`
+            ON `pmpro_mp`.`page_id` = `{$wpdb->posts}`.`ID`
+	";
+
+	$pmpro_events_tribe_repository->filter_query->join( $join, 'pmpro-events-access-join' );
+
+	// The default is to always show any posts without restrictions.
+	$where = 'pmpro_mp.membership_id IS NULL';
+
+	// If user is logged in, check for their membership levels.
+	if ( is_user_logged_in() ) {
+		$membership_ids = pmpro_getMembershipLevelsForUser( get_current_user_id() );
+
+		// If the user has membership levels, allow showing those restricted posts too.
+		if ( ! empty( $membership_ids ) ) {
+			$membership_ids = array_map( 'absint', wp_list_pluck( $membership_ids, 'id' ) );
+
+			$where .= ' OR pmpro_mp.membership_id IN ( ' . implode( ', ', $membership_ids ) . ' )';
+		}
+	}
+
+	$pmpro_events_tribe_repository->filter_query->where( $where, 'pmpro-events-access-filter' );
+}
+
+/**
+ * The global variable to keep track of the Events ORM object when it's active.
+ */
+global $pmpro_events_tribe_repository;
+
+/**
+ * Hook into the repository object (TEC ORM) when query arguments are set up to store the object for future integration in other hooks.
+ *
+ * @since 1.3
+ *
+ * @param array                                                $query_args The query args to use when fetching events.
+ * @param WP_Query                                             $query      The query object.
+ * @param Tribe__Events__Repositories__Event|Tribe__Repository $repository The repository object.
+ *
+ * @return array The query args to use when fetching events.
+ */
+function pmpro_events_tribe_events_track_repository_from_query_args( $query_args, $query, $repository ) {
+	global $pmpro_events_tribe_repository;
+
+	// Only set the repository if it's the one we want.
+	if ( $repository instanceof Tribe__Events__Repositories__Event ) {
+		$pmpro_events_tribe_repository = $repository;
+	}
+
+	return $query_args;
+}
+
+/**
  * Stuff to run on init
  * @since 1.0
  */
-function pmpro_events_tribe_events_init() {		
+function pmpro_events_tribe_events_init() {
 
 	// Add filters for tribe events if filterqueries option is set in PMPro.
 	if ( function_exists( 'pmpro_getOption' ) ) {
-		$filterqueries = pmpro_getOption( "filterqueries" );		
-		if ( ! empty( $filterqueries ) ) {			
+		$filterqueries = pmpro_getOption( "filterqueries" );
+		if ( ! empty( $filterqueries ) ) {
 			add_filter( 'tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3 );
 			add_filter( 'tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day' );
+
+			// TEC ORM integration.
+			add_filter( 'tribe_repository_events_query_args', 'pmpro_events_tribe_events_track_repository_from_query_args', 10, 3 );
+			add_action( 'tribe_repository_events_pre_count_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_found_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_get_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_first_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_last_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_get_ids_for_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
 		}
 	}
-	
+
 	// Add meta boxes to edit events page
 	if( is_admin() && defined( 'PMPRO_VERSION' ) ) {
 		add_action( 'admin_menu', 'pmpro_events_tribe_events_page_meta_wrapper' );
@@ -34,7 +114,7 @@ add_action( 'init', 'pmpro_events_tribe_events_init', 20 );
  * @since 1.0
  */
 function pmpro_events_tribe_events_pmpro_search_filter_post_types( $post_types ) {
-	$post_types[] = 'tribe_events';	
+	$post_types[] = 'tribe_events';
 
 	return $post_types;
 }
@@ -45,22 +125,22 @@ add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_tribe_events_pmpro_s
  * @since 1.0
  */
 function pmpro_events_tribe_events_get_events( $events, $args, $full ) {
-	
+
 	//make sure PMPro is active
 	if(!function_exists('pmpro_has_membership_access'))
 		return $events;
-		
+
 	if(!empty($events) && !empty($events->posts)) {
 		$newposts = array();
 		foreach($events->posts as $post) {
 			if(pmpro_has_membership_access($post->ID))
 				$newposts[] = $post;
 		}
-		
+
 		$events->posts = $newposts;
 		$events->post_count = count($newposts);
-	}		
-	
+	}
+
 	return $events;
 }
 
@@ -73,8 +153,8 @@ function pmpro_events_tribe_events_get_current_month_day($day) {
 
 	if($day['total_events'] > 0 && !empty($day['events']->posts)) {
 		$day['total_events'] = count($day['events']->posts);
-	}	
-	
+	}
+
 	return $day;
 }
 
@@ -96,7 +176,7 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 		if( class_exists( 'Tribe__Tickets__Main' ) ) {
 			add_filter( 'tribe_events_tickets_template_tickets/rsvp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
 			add_filter( 'tribe_events_tickets_template_tickets/tpp.php', 'pmpro_events_tribe_events_tickets_remove_module' );
-		}	
+		}
 	}
 
 	return $hasaccess;
@@ -110,14 +190,14 @@ add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tri
 function pmpro_events_tribe_events_hide_post_meta( $html, $file, $name, $template ) {
 	global $post;
 
-	if ( has_blocks( $post->ID ) ) {
+	if ( $post && has_blocks( $post->ID ) ) {
 		return $html;
 	}
 
 	if ( is_single() && get_post_type() === 'tribe_events' && ! pmpro_has_membership_access( $post->ID )) {
 		$html = false;
 	}
-		
+
 	return apply_filters( 'pmpro_events_tribe_post_single_html', $html, $post );
 }
 add_filter( 'tribe_template_pre_html', 'pmpro_events_tribe_events_hide_post_meta', 10, 4 );
@@ -131,7 +211,7 @@ add_filter( 'tribe_template_pre_html', 'pmpro_events_tribe_events_hide_post_meta
 function pmpro_events_tribe_events_remove_post_meta_section( $templates, $slug, $name ) {
 	$r = array();
 	$r = apply_filters( 'pmpro_events_tribe_events_page_modules', $r, $templates, $slug, $name );
-	return $r;		
+	return $r;
 }
 
 /**
