@@ -2,9 +2,9 @@
 Contributors: strangerstudios
 Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
 Requires at least: 3.5
-Tested up to: 5.8.2
+Tested up to: 5.9
 Requires PHP: 5.6
-Stable tag: 1.3
+Stable tag: 1.3.1
 
 Offer members-only events using popular events plugins and Paid Memberships Pro.
 
@@ -51,6 +51,10 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+
+= 1.3.1 - 2022-01-26 =
+* BUG FIX: Changed
+* Updated to show as compatible with WordPress 5.9 after testing
 
 = 1.3 - 2021-12-15 =
 * ENHANCEMENT: New integration with The Events Calendar new "v2" calendar views for filtering protected events.
