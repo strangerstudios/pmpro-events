@@ -96,8 +96,8 @@ function pmpro_events_tribe_events_init() {
 			add_action( 'tribe_repository_events_pre_count_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
 			add_action( 'tribe_repository_events_pre_found_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
 			add_action( 'tribe_repository_events_pre_get_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
-			add_action( 'tribe_repository_events_pre_first_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
-			add_action( 'tribe_repository_events_pre_last_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_first_post', 'pmpro_events_tribe_events_repository_handle_posts' );
+			add_action( 'tribe_repository_events_pre_last_post', 'pmpro_events_tribe_events_repository_handle_posts' );
 			add_action( 'tribe_repository_events_pre_get_ids_for_posts', 'pmpro_events_tribe_events_repository_handle_posts' );
 		}
 	}
