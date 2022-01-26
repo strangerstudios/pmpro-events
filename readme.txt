@@ -52,19 +52,19 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 
 == Changelog ==
 
-= 1.3.1 - 2022-01-26 =
+= 1.3.1 - January 26th, 2022 =
 * BUG FIX: Changed two hooks to the correct anmes in the integration for The Events Calendar.
 * Updated to show as compatible with WordPress 5.9 after testing.
 
-= 1.3 - 2021-12-15 =
+= 1.3 - December 15th, 2021 =
 * ENHANCEMENT: New integration with The Events Calendar new "v2" calendar views for filtering protected events.
 * Now requiring PHP 5.6+ to match minimum required version in Paid Memberships Pro
 
-= 1.2 - 2021-06-21 =
+= 1.2 - June 21st, 2021 =
 * ENHANCEMENT: Improved integration for Sugar Calendar and the Event Ticketing Add On so that the Event Ticketing box is not displayed if the event is protected.
 * BUG FIX: Fixed a problem where events for The Events Calendar would get the wrong excerpt when they were protected.
 
-= 1.1 - 2021-03-01 =
+= 1.1 - March 1st, 2021 =
 * ENHANCEMENT: Added in a new filter for The Events Calendar, to adjust the event meta if the user doesn't have access to the event. `pmpro_events_tribe_post_single_html`.
 * ENHANCEMENT: Added in a new filter for Sugar Calendar, to show/hide event meta to non-members. `pmpro_events_sc_hide_event_meta`.
 * ENHANCEMENT: General improvements to localization and internationalization.
