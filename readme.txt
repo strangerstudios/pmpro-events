@@ -53,7 +53,7 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 == Changelog ==
 
 = 1.3.1 - 2022-01-26 =
-* BUG FIX: Changed two hooks to the correct anmes in the integration for The Events Calendar.
+* BUG FIX: Changed two hooks to the correct names in the integration for The Events Calendar.
 * Updated to show as compatible with WordPress 5.9 after testing.
 
 = 1.3 - 2021-12-15 =
