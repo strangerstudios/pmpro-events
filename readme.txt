@@ -1,37 +1,100 @@
-=== Paid Memberships Pro - Events Add On ===
-Contributors: strangerstudios
-Tags: paid memberships pro, events, events calendar, events manager, bookings, calendar, registration, tribe
+=== Members-Only Events for Paid Memberships Pro: Integrate Events Manager, The Events Calendar, & Timely ===
+Contributors: strangerstudios, paidmembershipspro
+Tags: calendar, events, private event, tickets, pmpro, paid memberships pro
 Requires at least: 3.5
 Tested up to: 5.9
 Requires PHP: 5.6
 Stable tag: 1.3.1
 
-Offer members-only events using popular events plugins and Paid Memberships Pro.
+Create private events, hide event details, & restrict event registration for members-only using popular events calendar plugins with PMPro.
 
 == Description ==
-This Add On offers integration for popular events plugins, including:
+
+### The best way to create private events and restrict event registration for members-only with WordPress.
+
+Create a fully-featured membership community or association website with private events and registration for members-only. This plugin integrates Paid Memberships Pro with the most popular free events plugins for WordPress including:
 
 * [Events Manager](https://wordpress.org/plugins/events-manager/)
 * [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/)
 * [Sugar Calendar](https://wordpress.org/plugins/sugar-calendar-lite/)
-* [All-in-One Event Calendar](https://wordpress.org/plugins/all-in-one-event-calendar/)
+* [Timely All-in-One Events Calendar](https://wordpress.org/plugins/all-in-one-event-calendar/)
 
-Events that are restricted by membership level will not allow non-members to view full event details or complete event registration. The list and single view of the event will show limited event details as defined by your Advanced Settings > "Show Excerpts to Non-Members" setting.
+= Hide Event Details From Non-Members =
 
-Additionally, you can completely hide member-restricted events to non-members via the Memberships > Advanced Settings > "Filter Searches and Archives" setting.
+Create or edit an event with your calendar plugin of choice. The event editor includes the "Require Membership" meta box bundled with Paid Memberships Pro.
+
+This plugin filters the event information shown in your event lists, event categories, calendar views, and single event landing pages. You can control how much information is shown to public visitors in the plugin settings.
+
+* Protect any event by checking the boxes for your desired membership levels.
+* Private events do not allow non-members to view full event details or complete event registration.
+* Supports recurring events for all modules. Membership requirements automatically copy over from the 'parent' event.
+
+= Hide Private Events From The Public =
+
+You can completely hide member-restricted events to non-members. This means that only logged in members can see any event details.
+
+Hidden events are a secret—these events are not shown in your event lists, event categories, and calendar views.
+
+Learn more about [creating and protecting events and event bookings for your membership](https://www.paidmembershipspro.com/add-ons/events-for-members-only/?utm_source=wordpress-org&utm_medium=readme&utm_campaign=pmpro-events) in our documentation site.
+
+### About Paid Memberships Pro
+
+[Paid Memberships Pro is a WordPress membership plugin](https://www.paidmembershipspro.com/?utm_source=wordpress-org&utm_medium=readme&utm_campaign=pmpro-events) that puts you in control. Create what you want and release in whatever format works best for your business.
+
+* Courses & E-Learning
+* Private Podcasts
+* Premium Newsletters
+* Private Communities
+* Sell Physical & Digital Goods
+
+Paid Memberships Pro allows anyone to build a membership site—for free. Restrict content, accept payment, and manage subscriptions right from your WordPress admin.
+
+Paid Memberships Pro is built "the WordPress way" with a lean core plugin and over 75 Add Ons to enhance every aspect of your membership site. Each business is different and we encourage customization. For our members we have a library of 300+ recipes to personalize your membership site.
+
+Paid Memberships Pro is the flagship product of Stranger Studios. We are a bootstrapped company which grows when membership sites like yours grow. That means we focus our entire company towards helping you succeed.
+
+[Try Paid Memberships Pro entirely for free on WordPress.org](https://wordpress.org/plugins/paid-memberships-pro/) and see why 100,000+ sites trust us to help them #GetPaid.
+
+### Read More
+
+Want more information on protecting course content with Paid Memberships Pro, LearnDash or LifterLMS and WordPress membership sites? Have a look at:
+
+* The [Paid Memberships Pro](https://www.paidmembershipspro.com/?utm_source=wordpress-org&utm_medium=readme&utm_campaign=pmpro-events) official homepage.
+* The [Events for Members-Only documentation page](https://www.paidmembershipspro.com/add-ons/events-for-members-only/?utm_source=wordpress-org&utm_medium=readme&utm_campaign=pmpro-events).
+* Also follow PMPro on [Twitter](https://twitter.com/pmproplugin), [YouTube](https://www.youtube.com/channel/UCFtMIeYJ4_YVidi1aq9kl5g) & [Facebook](https://www.facebook.com/PaidMembershipsPro/).
 
 == Installation ==
 
-1. Make sure you have the Paid Memberships Pro plugin installed and activated.
-1. Upload the `pmpro-events` directory to the `/wp-content/plugins/` directory of your site.
-1. Activate the plugin through the 'Plugins' menu in WordPress.
+Note: You must have [Paid Memberships Pro](https://wordpress.org/plugins/paid-memberships-pro/) installed and activated on your site.
 
-= Setup =
+### Install PMPro Events from within WordPress
 
-1. Once the plugin is active, it will automatically detect which events module to load for your site.
+1. Visit the plugins page within your dashboard and select "Add New"
+1. Search for "PMPro Events"
+1. Locate this plugin and click "Install"
+1. Activate "Paid Memberships Pro - Events" through the "Plugins" menu in WordPress
+1. Go to "after activation" below.
+
+### Install PMPro Events Manually
+
+1. Upload the `pmpro-events` folder to the `/wp-content/plugins/` directory
+1. Activate "Paid Memberships Pro - Events" through the "Plugins" menu in WordPress
+1. Go to "after activation" below.
+
+### After Activation: Create Members-Only Events
+
+Once the plugin is activated, it automatically detects which events module to load for your site. The included modules are:
+
+* [Events Manager](https://wordpress.org/plugins/events-manager/)
+* [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/)
+* [Sugar Calendar](https://wordpress.org/plugins/sugar-calendar-lite/)
+* [Timely All-in-One Events Calendar](https://wordpress.org/plugins/all-in-one-event-calendar/)
+
+If you are not already using an events plugin, you must select one from this list to use the features of this integration plugin.
+
 1. Edit any event in your site to restrict access via the "Require Membership" meta box.
-1. Events will be displayed or hidden from calendar (archive) view according to your settings under Memberships > Settings > Advanced Settings.
-1. Event excerpts will be shown or hidden from non-members according to your settings under Memberships > Settings > Advanced Settings.
+1. Events are displayed or hidden from calendar (archive) view according to your settings under Memberships > Settings > Advanced Settings.
+1. Event excerpts are shown or hidden from non-members according to your settings under Memberships > Settings > Advanced Settings.
 
 == Frequently Asked Questions ==
 
@@ -52,19 +115,19 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 
 == Changelog ==
 
-= 1.3.1 - January 26th, 2022 =
+= 1.3.1 - 2022-01-26 =
 * BUG FIX: Changed two hooks to the correct names in the integration for The Events Calendar.
 * Updated to show as compatible with WordPress 5.9 after testing.
 
-= 1.3 - December 15th, 2021 =
+= 1.3 - 2021-12-15 =
 * ENHANCEMENT: New integration with The Events Calendar new "v2" calendar views for filtering protected events.
 * Now requiring PHP 5.6+ to match minimum required version in Paid Memberships Pro
 
-= 1.2 - June 21st, 2021 =
+= 1.2 - 2021-06-21 =
 * ENHANCEMENT: Improved integration for Sugar Calendar and the Event Ticketing Add On so that the Event Ticketing box is not displayed if the event is protected.
 * BUG FIX: Fixed a problem where events for The Events Calendar would get the wrong excerpt when they were protected.
 
-= 1.1 - March 1st, 2021 =
+= 1.1 - 2021-03-01 =
 * ENHANCEMENT: Added in a new filter for The Events Calendar, to adjust the event meta if the user doesn't have access to the event. `pmpro_events_tribe_post_single_html`.
 * ENHANCEMENT: Added in a new filter for Sugar Calendar, to show/hide event meta to non-members. `pmpro_events_sc_hide_event_meta`.
 * ENHANCEMENT: General improvements to localization and internationalization.
