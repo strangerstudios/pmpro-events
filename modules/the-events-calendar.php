@@ -16,14 +16,12 @@ function pmpro_events_tribe_events_page_meta_wrapper( ) {
  */
 function pmpro_events_tribe_events_repository_handle_posts( WP_Query $query ) {
 	/** @var Tribe__Events__Repositories__Event|null $pmpro_events_tribe_repository */
-	global $pmpro_events_tribe_repository;
+	global $pmpro_events_tribe_repository, $wpdb;
 
 	// Only integrate if we have the repository tracked.
 	if ( empty( $pmpro_events_tribe_repository ) ) {
 		return;
 	}
-
-	global $wpdb;
 
 	// Join the membership pages table to reference restrictions on.
 	$join = "
@@ -163,7 +161,7 @@ function pmpro_events_tribe_events_get_current_month_day($day) {
  * @since 1.0
  */
 function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels ){
-
+	global $wpdb;
 	if ( ! is_admin() && is_single() && ! $hasaccess ) {
 
 		// remove sections of single event if the user doesn't have access.
@@ -179,9 +177,64 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 		}
 	}
 
+	// Check if recurring events are installed and check if the user has access to it or not.
+	if ( function_exists( 'tribe_is_recurring_event' ) ) {
+		// See if recurring event (occurence) is restricted or not on the parent post.
+		if ( ! is_admin() && is_single() && tribe_is_recurring_event() ) {
+
+			// Bail if the user already doesn't have access.
+			if ( ! $hasaccess ) {
+				return $hasaccess;
+			}
+
+			$main_post_id = $post->_tec_occurrence->post_id;
+			if ( ! pmpro_events_tribe_get_parent_event_access( $main_post_id ) ) {
+				$hasaccess = false;
+			}
+		}
+	}
+
 	return $hasaccess;
 }
 add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tribe_events_has_access', 10, 4 );
+
+/**
+ * Function to get membership access directly within the has_membership_access filter for parent events.
+ * 
+ * @since TBD
+ *
+ * @param int $post_id The post ID we need to query.
+ * @param int $user_id The user ID we need to query.
+ * @return bool $hasaccess Returns true or false whether or not the user has relevant levels.
+ */
+function pmpro_events_tribe_get_parent_event_access( $parent_id, $user_id = NULL ) {
+	global $wpdb, $current_user;
+
+	if ( empty( $user_id ) ) {
+		$user_id = $current_user->ID;
+	}
+
+	// Get levels related to a post ID, and check to make sure the user has a relevant level.
+	$membership_ids = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %s",
+			$parent_id
+		),
+		ARRAY_N
+	);
+
+	$memberships_for_user = pmpro_getMembershipLevelsForUser( $user_id );
+
+	// If there is any overlap between the two arrays, assume they have access.
+	if ( array_intersect( $membership_ids, $memberships_for_user ) ) {
+		$hasaccess = true;
+	} else {
+		$hasaccess = false;
+	}
+
+	return $hasaccess;
+
+}
 
 /**
  * Hide content if user doesn't have access to the event. Only affects single views.
