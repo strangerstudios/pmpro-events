@@ -198,6 +198,34 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 }
 add_filter( 'pmpro_has_membership_access_filter_tribe_events', 'pmpro_events_tribe_events_has_access', 10, 4 );
 
+// Let's make a note about the main POST ID here.
+function pmpro_events_tribe_events_add_require_membership_message( $post ) {
+
+	// Make sure that Events Calendar Pro is installed.
+	if ( ! function_exists( 'tribe_is_recurring_event' ) ) {
+		return;
+	}
+
+	// Show a notice about the main event setting.
+	if ( tribe_is_recurring_event() ) {
+		$parent_event_id = tribe_get_event()->_tec_occurrence->post_id;
+
+		if ( ! empty( $_REQUEST['post'] ) && ! empty( $parent_event_id ) ) {
+
+			?>
+				<style>
+					#pmpro-memberships-checklist { display:none; }
+				</style>
+			<?
+			$parent_event_url = add_query_arg( array( 'post' => intval( $parent_event_id ), 'action' => 'edit' ), admin_url( 'post.php' ) );
+			echo '<a href="' . esc_url( $parent_event_url ) . '">' . __( 'Edit the parent event for membership restrictions.', 'pmpro-events' ) . '</a>';
+		}
+
+	}
+
+}
+add_action( 'pmpro_after_require_membership_metabox', 'pmpro_events_tribe_events_add_require_membership_message', 10, 1 );
+
 /**
  * Function to get membership access directly within the has_membership_access filter for parent events.
  * 
@@ -223,6 +251,11 @@ function pmpro_events_tribe_get_parent_event_access( $parent_id, $user_id = NULL
 		ARRAY_N
 	);
 
+	// No levels are required for the parent ID, let's just bail and assume they have access.
+	if ( empty( $membership_ids ) ) {
+		return true;
+	}
+
 	$memberships_for_user = pmpro_getMembershipLevelsForUser( $user_id );
 
 	// If there is any overlap between the two arrays, assume they have access.
@@ -235,7 +268,6 @@ function pmpro_events_tribe_get_parent_event_access( $parent_id, $user_id = NULL
 	return $hasaccess;
 
 }
-
 /**
  * Hide content if user doesn't have access to the event. Only affects single views.
  * @since 1.1
