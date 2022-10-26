@@ -177,7 +177,7 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 		}
 	}
 
-	// Check if recurring events are installed and check if the user has access to it or not.
+	// Figure out recurring events.
 	if ( function_exists( 'tribe_is_recurring_event' ) ) {
 		// See if recurring event (occurence) is restricted or not on the parent post.
 		if ( ! is_admin() && is_single() && tribe_is_recurring_event() ) {
@@ -214,7 +214,7 @@ function pmpro_events_tribe_events_add_require_membership_message( $post ) {
 
 			?>
 				<style>
-					#pmpro-memberships-checklist { display:none; }
+					#pmpro-memberships-checklist, #pmpro_page_meta p { display:none; }
 				</style>
 			<?
 			$parent_event_url = add_query_arg( array( 'post' => intval( $parent_event_id ), 'action' => 'edit' ), admin_url( 'post.php' ) );
@@ -228,8 +228,6 @@ add_action( 'pmpro_after_require_membership_metabox', 'pmpro_events_tribe_events
 
 /**
  * Function to get membership access directly within the has_membership_access filter for parent events.
- * 
- * @since TBD
  *
  * @param int $post_id The post ID we need to query.
  * @param int $user_id The user ID we need to query.
@@ -256,10 +254,21 @@ function pmpro_events_tribe_get_parent_event_access( $parent_id, $user_id = NULL
 		return true;
 	}
 
+	// Get all Post levels and convert them to an array so we may intersect these later.
+	$post_levels = array();
+	foreach( $membership_ids as $level) {
+		$post_levels[] = $level[0];
+	}
+
+	// Get membership levels and convert them to an array so we may intersect these later.
 	$memberships_for_user = pmpro_getMembershipLevelsForUser( $user_id );
+	$members_levels = array();
+	foreach( $memberships_for_user as $membership ) {
+		$members_levels[] = $membership->id;
+	}
 
 	// If there is any overlap between the two arrays, assume they have access.
-	if ( array_intersect( $membership_ids, $memberships_for_user ) ) {
+	if ( array_intersect( $post_levels, $members_levels ) ) {
 		$hasaccess = true;
 	} else {
 		$hasaccess = false;
