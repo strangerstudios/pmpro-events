@@ -208,7 +208,7 @@ function pmpro_events_tribe_events_add_require_membership_message( $post ) {
 
 	// Show a notice about the main event setting.
 	if ( tribe_is_recurring_event() ) {
-		$parent_event_id = tribe_get_event()->_tec_occurrence->post_id;
+		$parent_event_id = isset( tribe_get_event()->_tec_occurrence->post_id ) ? tribe_get_event()->_tec_occurrence->post_id : 0;
 
 		if ( ! empty( $_REQUEST['post'] ) && ! empty( $parent_event_id ) ) {
 
