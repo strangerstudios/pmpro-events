@@ -216,7 +216,7 @@ function pmpro_events_tribe_events_add_require_membership_message( $post ) {
 				<style>
 					#pmpro-memberships-checklist, #pmpro_page_meta p { display:none; }
 				</style>
-			<?
+			<?php
 			$parent_event_url = add_query_arg( array( 'post' => intval( $parent_event_id ), 'action' => 'edit' ), admin_url( 'post.php' ) );
 			echo '<a href="' . esc_url( $parent_event_url ) . '">' . esc_html__( 'Edit the parent event for membership restrictions.', 'pmpro-events' ) . '</a>';
 
