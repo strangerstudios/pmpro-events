@@ -18,6 +18,12 @@ function pmpro_events_tribe_events_repository_handle_posts( WP_Query $query ) {
 	/** @var Tribe__Events__Repositories__Event|null $pmpro_events_tribe_repository */
 	global $pmpro_events_tribe_repository, $wpdb;
 
+	// Avoid non-unique table aliases.
+	static $func_run_index = 1;
+	$mp_table_name = 'pmpro_mp_' . $func_run_index;
+	$func_run_index++;
+
+
 	// Only integrate if we have the repository tracked.
 	if ( empty( $pmpro_events_tribe_repository ) ) {
 		return;
@@ -25,14 +31,14 @@ function pmpro_events_tribe_events_repository_handle_posts( WP_Query $query ) {
 
 	// Join the membership pages table to reference restrictions on.
 	$join = "
-	    LEFT JOIN `{$wpdb->pmpro_memberships_pages}` AS `pmpro_mp`
-            ON `pmpro_mp`.`page_id` = `{$wpdb->posts}`.`ID`
+	    LEFT JOIN `{$wpdb->pmpro_memberships_pages}` AS `{$mp_table_name}`
+            ON `{$mp_table_name}`.`page_id` = `{$wpdb->posts}`.`ID`
 	";
 
 	$pmpro_events_tribe_repository->filter_query->join( $join, 'pmpro-events-access-join' );
 
 	// The default is to always show any posts without restrictions.
-	$where = 'pmpro_mp.membership_id IS NULL';
+	$where = $mp_table_name . '.membership_id IS NULL';
 
 	// If user is logged in, check for their membership levels.
 	if ( is_user_logged_in() ) {
@@ -42,7 +48,7 @@ function pmpro_events_tribe_events_repository_handle_posts( WP_Query $query ) {
 		if ( ! empty( $membership_ids ) ) {
 			$membership_ids = array_map( 'absint', wp_list_pluck( $membership_ids, 'id' ) );
 
-			$where .= ' OR pmpro_mp.membership_id IN ( ' . implode( ', ', $membership_ids ) . ' )';
+			$where .= ' OR ' . $mp_table_name . '.membership_id IN ( ' . implode( ', ', $membership_ids ) . ' )';
 		}
 	}
 
