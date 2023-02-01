@@ -1,9 +1,9 @@
 === Members-Only Events for Paid Memberships Pro: Integrate Events Manager, The Events Calendar, & Timely ===
 Contributors: strangerstudios, paidmembershipspro
 Tags: calendar, events, private event, tickets, pmpro, paid memberships pro
-Requires at least: 3.5
+Requires at least: 5.0
 Tested up to: 6.1
-Requires PHP: 5.6
+Requires PHP: 7.2
 Stable tag: 1.3.1
 
 Create private events, hide event details, & restrict event registration for members-only using popular events calendar plugins with PMPro.
@@ -114,6 +114,9 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+= 1.4 - 2023-02-01 =
+* ENHANCEMENT: Support recurring events for The Events Calendar. It inherits the 'main' event membership settings.
+* BUG FIX: Resolve a database warning (unique alias warnings) for The Events Calendar in some instances when SQL queries run multiple times.
 
 = 1.3.1 - 2022-01-26 =
 * BUG FIX: Changed two hooks to the correct names in the integration for The Events Calendar.
