@@ -12,7 +12,7 @@ This Add On offers integration for popular events plugins, including:
 * [Events Manager](https://wordpress.org/plugins/events-manager/)
 * [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/)
 * [Sugar Calendar](https://wordpress.org/plugins/sugar-calendar-lite/)
-* [Timely All-in-One Event Calendar](https://wordpress.org/plugins/all-in-one-event-calendar/)
+* [Timely All-in-One Event Calendar (< 3.0.0)](https://wordpress.org/plugins/all-in-one-event-calendar/)
 
 Events that are restricted by membership level will not allow non-members to view full event details or complete event registration. The list and single view of the event will show limited event details as defined by your Advanced Settings > "Show Excerpts to Non-Members" setting.
 
