@@ -3,7 +3,7 @@
 Plugin Name: Paid Memberships Pro - Events Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/events-for-members-only/
 Description: Offer Members-only events using PMPro and popular events plugins.
-Version: 1.4
+Version: 1.4.1
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-events
@@ -27,7 +27,7 @@ function pmpro_events_plugin_init() {
 	}
 
 	// All in One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
-	if ( defined( 'AI1EC_PATH' ) ) {
+	if ( defined( 'AI1EC_PATH' ) && AI1EC_VERSION  < '3.0.0' ) {
 		require_once( $path . '/modules/all-in-one-event-calendar.php' );
 	}
 
