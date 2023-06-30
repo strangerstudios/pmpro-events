@@ -88,7 +88,7 @@ Once the plugin is activated, it automatically detects which events module to lo
 * [Events Manager](https://wordpress.org/plugins/events-manager/)
 * [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/)
 * [Sugar Calendar](https://wordpress.org/plugins/sugar-calendar-lite/)
-* [Timely All-in-One Events Calendar](https://wordpress.org/plugins/all-in-one-event-calendar/)
+* [Timely All-in-One Events Calendar (< 3.0.0)](https://wordpress.org/plugins/all-in-one-event-calendar/)
 
 If you are not already using an events plugin, you must select one from this list to use the features of this integration plugin.
 
@@ -114,6 +114,9 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+= 1.4.1 - TBD =
+* ENHANCEMENT: Only load our module for All-In-One-Events Calendar for versions before 3.0. If you are using the latest version, please restrict the content by following this guide - https://www.paidmembershipspro.com/documentation/content-controls/
+
 = 1.4 - 2023-02-01 =
 * ENHANCEMENT: Support recurring events for The Events Calendar. It inherits the 'main' event membership settings.
 * BUG FIX: Resolve a database warning (unique alias warnings) for The Events Calendar in some instances when SQL queries run multiple times.
