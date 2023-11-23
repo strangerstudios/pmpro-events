@@ -47,7 +47,7 @@ function pmpro_events_sc_filter_events_archive( $events ) {
 		return $events;
 	}
 
-	$filterqueries = pmpro_getOption( 'filterqueries' );
+	$filterqueries = get_option( 'pmpro_filterqueries' );
 	if ( empty( $filterqueries ) ) {
 		return $events;
 	}

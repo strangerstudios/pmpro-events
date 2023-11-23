@@ -89,8 +89,8 @@ function pmpro_events_tribe_events_track_repository_from_query_args( $query_args
 function pmpro_events_tribe_events_init() {
 
 	// Add filters for tribe events if filterqueries option is set in PMPro.
-	if ( function_exists( 'pmpro_getOption' ) ) {
-		$filterqueries = pmpro_getOption( "filterqueries" );
+	if ( function_exists( 'pmpro_init' ) ) {
+		$filterqueries = get_option( "pmpro_filterqueries" );
 		if ( ! empty( $filterqueries ) ) {
 			add_filter( 'tribe_get_events', 'pmpro_events_tribe_events_get_events', 10, 3 );
 			add_filter( 'tribe_events_get_current_month_day', 'pmpro_events_tribe_events_get_current_month_day' );
@@ -333,7 +333,7 @@ function pmpro_events_tribe_events_tickets_remove_module( $modules ) {
  */
 function pmpro_events_tribe_events_excerpt_filter( $excerpt, $post ) {
 
-	$showexcerpts = apply_filters( 'pmpro_events_tribe_events_show_excerpts', pmpro_getOption( "showexcerpts" ), $post );
+	$showexcerpts = apply_filters( 'pmpro_events_tribe_events_show_excerpts', get_option( "pmpro_showexcerpts" ), $post );
 
 	if ( pmpro_has_membership_access( $post->ID ) ) {
 		$excerpt = get_the_excerpt( $post );
