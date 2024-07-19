@@ -67,11 +67,11 @@ function pmpro_events_no_access_message_body( $body, $level_ids ) {
 
 	// Generate the message for the event.
 	if ( count( $level_ids ) !== 1 ) {
-		$body = '<p>' . __(' You must be a member to access this event.', 'pmpro-events') . '</p>';
-		$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="!!levels_page_url!!">' . __( 'View Membership Levels', 'pmpro-events' ) . '</a></p>';
+		$body = '<p>' . esc_html__(' You must be a member to access this event.', 'pmpro-events') . '</p>';
+		$body .= '<p><a class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ) . '" href="!!levels_page_url!!">' . esc_html__( 'View Membership Levels', 'pmpro-events' ) . '</a></p>';
 	} else {
-		$body = '<p>' . __(' You must be a !!levels!! member to access this event.', 'pmpro-events') . '</p>';
-		$body .= '<p><a class="' . pmpro_get_element_class( 'pmpro_btn' ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . __( 'Join Now', 'pmpro-events' ) . '</a></p>';
+		$body = '<p>' . esc_html__(' You must be a !!levels!! member to access this event.', 'pmpro-events') . '</p>';
+		$body .= '<p><a class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . esc_html__( 'Join Now', 'pmpro-events' ) . '</a></p>';
 	}
 
 	return $body;
