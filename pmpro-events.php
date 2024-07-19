@@ -48,12 +48,41 @@ function pmpro_events_load_plugin_text_domain() {
 add_action( 'init', 'pmpro_events_load_plugin_text_domain');
 
 /**
+ * Filter the message for users without access.
+ *
+ * @param string $text The message for users without access.
+ * @param array $level_ids The level IDs that are restricted from the content.
+ * @return string The filtered message for users without access.
+ */
+function pmpro_events_no_access_message_body( $body, $level_ids ) {
+	// We are running PMPro v3.1+, so make sure that deprecated filters don't run later.
+	remove_filter( 'pmpro_non_member_text_filter', 'pmpro_events_pmpro_text_filter' );
+	remove_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' );
+
+	// If this is not an event, return the default message.
+	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event' ) );
+	if ( ! is_singular( $event_slugs ) ) {
+		return $body;
+	}
+
+	// Generate the message for the event.
+	if ( count( $level_ids ) !== 1 ) {
+		$body = '<p>' . esc_html__(' You must be a member to access this event.', 'pmpro-events') . '</p>';
+		$body .= '<p><a class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ) . '" href="!!levels_page_url!!">' . esc_html__( 'View Membership Levels', 'pmpro-events' ) . '</a></p>';
+	} else {
+		$body = '<p>' . esc_html__(' You must be a !!levels!! member to access this event.', 'pmpro-events') . '</p>';
+		$body .= '<p><a class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . esc_html__( 'Join Now', 'pmpro-events' ) . '</a></p>';
+	}
+
+	return $body;
+}
+add_filter( 'pmpro_no_access_message_body', 'pmpro_events_no_access_message_body', 10, 2 ); // PMPro v3.1+.
+
+/**
  * Adjusts the word content with "event" if it's an event.
  * @since 1.0
  */
 function pmpro_events_pmpro_text_filter( $text ) {
-	global $post;
-
 	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event' ) );
 
 	if( is_singular( $event_slugs ) ) {
@@ -61,8 +90,8 @@ function pmpro_events_pmpro_text_filter( $text ) {
 	}
 	return $text;
 }
-add_filter( 'pmpro_non_member_text_filter', 'pmpro_events_pmpro_text_filter' );
-add_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' );
+add_filter( 'pmpro_non_member_text_filter', 'pmpro_events_pmpro_text_filter' ); // Pre-PMPro v3.1.
+add_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' ); // Pre-PMPro v3.1.
 
 /**
  * Runs only when the plugin is activated.
@@ -85,13 +114,13 @@ function pmpro_events_activation_admin_notice() {
 		if (  ! defined( 'EM_VERSION' ) && ! class_exists( 'Tribe__Events__Main' ) && ! defined( 'AI1EC_PATH' ) && ! class_exists( 'Sugar_Calendar\\Plugin' ) ) {
 		?>
 			<div class="notice notice-warning is-dismissible">
-			<p><?php printf( __( "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>", 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ); ?></p>
+			<p><?php echo wp_kses_post( sprintf( __( "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>", 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ) ); ?></p>
 		</div>
 		<?php
 		}else{
 		?>
 		<div class="updated notice is-dismissible">
-			<p><?php printf( __( 'Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the "Require Membership" box in the sidebar. <a href="%s">View more documentation here.</a>', 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ); ?></p>
+			<p><?php echo wp_kses_post( sprintf( __( 'Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the "Require Membership" box in the sidebar. <a href="%s">View more documentation here.</a>', 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ) ); ?></p>
 		</div>
 		<?php
 		}
