@@ -42,7 +42,6 @@ add_action( 'init', 'pmpro_events_events_manager_init', 20 );
  * @since 1.0
  */
 function pmpro_events_events_manager_em_event_output( $event_string, $post, $format, $target ) {
-	global $current_user;
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) && is_singular( array( 'event' ) ) && in_the_loop() ) {
 		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);
 		if(is_array($hasaccess)) {
@@ -57,35 +56,8 @@ function pmpro_events_events_manager_em_event_output( $event_string, $post, $for
 		if(empty($post_membership_levels_names)) {
 			$post_membership_levels_names = array();
 		}
-	
-		 //hide levels which don't allow signups by default
-		if(!apply_filters("pmpro_membership_content_filter_disallowed_levels", false, $post_membership_levels_ids, $post_membership_levels_names)) {
-			foreach($post_membership_levels_ids as $key=>$id) {
-				//does this level allow registrations?
-				$level_obj = pmpro_getLevel($id);
-				if(!$level_obj->allow_signups) {
-					unset($post_membership_levels_ids[$key]);
-					unset($post_membership_levels_names[$key]);
-				}
-			}
-		}
-	
-		$pmpro_content_message_pre = '<div class="pmpro_content_message">';
-		$pmpro_content_message_post = '</div>';
-		$content = '';
-		$sr_search = array("!!levels!!", "!!referrer!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), esc_url(site_url($_SERVER['REQUEST_URI'])));
-		//get the correct message to show at the bottom
-		if($current_user->ID) {
-			//not a member
-			$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes(get_option( 'pmpro_nonmembertext' )));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		} else {
-			//not logged in!
-			$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes(get_option( 'pmpro_notloggedintext' )));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		}
-		$event_string = $event_string . $content;
+
+		$event_string = pmpro_get_no_access_message( $event_string, $post_membership_levels_ids, $post_membership_levels_names );
 	}
 	return $event_string;
 }
