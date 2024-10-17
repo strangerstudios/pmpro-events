@@ -3,7 +3,7 @@
 # [Paid Memberships Pro - Events Integration](https://www.paidmembershipspro.com/add-ons/events-for-members-only/) #
 [comment]: # (Generate badges from shields.io, only works for .org plugins to get other stats etc. We'd have to create our own endpoints for Premium plugins)
 
-![WordPress Plugin Downloads](https://img.shields.io/wordpress/plugin/dy/pmpro-events?style=flat-square) ![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg?style=flat-square)
+![License](https://img.shields.io/badge/license-GPL--2.0%2B-red.svg?style=flat-square)
 
 ### Welcome to the Paid Memberships Pro - Events Integration GitHub Repository
 
@@ -31,7 +31,7 @@ For detailed installation steps, visit the our [documentation](https://www.paidm
 If you find an issue/bug, let us know by [creating a detailed GitHub issue](https://github.com/strangerstudios/pmpro-events/issues/new).
 
 ## Support ##
-This is a developer's portal for Paid Memberships Pro - Events Integration. We do not offer support on this channel. **Any support related questions should be directed to [wordpress.org/support/plugin/pmpro-events/](https://wordpress.org/support/plugin/pmpro-events/).**
+This is a developer's portal for Paid Memberships Pro - Events Integration. We do not offer support on this channel. **Any support related questions should be directed to [https://www.paidmembershipspro.com/support/](https://www.paidmembershipspro.com/support/).**
 
 ## Contributing to Paid Memberships Pro - Events Integration ##
 We encourage and welcome any contribution to Paid Memberships Pro - Events Integration. Please read the [guidelines for contributing](https://github.com/strangerstudios/pmpro-events/blob/dev/.github/CONTRIBUTING.md) to this repository.
@@ -45,4 +45,4 @@ Here are some ways for **non-developers to contribute** to Paid Memberships Pro 
 
 1. Translate Paid Memberships Pro - Events Integration into your own [language](https://www.paidmembershipspro.com/paid-memberships-pro-in-your-language/).
 2. [Purchase a premium membership](https://paidmembershipspro.com/pricing/) to help fund ongoing development and bug fixes.
-3. Leave an honest review for [Paid Memberships Pro - Events Integration](https://wordpress.org/support/plugin/pmpro-events/reviews/#new-post).
+3. Leave an honest review for [Paid Memberships Pro](https://www.paidmembershipspro.com/submit-testimonial/).
