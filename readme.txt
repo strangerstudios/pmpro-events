@@ -2,9 +2,9 @@
 Contributors: strangerstudios, paidmembershipspro
 Tags: calendar, events, private event, tickets, paid memberships pro
 Requires at least: 5.2
-Tested up to: 6.6
+Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 1.6
+Stable tag: 1.6.1
 
 Create private events, hide event details, & restrict event registration for members-only using popular events calendar plugins with PMPro.
 
@@ -114,6 +114,9 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+= 1.6.1 - 2025-11-25 =
+* BUG FIX: Resolve a PHP warning for Events Manager that occurs when event content is retrieved via AJAX. #56 (@dwanjuki)
+
 = 1.6 - 2024-10-17 =
 * FEATURE: Now updating the plugin from paidmembershipspro.com.
 * ENHANCEMENT: Updated translation files bundled with the plugin.

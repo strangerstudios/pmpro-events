@@ -68,7 +68,6 @@ add_action( 'em_event_output', 'pmpro_events_events_manager_em_event_output', 1,
  * @since 1.0
  */
 function pmpro_events_events_manager_output_placeholder( $replace, $EM_Event, $result ) {
-	global $wp_query, $wp_rewrite, $post, $current_user;
 	if ( function_exists( 'pmpro_hasMembershipLevel' ) && ! pmpro_has_membership_access( $EM_Event->post_id ) ) {
 		$hasaccess = pmpro_has_membership_access( $EM_Event->post_id, NULL, true );
 		if ( is_array( $hasaccess ) ) {
