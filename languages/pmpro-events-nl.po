@@ -1,17 +1,17 @@
-# Copyright (C) 2024 Paid Memberships Pro
+# Copyright (C) 2025 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Events Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Events Add On 1.6\n"
+"Project-Id-Version: Paid Memberships Pro - Events Add On 1.6.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2024-10-17T14:12:31+00:00\n"
+"POT-Creation-Date: 2025-11-25T07:36:50+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"X-Generator: WP-CLI 2.11.0\n"
+"X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-events\n"
 
 #: pmpro-events.php:74
@@ -51,10 +51,12 @@ msgid "View Documentation"
 msgstr "Documentatie bekijken"
 
 #: pmpro-events.php:123
+#, php-format
 msgid "Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the \"Require Membership\" box in the sidebar. <a href=\"%s\">View more documentation here.</a>"
 msgstr "Bedankt voor het activeren van de Evenementen add-on voor Paid Memberships Pro. Om te beginnen, bewerk je een evenement en zoek je naar de box 'Lidmaatschap vereist' in de zijbalk. <a href=\"%s\">Bekijk hier meer documentatie.</a>"
 
 #: pmpro-events.php:117
+#, php-format
 msgid "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>"
 msgstr "Bedankt voor het activeren van de Events add-on voor Paid Memberships Pro. Helaas lijkt het erop dat we geen ondersteunde plugin voor evenementen hebben kunnen vinden. <a href='%s' target='_blank'>Klik hier voor meer informatie.</a>"
 
