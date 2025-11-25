@@ -21,8 +21,8 @@ function pmpro_events_events_manager_init() {
 	/*
 		Filter searches and redirect single event page if PMPro Option to filter is set.
 	*/
-	if(function_exists('pmpro_getOption')) {
-		$filterqueries = pmpro_getOption("filterqueries");
+	if(function_exists('pmpro_init')) {
+		$filterqueries = get_option("pmpro_filterqueries");
 		if(!empty($filterqueries)) {
 			add_filter('em_events_get','pmpro_events_events_manager_em_events_get', 10, 2);
 		}
@@ -42,7 +42,6 @@ add_action( 'init', 'pmpro_events_events_manager_init', 20 );
  * @since 1.0
  */
 function pmpro_events_events_manager_em_event_output( $event_string, $post, $format, $target ) {
-	global $current_user;
 	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) && is_singular( array( 'event' ) ) && in_the_loop() ) {
 		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);
 		if(is_array($hasaccess)) {
@@ -57,35 +56,8 @@ function pmpro_events_events_manager_em_event_output( $event_string, $post, $for
 		if(empty($post_membership_levels_names)) {
 			$post_membership_levels_names = array();
 		}
-	
-		 //hide levels which don't allow signups by default
-		if(!apply_filters("pmpro_membership_content_filter_disallowed_levels", false, $post_membership_levels_ids, $post_membership_levels_names)) {
-			foreach($post_membership_levels_ids as $key=>$id) {
-				//does this level allow registrations?
-				$level_obj = pmpro_getLevel($id);
-				if(!$level_obj->allow_signups) {
-					unset($post_membership_levels_ids[$key]);
-					unset($post_membership_levels_names[$key]);
-				}
-			}
-		}
-	
-		$pmpro_content_message_pre = '<div class="pmpro_content_message">';
-		$pmpro_content_message_post = '</div>';
-		$content = '';
-		$sr_search = array("!!levels!!", "!!referrer!!");
-		$sr_replace = array(pmpro_implodeToEnglish($post_membership_levels_names), esc_url(site_url($_SERVER['REQUEST_URI'])));
-		//get the correct message to show at the bottom
-		if($current_user->ID) {
-			//not a member
-			$newcontent = apply_filters( 'pmpro_non_member_text_filter', stripslashes(pmpro_getOption( 'nonmembertext' )));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		} else {
-			//not logged in!
-			$newcontent = apply_filters( 'pmpro_not_logged_in_text_filter', stripslashes(pmpro_getOption( 'notloggedintext' )));
-			$content .= $pmpro_content_message_pre . str_replace($sr_search, $sr_replace, $newcontent) . $pmpro_content_message_post;
-		}
-		$event_string = $event_string . $content;
+
+		$event_string = pmpro_get_no_access_message( $event_string, $post_membership_levels_ids, $post_membership_levels_names );
 	}
 	return $event_string;
 }
@@ -97,17 +69,17 @@ add_action( 'em_event_output', 'pmpro_events_events_manager_em_event_output', 1,
  */
 function pmpro_events_events_manager_output_placeholder( $replace, $EM_Event, $result ) {
 	global $wp_query, $wp_rewrite, $post, $current_user;
-	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) ) {
-		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);		
-		if(is_array($hasaccess)) {
+	if ( function_exists( 'pmpro_hasMembershipLevel' ) && ! pmpro_has_membership_access( $EM_Event->post_id ) ) {
+		$hasaccess = pmpro_has_membership_access( $EM_Event->post_id, NULL, true );
+		if ( is_array( $hasaccess ) ) {
 			//returned an array to give us the membership level values
 			$post_membership_levels_ids = $hasaccess[1];
 			$post_membership_levels_names = $hasaccess[2];
 			$hasaccess = $hasaccess[0];
 		}
-		switch( $result ) {
+		switch ( $result ) {
 			case '#_BOOKINGFORM':
-				if(empty($hasaccess)) {
+				if ( empty( $hasaccess ) ) {
 					$replace = '';	
 					break;	
 				}
@@ -188,8 +160,8 @@ function pmpro_events_events_manager_event_output( $event_string, $content, $for
  */
 function pmpro_events_events_manager_hide_excerpts( $result, $event, $placeholder, $target='html' ) {
 	
-	if ( function_exists( 'pmpro_getOption' ) ) {
-		$showexcerpts = pmpro_getOption( "showexcerpts" );
+	if ( function_exists( 'pmpro_init' ) ) {
+		$showexcerpts = get_option( "pmpro_showexcerpts" );
 	
 		if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT','#_EVENTEXCERPTCUT', "#_LOCATIONEXCERPT")) && $target == 'html' && !pmpro_has_membership_access( $event->ID ) && '1' !== $showexcerpts ){
 			$result = '';
@@ -209,8 +181,8 @@ add_filter('em_location_output_placeholder','pmpro_events_events_manager_hide_ex
  */
 function pmpro_events_events_manager_filter_calendar_page( $event ) {
 
-	if ( function_exists( 'pmpro_getOption' ) ) {		
-		$filterqueries = pmpro_getOption("filterqueries");
+	if ( function_exists( 'pmpro_init' ) ) {		
+		$filterqueries = get_option("pmpro_filterqueries");
 
 		// Filter events from calendar page if the member doesn't meet the requirements.
 		if ( ! pmpro_has_membership_access( $event['post_id'] ) && ! empty( $filterqueries ) ) {

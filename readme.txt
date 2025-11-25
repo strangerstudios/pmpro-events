@@ -2,9 +2,9 @@
 Contributors: strangerstudios, paidmembershipspro
 Tags: calendar, events, private event, tickets, paid memberships pro
 Requires at least: 5.2
-Tested up to: 6.5.l
+Tested up to: 6.6
 Requires PHP: 7.2
-Stable tag: 1.3.1
+Stable tag: 1.6
 
 Create private events, hide event details, & restrict event registration for members-only using popular events calendar plugins with PMPro.
 
@@ -53,7 +53,7 @@ Paid Memberships Pro is built "the WordPress way" with a lean core plugin and ov
 
 Paid Memberships Pro is the flagship product of Stranger Studios. We are a bootstrapped company which grows when membership sites like yours grow. That means we focus our entire company towards helping you succeed.
 
-[Try Paid Memberships Pro entirely for free on WordPress.org](https://wordpress.org/plugins/paid-memberships-pro/) and see why 100,000+ sites trust us to help them #GetPaid.
+[Try Paid Memberships Pro entirely for free](https://paidmembershipspro.com) and see why 100,000+ sites trust us to help them #GetPaid.
 
 ### Read More
 
@@ -65,7 +65,7 @@ Want more information on protecting course content with Paid Memberships Pro, Le
 
 == Installation ==
 
-Note: You must have [Paid Memberships Pro](https://wordpress.org/plugins/paid-memberships-pro/) installed and activated on your site.
+Note: You must have [Paid Memberships Pro](https://paidmembershipspro.com) installed and activated on your site.
 
 ### Install PMPro Events from within WordPress
 
@@ -114,8 +114,14 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
-= 1.4.1 - TBD =
+= 1.6 - 2024-10-17 =
+* FEATURE: Now updating the plugin from paidmembershipspro.com.
+* ENHANCEMENT: Updated translation files bundled with the plugin.
+
+= 1.5 - 2024-07-18 =
+* ENHANCEMENT: Updated the frontend UI for compatibility with PMPro v3.1. #53 (@dparker1005)
 * ENHANCEMENT: Only load our module for All-In-One-Events Calendar for versions before 3.0. If you are using the latest version, please restrict the content by following this guide - https://www.paidmembershipspro.com/documentation/content-controls/
+* REFACTOR: Now usigng `get_option()` instead of `pmpro_getOption()`. #51 (@JarrydLong)
 
 = 1.4 - 2023-02-01 =
 * ENHANCEMENT: Support recurring events for The Events Calendar. It inherits the 'main' event membership settings.

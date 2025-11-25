@@ -1,0 +1,88 @@
+# Copyright (C) 2024 Paid Memberships Pro
+# This file is distributed under the same license as the Paid Memberships Pro - Events Add On plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Paid Memberships Pro - Events Add On 1.6\n"
+"Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
+"Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
+"Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-10-17T14:12:31+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.11.0\n"
+"X-Domain: pmpro-events\n"
+
+#: pmpro-events.php:74
+msgid "Join Now"
+msgstr ""
+
+#: pmpro-events.php:73
+msgid " You must be a !!levels!! member to access this event."
+msgstr ""
+
+#: pmpro-events.php:71
+msgid "View Membership Levels"
+msgstr ""
+
+#: pmpro-events.php:70
+msgid " You must be a member to access this event."
+msgstr ""
+
+#: modules/the-events-calendar.php:227
+msgid "Edit the parent event for membership restrictions."
+msgstr ""
+
+#: pmpro-events.php:140
+msgid "Support"
+msgstr "Soporte"
+
+#: pmpro-events.php:140
+msgid "Visit Customer Support Forum"
+msgstr "Visita el foro de soporte para clientes"
+
+#: pmpro-events.php:139
+msgid "Docs"
+msgstr "Documentación"
+
+#: pmpro-events.php:139
+msgid "View Documentation"
+msgstr "Ver la documentación"
+
+#: pmpro-events.php:123
+msgid "Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the \"Require Membership\" box in the sidebar. <a href=\"%s\">View more documentation here.</a>"
+msgstr "Gracias por activar la extensión Events para Paid Memberships Pro. Para comenzar, edita un evento y busca el panel «Requerir membresía» en la barra lateral. <a href=\"%s\">Ver más documentación aquí.</a>"
+
+#: pmpro-events.php:117
+msgid "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>"
+msgstr "Gracias por activar la extensión Events para Paid Memberships Pro. Desafortunadamente, parece que no hemos podido encontrar ningún plugin de eventos compatible. <a href='%s' target='_blank'>Para obtener más información, haz clic aquí.</a>"
+
+#: modules/all-in-one-event-calendar.php:23
+msgid "This content is for members only."
+msgstr "Este contenido es solo para miembros."
+
+#. Author URI of the plugin
+#: pmpro-events.php
+msgid "https://www.paidmembershipspro.com"
+msgstr "https://www.paidmembershipspro.com"
+
+#. Author of the plugin
+#: pmpro-events.php
+msgid "Paid Memberships Pro"
+msgstr "Paid Memberships Pro"
+
+#. Description of the plugin
+#: pmpro-events.php
+msgid "Offer Members-only events using PMPro and popular events plugins."
+msgstr "Ofrece eventos solo para miembros mediante PMPro y algunos plugins de eventos populares."
+
+#. Plugin URI of the plugin
+#: pmpro-events.php
+msgid "https://www.paidmembershipspro.com/add-ons/events-for-members-only/"
+msgstr "https://www.paidmembershipspro.com/add-ons/events-for-members-only/"
+
+#. Plugin Name of the plugin
+#: pmpro-events.php
+msgid "Paid Memberships Pro - Events Add On"
+msgstr "Paid Memberships Pro - Events Add On"
