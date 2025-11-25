@@ -69,17 +69,17 @@ add_action( 'em_event_output', 'pmpro_events_events_manager_em_event_output', 1,
  */
 function pmpro_events_events_manager_output_placeholder( $replace, $EM_Event, $result ) {
 	global $wp_query, $wp_rewrite, $post, $current_user;
-	if( function_exists( 'pmpro_hasMembershipLevel' ) && !pmpro_has_membership_access( $post->post_id ) ) {
-		$hasaccess = pmpro_has_membership_access($post->post_id, NULL, true);		
-		if(is_array($hasaccess)) {
+	if ( function_exists( 'pmpro_hasMembershipLevel' ) && ! pmpro_has_membership_access( $EM_Event->post_id ) ) {
+		$hasaccess = pmpro_has_membership_access( $EM_Event->post_id, NULL, true );
+		if ( is_array( $hasaccess ) ) {
 			//returned an array to give us the membership level values
 			$post_membership_levels_ids = $hasaccess[1];
 			$post_membership_levels_names = $hasaccess[2];
 			$hasaccess = $hasaccess[0];
 		}
-		switch( $result ) {
+		switch ( $result ) {
 			case '#_BOOKINGFORM':
-				if(empty($hasaccess)) {
+				if ( empty( $hasaccess ) ) {
 					$replace = '';	
 					break;	
 				}
