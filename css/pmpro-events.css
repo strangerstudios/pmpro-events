@@ -1,0 +1,125 @@
+/**
+ * PMPro Events — Styles
+ *
+ * @since 2.0
+ */
+
+/* Event Meta */
+.pmpro-event-meta {
+	margin: 1.5em 0;
+	padding: 1em;
+	background: #f9f9f9;
+	border: 1px solid #e0e0e0;
+	border-radius: 4px;
+}
+
+.pmpro-event-meta > div {
+	margin-bottom: 0.5em;
+}
+
+.pmpro-event-meta > div:last-child {
+	margin-bottom: 0;
+}
+
+/* Registration Block */
+.pmpro-event-registration {
+	margin: 2em 0;
+	padding: 1.5em;
+	border: 2px solid #e0e0e0;
+	border-radius: 6px;
+}
+
+.pmpro-event-registered {
+	border-color: #46b450;
+	background: #f0f9f0;
+}
+
+.pmpro-event-sold-out {
+	border-color: #dc3232;
+	background: #fef0f0;
+}
+
+.pmpro-event-passed {
+	border-color: #999;
+	background: #f5f5f5;
+	color: #666;
+}
+
+/* Ticket Options */
+.pmpro-event-ticket-options {
+	display: flex;
+	flex-direction: column;
+	gap: 1em;
+}
+
+.pmpro-event-ticket-option {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding: 1em;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.pmpro-event-ticket-member {
+	border-color: #2271b1;
+}
+
+/* Cross-sell */
+.pmpro-event-cross-sell {
+	padding: 0.75em;
+	background: #f0f6fc;
+	border-radius: 4px;
+	font-size: 0.9em;
+}
+
+/* Add to Calendar */
+.pmpro-events-add-to-calendar {
+	position: relative;
+	display: inline-block;
+	margin-top: 1em;
+}
+
+.pmpro-events-atc-dropdown {
+	position: absolute;
+	top: 100%;
+	left: 0;
+	z-index: 100;
+	min-width: 180px;
+	margin-top: 4px;
+	padding: 4px 0;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pmpro-events-atc-dropdown a {
+	display: block;
+	padding: 8px 16px;
+	color: #333;
+	text-decoration: none;
+}
+
+.pmpro-events-atc-dropdown a:hover {
+	background: #f0f0f0;
+}
+
+/* Admin */
+.pmpro-events-details-table input[type="date"],
+.pmpro-events-details-table input[type="time"] {
+	min-width: 150px;
+}
+
+.pmpro-events-currency {
+	font-weight: 600;
+	font-size: 1.1em;
+	vertical-align: middle;
+	margin-right: 2px;
+}
+
+/* Account Page */
+#pmpro_account-events {
+	margin-top: 2em;
+}

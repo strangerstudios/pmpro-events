@@ -2,145 +2,179 @@
 /*
 Plugin Name: Paid Memberships Pro - Events Add On
 Plugin URI: https://www.paidmembershipspro.com/add-ons/events-for-members-only/
-Description: Offer Members-only events using PMPro and popular events plugins.
-Version: 1.6.1
+Description: A first-party events system for PMPro. Create events, sell tickets via PMPro checkout, and track registrations.
+Version: 2.0-alpha
 Author: Paid Memberships Pro
 Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-events
 Domain Path: /languages
 */
 
+defined( 'ABSPATH' ) || exit;
+
+define( 'PMPRO_EVENTS_VERSION', '2.0-alpha' );
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
-
-function pmpro_events_plugin_init() {
-	// Load module based on active events plugin
-	$path = dirname( __FILE__ );
-
-	// Events Manager (https://wordpress.org/plugins/events-manager/)
-	if ( defined( 'EM_VERSION' ) ) {
-		require_once( $path . '/modules/events-manager.php' );
-	}
-
-	// The Events Calendar by Modern Tribe (https://wordpress.org/plugins/the-events-calendar/)
-	if ( class_exists( 'Tribe__Events__Main' ) ) {
-		require_once( $path . '/modules/the-events-calendar.php' );
-	}
-
-	// All in One Event Calendar (https://wordpress.org/plugins/all-in-one-event-calendar/)
-	if ( defined( 'AI1EC_PATH' ) && AI1EC_VERSION  < '3.0.0' ) {
-		require_once( $path . '/modules/all-in-one-event-calendar.php' );
-	}
-
-	// Sugar Calendar Lite (https://wordpress.org/plugins/sugar-calendar-lite/)
-	if ( class_exists( 'Sugar_Calendar\\Plugin' ) ) {
-		require_once( $path . '/modules/sugar-calendar.php' );
-	}
-}
-add_action( 'plugins_loaded', 'pmpro_events_plugin_init' );
+define( 'PMPRO_EVENTS_DIR', plugin_dir_path( __FILE__ ) );
+define( 'PMPRO_EVENTS_URL', plugin_dir_url( __FILE__ ) );
 
 /**
- * Load Plugin Text Domain for Translations.
- * @since 1.1
- */
-function pmpro_events_load_plugin_text_domain() {
-	load_plugin_textdomain( 'pmpro-events', false, basename( dirname( __FILE__ ) ) . '/languages' );
-}
-add_action( 'init', 'pmpro_events_load_plugin_text_domain');
-
-/**
- * Filter the message for users without access.
+ * Check if PMPro is active and meets minimum version.
  *
- * @param string $text The message for users without access.
- * @param array $level_ids The level IDs that are restricted from the content.
- * @return string The filtered message for users without access.
+ * @since 2.0
+ *
+ * @return bool
  */
-function pmpro_events_no_access_message_body( $body, $level_ids ) {
-	// We are running PMPro v3.1+, so make sure that deprecated filters don't run later.
-	remove_filter( 'pmpro_non_member_text_filter', 'pmpro_events_pmpro_text_filter' );
-	remove_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' );
-
-	// If this is not an event, return the default message.
-	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event' ) );
-	if ( ! is_singular( $event_slugs ) ) {
-		return $body;
+function pmpro_events_check_dependencies() {
+	if ( ! defined( 'PMPRO_VERSION' ) ) {
+		return false;
 	}
-
-	// Generate the message for the event.
-	if ( count( $level_ids ) !== 1 ) {
-		$body = '<p>' . esc_html__(' You must be a member to access this event.', 'pmpro-events') . '</p>';
-		$body .= '<p><a class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ) . '" href="!!levels_page_url!!">' . esc_html__( 'View Membership Levels', 'pmpro-events' ) . '</a></p>';
-	} else {
-		$body = '<p>' . esc_html__(' You must be a !!levels!! member to access this event.', 'pmpro-events') . '</p>';
-		$body .= '<p><a class="' . esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ) . '" href="' . esc_url( pmpro_url( 'checkout', '?pmpro_level=' . $level_ids[0] ) ) . '">' . esc_html__( 'Join Now', 'pmpro-events' ) . '</a></p>';
-	}
-
-	return $body;
+	return version_compare( PMPRO_VERSION, '3.0', '>=' );
 }
-add_filter( 'pmpro_no_access_message_body', 'pmpro_events_no_access_message_body', 10, 2 ); // PMPro v3.1+.
 
 /**
- * Adjusts the word content with "event" if it's an event.
- * @since 1.0
+ * Show admin notice if PMPro is not active.
+ *
+ * @since 2.0
  */
-function pmpro_events_pmpro_text_filter( $text ) {
-	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event' ) );
-
-	if( is_singular( $event_slugs ) ) {
-		$text = str_replace( 'content', 'event', $text );
+function pmpro_events_admin_notice_no_pmpro() {
+	if ( pmpro_events_check_dependencies() ) {
+		return;
 	}
-	return $text;
+	?>
+	<div class="notice notice-error">
+		<p><?php esc_html_e( 'PMPro Events requires Paid Memberships Pro 3.0 or later.', 'pmpro-events' ); ?></p>
+	</div>
+	<?php
 }
-add_filter( 'pmpro_non_member_text_filter', 'pmpro_events_pmpro_text_filter' ); // Pre-PMPro v3.1.
-add_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' ); // Pre-PMPro v3.1.
+add_action( 'admin_notices', 'pmpro_events_admin_notice_no_pmpro' );
 
 /**
- * Runs only when the plugin is activated.
- * @since 1.0
+ * Initialize the plugin.
+ *
+ * @since 2.0
  */
-function pmpro_events_activation_hook() {
-	// Create transient data.
-	set_transient( 'pmpro-events-admin-notice', true, 5 );
-}
-register_activation_hook( PMPRO_EVENTS_BASENAME, 'pmpro_events_activation_hook' );
+function pmpro_events_init() {
+	if ( ! pmpro_events_check_dependencies() ) {
+		return;
+	}
 
-/**
- * Show a notice on activation.
- * @since 1.0
- */
-function pmpro_events_activation_admin_notice() {
-	// Check transient, if available display notice.
-	if ( get_transient( 'pmpro-events-admin-notice' ) ) {
+	// Core.
+	require_once PMPRO_EVENTS_DIR . 'includes/db.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/cpt.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/class-pmpro-event.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/settings.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/levels.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/registration.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/template.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/ics.php';
 
-		if (  ! defined( 'EM_VERSION' ) && ! class_exists( 'Tribe__Events__Main' ) && ! defined( 'AI1EC_PATH' ) && ! class_exists( 'Sugar_Calendar\\Plugin' ) ) {
-		?>
-			<div class="notice notice-warning is-dismissible">
-			<p><?php echo wp_kses_post( sprintf( __( "Thank you for activating the Events Add On for Paid Memberships Pro. Unfortunately it seems we weren't able to find any supported events plugin. <a href='%s' target='_blank'>For more information click here.</a>", 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ) ); ?></p>
-		</div>
-		<?php
-		}else{
-		?>
-		<div class="updated notice is-dismissible">
-			<p><?php echo wp_kses_post( sprintf( __( 'Thank you for activating the Events Add On for Paid Memberships Pro. To get started, edit an event and look for the "Require Membership" box in the sidebar. <a href="%s">View more documentation here.</a>', 'pmpro-events' ), "https://www.paidmembershipspro.com/add-ons/events-for-members-only/" ) ); ?></p>
-		</div>
-		<?php
-		}
-	// Delete transient, only display this notice once.
-	delete_transient( 'pmpro-events-admin-notice' );
+	// Admin.
+	if ( is_admin() ) {
+		require_once PMPRO_EVENTS_DIR . 'includes/admin.php';
 	}
 }
-add_action( 'admin_notices', 'pmpro_events_activation_admin_notice' );
+add_action( 'plugins_loaded', 'pmpro_events_init' );
 
-/*
-Function to add links to the plugin row meta
-*/
-function pmpro_events_plugin_row_meta($links, $file) {
-	if(strpos($file, 'pmpro-events.php') !== false) {
-		$new_links = array(
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/events-for-members-only/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
-		);
+/**
+ * Run on activation.
+ *
+ * @since 2.0
+ */
+function pmpro_events_activate() {
+	if ( ! pmpro_events_check_dependencies() ) {
+		return;
+	}
 
-		$links = array_merge($links, $new_links);
+	require_once PMPRO_EVENTS_DIR . 'includes/settings.php';
+	require_once PMPRO_EVENTS_DIR . 'includes/db.php';
+	pmpro_events_create_tables();
+
+	require_once PMPRO_EVENTS_DIR . 'includes/cpt.php';
+	pmpro_events_register_post_type();
+
+	require_once PMPRO_EVENTS_DIR . 'includes/levels.php';
+	pmpro_events_maybe_create_level_group();
+
+	flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'pmpro_events_activate' );
+
+/**
+ * Load text domain.
+ *
+ * @since 2.0
+ */
+function pmpro_events_load_textdomain() {
+	load_plugin_textdomain( 'pmpro-events', false, basename( PMPRO_EVENTS_DIR ) . '/languages' );
+}
+add_action( 'init', 'pmpro_events_load_textdomain' );
+
+/**
+ * Enqueue frontend assets.
+ *
+ * @since 2.0
+ */
+function pmpro_events_enqueue_assets() {
+	if ( ! is_singular( 'pmpro_event' ) ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'pmpro-events',
+		PMPRO_EVENTS_URL . 'css/pmpro-events.css',
+		array(),
+		PMPRO_EVENTS_VERSION
+	);
+
+	wp_enqueue_script(
+		'pmpro-events-ticket-picker',
+		PMPRO_EVENTS_URL . 'js/ticket-picker.js',
+		array(),
+		PMPRO_EVENTS_VERSION,
+		true
+	);
+
+	global $post;
+	$event = PMPro_Event::get_by_post_id( $post->ID );
+	if ( $event ) {
+		wp_localize_script( 'pmpro-events-ticket-picker', 'pmpro_events', array(
+			'checkout_url' => pmpro_url( 'checkout' ),
+			'level_id'     => $event->level_id,
+			'member_level_id' => $event->member_level_id,
+		) );
+	}
+}
+add_action( 'wp_enqueue_scripts', 'pmpro_events_enqueue_assets' );
+
+/**
+ * Enqueue admin assets.
+ *
+ * @since 2.0
+ */
+function pmpro_events_admin_enqueue_assets( $hook ) {
+	global $post_type;
+	if ( 'pmpro_event' !== $post_type ) {
+		return;
+	}
+
+	wp_enqueue_style(
+		'pmpro-events-admin',
+		PMPRO_EVENTS_URL . 'css/pmpro-events.css',
+		array(),
+		PMPRO_EVENTS_VERSION
+	);
+}
+add_action( 'admin_enqueue_scripts', 'pmpro_events_admin_enqueue_assets' );
+
+/**
+ * Plugin row meta links.
+ *
+ * @since 2.0
+ */
+function pmpro_events_plugin_row_meta( $links, $file ) {
+	if ( strpos( $file, 'pmpro-events.php' ) !== false ) {
+		$links[] = '<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/events-for-members-only/' ) . '">' . esc_html__( 'Docs', 'pmpro-events' ) . '</a>';
+		$links[] = '<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '">' . esc_html__( 'Support', 'pmpro-events' ) . '</a>';
 	}
 	return $links;
 }
