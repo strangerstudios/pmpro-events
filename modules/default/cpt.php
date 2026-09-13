@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The pmpro_event post type and its meta.
  *

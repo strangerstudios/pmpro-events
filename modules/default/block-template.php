@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * A block template for single events.
  *

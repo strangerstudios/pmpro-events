@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Database setup for the event registrations table.
  *

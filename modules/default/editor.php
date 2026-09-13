@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Enqueue the block editor sidebar panels for the event edit screen.
  *

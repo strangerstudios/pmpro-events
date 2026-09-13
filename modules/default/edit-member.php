@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The Events panel on PMPro's Edit Member screen.
  *

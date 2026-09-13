@@ -1,4 +1,8 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Add metabox to All-In-One-Event Calendar CPT.
@@ -74,7 +78,7 @@ function pmpro_events_ai1ec_requires_membership_columns_head( $defaults ) {
 function pmpro_events_ai1ec_requires_membership_columns_content( $column_name, $post_ID ) {
 	if ( $column_name == 'requires_membership' ) {
 	    global $membership_levels, $wpdb;
-		$post_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post_ID}'");
+		$post_levels = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_ID ) );
 		$protected_levels = array();
 		foreach ( $membership_levels as $level ) {
 			if ( in_array( $level->id, $post_levels ) ) {

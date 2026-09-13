@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The Registrations admin page, its add/remove actions, and its CSV export.
  *
@@ -642,7 +647,7 @@ function pmpro_events_export_registrations() {
 		fputcsv( $output, array_map( 'pmpro_events_csv_escape', array_values( $row ) ) );
 	}
 
-	fclose( $output );
+	fclose( $output ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- Streaming to php://output.
 	exit;
 }
 add_action( 'admin_post_pmpro_events_export_registrations', 'pmpro_events_export_registrations' );

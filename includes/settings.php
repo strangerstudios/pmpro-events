@@ -1,4 +1,9 @@
 <?php
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * The Events settings page, shown as a submenu under Memberships.
  *
@@ -36,7 +41,7 @@ function pmpro_events_save_settings() {
 
 	// Only toggleable modules can be changed from this page.
 	$active = array();
-	$submitted = isset( $_POST['pmpro_events_modules'] ) ? (array) $_POST['pmpro_events_modules'] : array();
+	$submitted = isset( $_POST['pmpro_events_modules'] ) ? array_map( 'sanitize_key', (array) wp_unslash( $_POST['pmpro_events_modules'] ) ) : array();
 	foreach ( pmpro_events_get_modules() as $module => $data ) {
 		if ( ! empty( $data['toggleable'] ) && in_array( $module, $submitted, true ) ) {
 			$active[] = $module;
