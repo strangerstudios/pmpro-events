@@ -1,5 +1,8 @@
 <?php
-defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The Upcoming Events block and shortcode, with a list view and a calendar view.

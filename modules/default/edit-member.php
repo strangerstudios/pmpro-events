@@ -1,5 +1,8 @@
 <?php
-defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * The Events panel on PMPro's Edit Member screen.

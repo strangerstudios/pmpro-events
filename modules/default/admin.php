@@ -1,5 +1,8 @@
 <?php
-defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 /**
  * Admin list table columns for the events post type.

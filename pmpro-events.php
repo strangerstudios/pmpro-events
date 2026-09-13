@@ -12,7 +12,10 @@ Requires Plugins: paid-memberships-pro
 License: GPLv2 or later
 */
 
-defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+// In case the file is loaded directly.
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 define( 'PMPRO_EVENTS_VERSION', '2.0' );
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
