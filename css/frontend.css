@@ -1,0 +1,169 @@
+/**
+ * Frontend styles for the built-in events module.
+ *
+ * PMPro's own components do the heavy lifting — cards, buttons, and messages
+ * all come from the site's chosen style variation. Everything here is scoped
+ * under .pmpro to match how PMPro nests its own rules, and only covers the
+ * pieces PMPro has no component for: the summary line under the event title
+ * and the label/value detail list.
+ */
+
+.pmpro {
+
+	/**
+	 * Summary under the event title.
+	 */
+	.pmpro_events_header {
+		margin: 0 0 var(--pmpro--base--spacing--medium, 1rem);
+	}
+
+	.pmpro_events_summary {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em 1.5em;
+		padding: var(--pmpro--base--spacing--small, 0.5rem) 0;
+		border-top: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		border-bottom: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+	}
+
+	.pmpro_events_summary_item {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.4em;
+	}
+
+	.pmpro_events_summary_icon {
+		flex: none;
+	}
+
+	.pmpro_events_summary_text {
+		font-weight: 700;
+	}
+
+	.pmpro_events_timezone {
+		font-size: 0.9em;
+		font-weight: 400;
+		opacity: 0.7;
+	}
+
+	/**
+	 * Detail list, used in the card and reused on the account page.
+	 */
+	.pmpro_events_details {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 0.35em 1.5em;
+		margin: 0;
+	}
+
+	.pmpro_events_details dt {
+		margin: 0;
+		font-weight: 700;
+		opacity: 0.75;
+	}
+
+	.pmpro_events_details dd {
+		margin: 0;
+	}
+
+	/**
+	 * Registration card.
+	 */
+	.pmpro_events_card-passed,
+	.pmpro_events_card-full {
+		opacity: 0.85;
+	}
+
+	.pmpro_events_meeting_url,
+	.pmpro_events_add_to_calendar {
+		margin: 0 0 var(--pmpro--base--spacing--small, 0.5rem);
+	}
+
+	.pmpro_events_add_to_calendar {
+		font-size: 0.95em;
+	}
+
+	/**
+	 * The Upcoming Events list view, shared by the My Events block.
+	 */
+	.pmpro_events_list {
+		display: grid;
+		gap: var(--pmpro--base--spacing--medium, 1rem);
+	}
+
+	.pmpro_events_list .pmpro_card {
+		margin: 0;
+	}
+
+	.pmpro_events_list_title {
+		margin: 0 0 0.25em;
+	}
+
+	.pmpro_events_list .pmpro_events_summary {
+		border: 0;
+		padding: 0;
+	}
+
+	/**
+	 * The Upcoming Events calendar view.
+	 */
+	.pmpro_events_calendar_nav {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1em;
+		margin: 0 0 var(--pmpro--base--spacing--small, 0.5rem);
+	}
+
+	.pmpro_events_calendar table {
+		width: 100%;
+		table-layout: fixed;
+		border-collapse: collapse;
+	}
+
+	.pmpro_events_calendar th,
+	.pmpro_events_calendar td {
+		padding: 0.35em;
+		border: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		vertical-align: top;
+		text-align: left;
+	}
+
+	.pmpro_events_calendar td {
+		height: 5em;
+	}
+
+	.pmpro_events_calendar td.is-today {
+		background: var(--pmpro--color--surface--variation, rgba(127, 127, 127, 0.08));
+	}
+
+	.pmpro_events_calendar_day {
+		display: block;
+		font-size: 0.85em;
+		opacity: 0.7;
+	}
+
+	.pmpro_events_calendar_event {
+		display: block;
+		margin: 0.25em 0 0;
+		font-size: 0.85em;
+		line-height: 1.3;
+		overflow-wrap: break-word;
+	}
+
+	.pmpro_events_calendar_time {
+		font-weight: 700;
+	}
+}
+
+@media (max-width: 480px) {
+
+	.pmpro .pmpro_events_details {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+
+	.pmpro .pmpro_events_details dd {
+		margin: 0 0 0.6em;
+	}
+}

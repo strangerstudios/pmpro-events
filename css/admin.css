@@ -1,0 +1,116 @@
+/**
+ * Admin styles for the built-in events module.
+ *
+ * Only covers the two screens this add-on adds: the settings page module table
+ * and the add-registration form on the registrations page. Everything else uses
+ * core's own admin components.
+ */
+
+/**
+ * Settings page.
+ */
+.pmpro_events_modules_table {
+	max-width: 60em;
+}
+
+.pmpro_events-badge {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	background: #f0f0f1;
+	color: #50575e;
+	font-size: 12px;
+}
+
+.pmpro_events-badge-detected {
+	background: #d5e5d5;
+	color: #1e4620;
+}
+
+/**
+ * Registrations page.
+ */
+.pmpro_events_add_registration {
+	margin: 1em 0;
+	padding: 1em;
+	border: 1px solid #c3c4c7;
+	background: #fff;
+}
+
+.pmpro_events_add_registration label {
+	margin-right: 0.5em;
+}
+
+.pmpro_events_add_registration .description {
+	margin: 0.75em 0 0;
+}
+
+/**
+ * The add-registration user picker.
+ */
+.pmpro_events_user_search {
+	position: relative;
+	display: inline-block;
+}
+
+.pmpro_events_user_search_results {
+	position: absolute;
+	z-index: 10;
+	top: 100%;
+	left: 0;
+	right: 0;
+	margin: 0;
+	max-height: 20em;
+	overflow-y: auto;
+	border: 1px solid #8c8f94;
+	background: #fff;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.pmpro_events_user_search_results li {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0;
+	padding: 6px 8px;
+	cursor: pointer;
+}
+
+.pmpro_events_user_search_results li.is-active,
+.pmpro_events_user_search_results li:hover {
+	background: #f0f6fc;
+}
+
+.pmpro_events_user_search_results li.pmpro_events_user_search_none {
+	cursor: default;
+	color: #646970;
+	background: none;
+}
+
+.pmpro_events_user_search_results img {
+	flex: none;
+	width: 24px;
+	height: 24px;
+	border-radius: 50%;
+}
+
+.pmpro_events_user_search_text {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+}
+
+.pmpro_events_user_search_text span {
+	font-size: 12px;
+	color: #646970;
+}
+
+.pmpro_events_user_search_badge {
+	margin-left: auto;
+	padding: 2px 8px;
+	border-radius: 3px;
+	background: #f0f0f1;
+	color: #50575e;
+	font-size: 12px;
+	white-space: nowrap;
+}

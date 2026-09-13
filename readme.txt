@@ -1,23 +1,43 @@
-=== Members-Only Events for Paid Memberships Pro: Integrate Events Manager, The Events Calendar, & Timely ===
+=== Members-Only Events for Paid Memberships Pro ===
 Contributors: strangerstudios, paidmembershipspro
 Tags: calendar, events, private event, tickets, paid memberships pro
-Requires at least: 5.2
-Tested up to: 6.8
+Requires at least: 6.0
+Tested up to: 7.0
 Requires PHP: 7.2
-Stable tag: 1.6.1
+Stable tag: 2.0
 
-Create private events, hide event details, & restrict event registration for members-only using popular events calendar plugins with PMPro.
+Create members-only events with built-in registration, or restrict events created with popular events calendar plugins.
 
 == Description ==
 
 ### The best way to create private events and restrict event registration for members-only with WordPress.
 
-Create a fully-featured membership community or association website with private events and registration for members-only. This plugin integrates Paid Memberships Pro with the most popular free events plugins for WordPress including:
+Create a fully-featured membership community or association website with private events and registration for members-only.
+
+= Create Events Without Another Plugin =
+
+The built-in events module adds an Events post type with its own admin menu. Set the date, time, timezone, location or meeting URL, and capacity right from the block editor sidebar.
+
+* Restrict an event with the same "Require Membership" panel you use on any page or post.
+* Turn on registration and members claim their spot with one click. No checkout, no payment.
+* Set a capacity to cap attendance, or leave it unlimited.
+* Registered attendees get the meeting URL and Add-to-Calendar links for Google Calendar, Outlook, and .ics download.
+* Add the My Events block or the [pmpro_events_my_events] shortcode to your Membership Account page to show members their upcoming events.
+* Export the registrant list for any event to CSV.
+* Rename "Event" to "Session", "Webinar", or whatever fits your site.
+
+Selling tickets is not part of this release. You can restrict an event to a paid level, but that is access control rather than ticketing.
+
+= Or Use Your Existing Events Plugin =
+
+Already running an events plugin? This add-on detects it and restricts those events instead. Supported plugins:
 
 * [Events Manager](https://wordpress.org/plugins/events-manager/)
 * [The Events Calendar](https://wordpress.org/plugins/the-events-calendar/)
 * [Sugar Calendar](https://wordpress.org/plugins/sugar-calendar-lite/)
 * [Timely All-in-One Events Calendar](https://wordpress.org/plugins/all-in-one-event-calendar/)
+
+Detected plugins are shown under Memberships > Events. When one is found on activation, the built-in module stays off so nothing about your existing setup changes.
 
 = Hide Event Details From Non-Members =
 
@@ -114,6 +134,23 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+= 2.0 - 2026-07-31 =
+* FEATURE: Added a built-in events module with a native Events post type, edited through block editor sidebar panels for dates, timezone, location, and capacity.
+* FEATURE: Members can register for an event with one click. Registrations are stored in their own table with capacity limits, duplicate prevention, and cancellation.
+* FEATURE: Registered attendees can add an event to Google Calendar, Outlook 365, Outlook.com, or download an .ics file.
+* FEATURE: Added registration confirmation and cancellation emails for members, plus admin notification emails for both, all editable under Memberships > Email Templates.
+* FEATURE: Added an Events panel to the Edit Member screen listing all of a member's registrations.
+* FEATURE: Added an Upcoming Events block and [pmpro_events] shortcode with a list view and a monthly calendar view. Restricted events are hidden when Paid Memberships Pro's "Filter searches and archives?" setting is enabled.
+* FEATURE: Added event categories for organizing events and scoping the Upcoming Events block or shortcode to a series.
+* FEATURE: Added a My Events block and [pmpro_events_my_events] shortcode that list a member's upcoming events.
+* FEATURE: Added a Registrations admin page with a per-event registrant list and CSV export.
+* FEATURE: Added a settings page under Memberships > Events for enabling the built-in module and renaming "Event" throughout the plugin.
+* ENHANCEMENT: Administrators can add, cancel, reactivate, and delete registrations from the Registrations page. Adding a registration searches members as you type, showing each match's email and membership level.
+* ENHANCEMENT: The single event template now uses Paid Memberships Pro's card, button, and message styles, so events match the site's chosen style variation.
+* ENHANCEMENT: Added a block template for single events so block themes don't render post meta that doesn't apply to an event.
+* ENHANCEMENT: Added Start Date, Capacity, and Registrations columns to the Events admin list, with sorting by start date.
+* ENHANCEMENT: The built-in module stays off on activation when a supported third-party events plugin is detected.
+
 = 1.6.1 - 2025-11-25 =
 * BUG FIX: Resolve a PHP warning for Events Manager that occurs when event content is retrieved via AJAX. #56 (@dwanjuki)
 

@@ -1,0 +1,14 @@
+{
+	"name": "pmpro-events",
+	"version": "2.0.0",
+	"description": "Event edit screen sidebar panels for the PMPro Events Add On.",
+	"license": "GPL-2.0-or-later",
+	"private": true,
+	"scripts": {
+		"build": "wp-scripts build",
+		"start": "wp-scripts start"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.0.0"
+	}
+}
