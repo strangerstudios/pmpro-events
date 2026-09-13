@@ -185,10 +185,10 @@ class PMProEvents_Event_Registration {
 
 		// If we're just counting, return the count.
 		if ( ! empty( $args['return_count'] ) ) {
-			return (int) $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above when placeholders are present.
+			return (int) $wpdb->get_var( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above when placeholders are present.
 		}
 
-		$registration_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- Prepared above when placeholders are present.
+		$registration_ids = $wpdb->get_col( $sql_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- Prepared above when placeholders are present.
 
 		if ( empty( $registration_ids ) ) {
 			return array();

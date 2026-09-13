@@ -100,7 +100,7 @@ add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_output_p
 function pmpro_events_events_manager_template_redirect() {
 	global $post;	
 	if(!is_admin() && isset($post->post_type) && ($post->post_type == "event" || $post->post_type == "event-recurring") && !pmpro_has_membership_access()) {
-		wp_redirect(pmpro_url("levels"));
+		wp_safe_redirect(pmpro_url("levels"));
 		exit;
 	}
 }
@@ -268,7 +268,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
 	$wpdb->query(
 		$wpdb->prepare(
-			"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a list of %d.
+			"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a list of %d.
 			$post_ids
 		)
 	);
@@ -286,7 +286,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 
 	$wpdb->query(
 		$wpdb->prepare(
-			"INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $insert_placeholders ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $insert_placeholders is a list of (%d, %d).
+			"INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $insert_placeholders ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $insert_placeholders is a list of (%d, %d).
 			$insert_values
 		)
 	);
