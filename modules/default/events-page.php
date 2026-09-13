@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * The Events page setting under Memberships > Settings > Pages.
  *

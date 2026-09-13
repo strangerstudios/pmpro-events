@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /*
 	* Add Membership Levels box to Events Manager CPTs
 	* Hide member events from non-members.
@@ -214,7 +216,7 @@ function pmpro_events_events_manager_requires_membership_columns_head( $defaults
 function pmpro_events_events_manager_requires_membership_columns_content( $column_name, $post_ID ) {
 	if ( $column_name == 'requires_membership' ) {
 	    global $membership_levels, $wpdb;
-		$post_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post_ID}'");
+		$post_levels = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_ID ) );
 		$protected_levels = array();
 		foreach ( $membership_levels as $level ) {
 			if ( in_array( $level->id, $post_levels ) ) {
@@ -259,26 +261,32 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	}
 
 	// remove all memberships for the individual event posts
-	$deletion_query = sprintf(
-		"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN (%s)",
-		implode( ",", $post_ids )
+	$post_ids     = array_map( 'intval', $post_ids );
+	$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
+	$wpdb->query(
+		$wpdb->prepare(
+			"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- $placeholders is a list of %d.
+			$post_ids
+		)
 	);
-	$wpdb->query( $deletion_query );
 
 	// prepare a bulk insert since we may have up to hundreds of recurring events
-	$inserts = array();
+	$insert_placeholders = array();
+	$insert_values       = array();
 	foreach( $post_ids as $event_post_id ) {
 		foreach( $membership_requirements as $membership_requirement ) {
-			$inserts[] = $wpdb->prepare(
-				"('%s', '%s')",
-				intval( $membership_requirement->membership_id ),
-				intval( $event_post_id )
-			);
+			$insert_placeholders[] = '(%d, %d)';
+			$insert_values[]       = intval( $membership_requirement->membership_id );
+			$insert_values[]       = $event_post_id;
 		}
 	}
 
-	$inserts_sql = "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $inserts );
-	$wpdb->query( $inserts_sql );
+	$wpdb->query(
+		$wpdb->prepare(
+			"INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $insert_placeholders ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $insert_placeholders is a list of (%d, %d).
+			$insert_values
+		)
+	);
 
 	return $save_ok;
 }

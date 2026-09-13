@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * The pmpro_event post type and its meta.
  *

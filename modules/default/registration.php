@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * Frontend registration and cancellation handling.
  *

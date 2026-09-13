@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * A block template for single events.
  *

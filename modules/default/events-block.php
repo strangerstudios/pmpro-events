@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * The Upcoming Events block and shortcode, with a list view and a calendar view.
  *

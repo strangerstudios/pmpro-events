@@ -1,4 +1,6 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
+
 /**
  * Enqueue the block editor sidebar panels for the event edit screen.
  *

@@ -9,7 +9,10 @@ Author URI: https://www.paidmembershipspro.com
 Text Domain: pmpro-events
 Domain Path: /languages
 Requires Plugins: paid-memberships-pro
+License: GPLv2 or later
 */
+
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 define( 'PMPRO_EVENTS_VERSION', '2.0' );
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
@@ -197,8 +200,8 @@ Function to add links to the plugin row meta
 function pmpro_events_plugin_row_meta($links, $file) {
 	if(strpos($file, 'pmpro-events.php') !== false) {
 		$new_links = array(
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/events-for-members-only/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/events-for-members-only/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro-events' ) ) . '">' . __( 'Docs', 'pmpro-events' ) . '</a>',
+			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro-events' ) ) . '">' . __( 'Support', 'pmpro-events' ) . '</a>',
 		);
 
 		$links = array_merge($links, $new_links);

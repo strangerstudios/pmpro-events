@@ -1,4 +1,5 @@
 <?php
+defined( 'ABSPATH' ) || die( 'File cannot be accessed directly' );
 
 /**
  * Add metabox to Sugar Calendar  CPT.
