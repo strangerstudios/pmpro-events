@@ -255,7 +255,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	// fetch membership requirements for main event entry
 	$membership_requirements = $wpdb->get_results(
 		$wpdb->prepare(
-			"SELECT * FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %s",
+			"SELECT * FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d",
 			$event->post_id
 		)
 	);
@@ -264,7 +264,10 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	}
 
 	// remove all memberships for the individual event posts
-	$post_ids     = array_map( 'intval', $post_ids );
+	$post_ids = array_map( 'intval', (array) $post_ids );
+	if ( empty( $post_ids ) ) {
+		return $save_ok;
+	}
 	$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
 	$wpdb->query(
 		$wpdb->prepare(
