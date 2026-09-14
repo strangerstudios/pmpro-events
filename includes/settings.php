@@ -157,14 +157,13 @@ function pmpro_events_settings_page() {
 					</button>
 				</div>
 				<div class="pmpro_section_inside">
-					<p><?php esc_html_e( 'Logged-out visitors are asked to log in before registering. Choose a level here — ideally a free one — to also offer them a "create an account" link that goes straight to checkout for that level.', 'pmpro-events' ); ?></p>
 					<table class="form-table" role="presentation">
 						<tbody>
 							<tr>
-								<th scope="row"><label for="pmpro_events_signup_level"><?php esc_html_e( 'Sign-Up Level', 'pmpro-events' ); ?></label></th>
+								<th scope="row"><label for="pmpro_events_signup_level"><?php esc_html_e( 'Registration Level', 'pmpro-events' ); ?></label></th>
 								<td>
 									<select id="pmpro_events_signup_level" name="pmpro_events_signup_level">
-										<option value="0"><?php esc_html_e( 'None — only show a log in link', 'pmpro-events' ); ?></option>
+										<option value="0"><?php esc_html_e( 'None - Only show a log in link.', 'pmpro-events' ); ?></option>
 										<?php
 										$signup_level = (int) get_option( 'pmpro_events_signup_level' );
 										$all_levels   = pmpro_getAllLevels( true, true );
@@ -178,6 +177,7 @@ function pmpro_events_settings_page() {
 										}
 										?>
 									</select>
+									<p class="description"><?php esc_html_e( 'Logged-out visitors are asked to log in before registering. Pick a level below (ideally a free one) to also show them a "create an account" link that goes straight to checkout for that level.', 'pmpro-events' ); ?></p>
 								</td>
 							</tr>
 						</tbody>
