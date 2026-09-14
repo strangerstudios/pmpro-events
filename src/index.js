@@ -14,11 +14,11 @@ import { useSelect } from '@wordpress/data';
 import { useEntityProp } from '@wordpress/core-data';
 import {
 	Notice,
-	PanelRow,
 	SelectControl,
 	TextControl,
 	TextareaControl,
 	ToggleControl,
+	__experimentalVStack as VStack,
 } from '@wordpress/components';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -108,17 +108,18 @@ const EventDetailsPanel = () => {
 			) }
 			className="pmpro-events-panel"
 		>
-			{ ! settings.siteHasNamedTimezone && (
-				<Notice status="warning" isDismissible={ false }>
-					{ __(
-						'Your site timezone is set to a fixed UTC offset, which cannot adjust for daylight saving time. Choose a named city or region under Settings → General for accurate event times.',
-						'pmpro-events'
-					) }
-				</Notice>
-			) }
+			<VStack spacing={ 4 }>
+				{ ! settings.siteHasNamedTimezone && (
+					<Notice status="warning" isDismissible={ false }>
+						{ __(
+							'Your site timezone is set to a fixed UTC offset, which cannot adjust for daylight saving time. Choose a named city or region under Settings → General for accurate event times.',
+							'pmpro-events'
+						) }
+					</Notice>
+				) }
 
-			<PanelRow>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __( 'All-day event', 'pmpro-events' ) }
 					checked={ allDay }
 					onChange={ ( value ) =>
@@ -136,33 +137,39 @@ const EventDetailsPanel = () => {
 						} )
 					}
 				/>
-			</PanelRow>
 
-			<TextControl
-				label={ allDay ? __( 'Start Date', 'pmpro-events' ) : __( 'Start Date and Time', 'pmpro-events' ) }
-				type={ allDay ? 'date' : 'datetime-local' }
-				value={ metaToInput( meta.pmpro_event_start, allDay ) }
-				onChange={ ( value ) =>
-					updateMeta( { pmpro_event_start: inputToMeta( value, allDay ) } )
-				}
-			/>
+				<TextControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ allDay ? __( 'Start Date', 'pmpro-events' ) : __( 'Start Date and Time', 'pmpro-events' ) }
+					type={ allDay ? 'date' : 'datetime-local' }
+					value={ metaToInput( meta.pmpro_event_start, allDay ) }
+					onChange={ ( value ) =>
+						updateMeta( { pmpro_event_start: inputToMeta( value, allDay ) } )
+					}
+				/>
 
-			<TextControl
-				label={ allDay ? __( 'End Date', 'pmpro-events' ) : __( 'End Date and Time', 'pmpro-events' ) }
-				type={ allDay ? 'date' : 'datetime-local' }
-				value={ metaToInput( meta.pmpro_event_end, allDay ) }
-				onChange={ ( value ) =>
-					updateMeta( { pmpro_event_end: inputToMeta( value, allDay ) } )
-				}
-				help={ __( 'Optional. Leave blank for an event with no set end.', 'pmpro-events' ) }
-			/>
+				<TextControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ allDay ? __( 'End Date', 'pmpro-events' ) : __( 'End Date and Time', 'pmpro-events' ) }
+					type={ allDay ? 'date' : 'datetime-local' }
+					value={ metaToInput( meta.pmpro_event_end, allDay ) }
+					onChange={ ( value ) =>
+						updateMeta( { pmpro_event_end: inputToMeta( value, allDay ) } )
+					}
+					help={ __( 'Optional. Leave blank for an event with no set end.', 'pmpro-events' ) }
+				/>
 
-			<SelectControl
-				label={ __( 'Timezone', 'pmpro-events' ) }
-				value={ meta.pmpro_event_timezone || '' }
-				options={ timezones }
-				onChange={ ( value ) => updateMeta( { pmpro_event_timezone: value } ) }
-			/>
+				<SelectControl
+					__nextHasNoMarginBottom
+					__next40pxDefaultSize
+					label={ __( 'Timezone', 'pmpro-events' ) }
+					value={ meta.pmpro_event_timezone || '' }
+					options={ timezones }
+					onChange={ ( value ) => updateMeta( { pmpro_event_timezone: value } ) }
+				/>
+			</VStack>
 		</PluginDocumentSettingPanel>
 	);
 };
@@ -185,8 +192,9 @@ const LocationPanel = () => {
 			title={ __( 'Location', 'pmpro-events' ) }
 			className="pmpro-events-panel"
 		>
-			<PanelRow>
+			<VStack spacing={ 4 }>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __( 'This event has a location', 'pmpro-events' ) }
 					checked={ hasLocation }
 					onChange={ ( value ) =>
@@ -196,57 +204,64 @@ const LocationPanel = () => {
 						} )
 					}
 				/>
-			</PanelRow>
 
-			{ hasLocation && (
-				<>
-					<SelectControl
-						label={ __( 'Location Type', 'pmpro-events' ) }
-						value={ locationType }
-						options={ [
-							{ label: __( 'In Person', 'pmpro-events' ), value: 'in_person' },
-							{ label: __( 'Virtual', 'pmpro-events' ), value: 'virtual' },
-						] }
-						onChange={ ( value ) =>
-							updateMeta( { pmpro_event_location_type: value } )
-						}
-					/>
-
-					{ 'virtual' === locationType ? (
-						<TextControl
-							label={ __( 'Meeting or Stream URL', 'pmpro-events' ) }
-							type="url"
-							value={ meta.pmpro_event_virtual_url || '' }
+				{ hasLocation && (
+					<>
+						<SelectControl
+							__nextHasNoMarginBottom
+							__next40pxDefaultSize
+							label={ __( 'Location Type', 'pmpro-events' ) }
+							value={ locationType }
+							options={ [
+								{ label: __( 'In Person', 'pmpro-events' ), value: 'in_person' },
+								{ label: __( 'Virtual', 'pmpro-events' ), value: 'virtual' },
+							] }
 							onChange={ ( value ) =>
-								updateMeta( { pmpro_event_virtual_url: value } )
-							}
-							help={
-								hasRegistration
-									? __( 'Only shown to people who are registered for this event.', 'pmpro-events' )
-									: __( 'Registration is disabled, so this is shown to everyone who can view this event.', 'pmpro-events' )
+								updateMeta( { pmpro_event_location_type: value } )
 							}
 						/>
-					) : (
-						<>
+
+						{ 'virtual' === locationType ? (
 							<TextControl
-								label={ __( 'Venue Name', 'pmpro-events' ) }
-								value={ meta.pmpro_event_venue_name || '' }
+								__nextHasNoMarginBottom
+								__next40pxDefaultSize
+								label={ __( 'Meeting or Stream URL', 'pmpro-events' ) }
+								type="url"
+								value={ meta.pmpro_event_virtual_url || '' }
 								onChange={ ( value ) =>
-									updateMeta( { pmpro_event_venue_name: value } )
+									updateMeta( { pmpro_event_virtual_url: value } )
+								}
+								help={
+									hasRegistration
+										? __( 'Only shown to people who are registered for this event.', 'pmpro-events' )
+										: __( 'Registration is disabled, so this is shown to everyone who can view this event.', 'pmpro-events' )
 								}
 							/>
-							<TextareaControl
-								label={ __( 'Venue Address', 'pmpro-events' ) }
-								value={ meta.pmpro_event_venue_address || '' }
-								onChange={ ( value ) =>
-									updateMeta( { pmpro_event_venue_address: value } )
-								}
-								rows={ 3 }
-							/>
-						</>
-					) }
-				</>
-			) }
+						) : (
+							<>
+								<TextControl
+									__nextHasNoMarginBottom
+									__next40pxDefaultSize
+									label={ __( 'Venue Name', 'pmpro-events' ) }
+									value={ meta.pmpro_event_venue_name || '' }
+									onChange={ ( value ) =>
+										updateMeta( { pmpro_event_venue_name: value } )
+									}
+								/>
+								<TextareaControl
+									__nextHasNoMarginBottom
+									label={ __( 'Venue Address', 'pmpro-events' ) }
+									value={ meta.pmpro_event_venue_address || '' }
+									onChange={ ( value ) =>
+										updateMeta( { pmpro_event_venue_address: value } )
+									}
+									rows={ 3 }
+								/>
+							</>
+						) }
+					</>
+				) }
+			</VStack>
 		</PluginDocumentSettingPanel>
 	);
 };
@@ -267,8 +282,9 @@ const RegistrationPanel = () => {
 			title={ __( 'Registration', 'pmpro-events' ) }
 			className="pmpro-events-panel"
 		>
-			<PanelRow>
+			<VStack spacing={ 4 }>
 				<ToggleControl
+					__nextHasNoMarginBottom
 					label={ __( 'Enable registration', 'pmpro-events' ) }
 					checked={ hasRegistration }
 					onChange={ ( value ) =>
@@ -279,23 +295,25 @@ const RegistrationPanel = () => {
 						'pmpro-events'
 					) }
 				/>
-			</PanelRow>
 
-			{ hasRegistration && (
-				<TextControl
-					label={ __( 'Capacity', 'pmpro-events' ) }
-					type="number"
-					min="0"
-					step="1"
-					value={ String( meta.pmpro_event_capacity || 0 ) }
-					onChange={ ( value ) =>
-						updateMeta( {
-							pmpro_event_capacity: Math.max( 0, parseInt( value, 10 ) || 0 ),
-						} )
-					}
-					help={ __( 'The number of people who can register. Use 0 for unlimited.', 'pmpro-events' ) }
-				/>
-			) }
+				{ hasRegistration && (
+					<TextControl
+						__nextHasNoMarginBottom
+						__next40pxDefaultSize
+						label={ __( 'Capacity', 'pmpro-events' ) }
+						type="number"
+						min="0"
+						step="1"
+						value={ String( meta.pmpro_event_capacity || 0 ) }
+						onChange={ ( value ) =>
+							updateMeta( {
+								pmpro_event_capacity: Math.max( 0, parseInt( value, 10 ) || 0 ),
+							} )
+						}
+						help={ __( 'The number of people who can register. Use 0 for unlimited.', 'pmpro-events' ) }
+					/>
+				) }
+			</VStack>
 		</PluginDocumentSettingPanel>
 	);
 };
