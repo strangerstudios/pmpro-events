@@ -134,6 +134,9 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+= TBD =
+* FEATURE: Added a Duplicate action to the Events list, its bulk actions menu, and the admin bar on the event edit screen. The copy is created as a draft with the source event's content, dates, location, capacity, categories, featured image, and membership restrictions, and gets its own calendar UUID. Registrations are not copied.
+
 = 2.0 - 2026-07-31 =
 * FEATURE: Added a built-in events module with a native Events post type, edited through block editor sidebar panels for dates, timezone, location, and capacity.
 * FEATURE: Members can register for an event with one click. Registrations are stored in their own table with capacity limits, duplicate prevention, and cancellation.

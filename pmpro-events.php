@@ -57,6 +57,7 @@ function pmpro_events_plugin_init() {
 		if ( is_admin() ) {
 			require_once( $path . '/modules/default/admin.php' );
 			require_once( $path . '/modules/default/admin-registrations.php' );
+			require_once( $path . '/modules/default/admin-duplicate.php' );
 			require_once( $path . '/modules/default/edit-member.php' );
 		}
 	}
