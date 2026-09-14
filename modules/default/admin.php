@@ -169,3 +169,20 @@ function pmpro_events_row_actions( $actions, $post ) {
 	return $actions;
 }
 add_filter( 'post_row_actions', 'pmpro_events_row_actions', 10, 2 );
+
+/**
+ * Add a Settings link at the bottom of the Events menu that goes to the
+ * Memberships > Events settings page.
+ *
+ * @since TBD
+ */
+function pmpro_events_add_settings_menu_link() {
+	add_submenu_page(
+		'edit.php?post_type=' . PMProEvents_Event::POST_TYPE,
+		__( 'Events Settings', 'pmpro-events' ),
+		__( 'Settings', 'pmpro-events' ),
+		'manage_options',
+		'admin.php?page=pmpro-events-settings'
+	);
+}
+add_action( 'admin_menu', 'pmpro_events_add_settings_menu_link', 30 );

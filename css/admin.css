@@ -3,7 +3,7 @@
  *
  * Only covers the two screens this add-on adds: the settings page module table
  * and the add-registration form on the registrations page. Everything else uses
- * core's own admin components.
+ * core's own admin components and the pmpro_section boxes styled by PMPro core.
  */
 
 /**
@@ -11,20 +11,6 @@
  */
 .pmpro_events_modules_table {
 	max-width: 60em;
-}
-
-.pmpro_events-badge {
-	display: inline-block;
-	padding: 2px 8px;
-	border-radius: 3px;
-	background: #f0f0f1;
-	color: #50575e;
-	font-size: 12px;
-}
-
-.pmpro_events-badge-detected {
-	background: #d5e5d5;
-	color: #1e4620;
 }
 
 /**
