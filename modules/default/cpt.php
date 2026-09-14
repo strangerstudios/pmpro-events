@@ -194,6 +194,31 @@ function pmpro_events_register_post_meta() {
 add_action( 'init', 'pmpro_events_register_post_meta' );
 
 /**
+ * Keep the event meta out of the classic Custom Fields box.
+ *
+ * The block editor saves classic meta boxes in a separate request after the
+ * REST save. When the Custom Fields box lists our keys, that request writes the
+ * values it rendered on page load straight back over what the sidebar panels
+ * just saved. The sidebar panels and the REST API still read and write these
+ * keys because they are registered with their own auth_callback.
+ *
+ * @since TBD
+ *
+ * @param bool   $protected Whether the key is protected.
+ * @param string $meta_key  The meta key.
+ * @param string $meta_type The object type.
+ * @return bool Whether the key is protected.
+ */
+function pmpro_events_protect_event_meta( $protected, $meta_key, $meta_type ) {
+	if ( 'post' === $meta_type && array_key_exists( $meta_key, pmpro_events_get_meta_fields() ) ) {
+		return true;
+	}
+
+	return $protected;
+}
+add_filter( 'is_protected_meta', 'pmpro_events_protect_event_meta', 10, 3 );
+
+/**
  * Strip meta the requester shouldn't see from REST API responses.
  *
  * The event meta is in the REST schema so the block editor can edit it, but
@@ -417,6 +442,13 @@ add_action( 'rest_after_insert_' . PMProEvents_Event::POST_TYPE, 'pmpro_events_r
 function pmpro_events_save_post( $post_id ) {
 	// REST saves are handled by pmpro_events_rest_after_insert() instead.
 	if ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		return;
+	}
+
+	// The block editor saves classic meta boxes in a second request that runs
+	// alongside the REST save. It carries none of our meta, and recomputing from
+	// its stale meta cache would overwrite what the REST save just wrote.
+	if ( ! empty( $_REQUEST['meta-box-loader'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		return;
 	}
 
