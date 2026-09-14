@@ -154,6 +154,45 @@ function pmpro_events_get_picker_events( $event_id = 0 ) {
 }
 
 /**
+ * Pick the event to show when none was requested.
+ *
+ * Prefers the in-progress or nearest upcoming event, then the most recently
+ * ended one. Drafts and pending events are skipped unless nothing else exists.
+ *
+ * @since TBD
+ *
+ * @param PMProEvents_Event[] $events The picker's events, newest start first.
+ * @return PMProEvents_Event|null The event to show, or null if the list is empty.
+ */
+function pmpro_events_get_default_picker_event( $events ) {
+	if ( empty( $events ) ) {
+		return null;
+	}
+
+	$live = array_filter( $events, function ( $event ) {
+		return ! in_array( get_post_status( $event->get_id() ), array( 'draft', 'pending' ), true );
+	} );
+
+	if ( empty( $live ) ) {
+		return $events[0];
+	}
+
+	$upcoming = null;
+	foreach ( $live as $event ) {
+		if ( empty( $event->start_utc ) ) {
+			continue;
+		}
+		if ( $event->has_passed() ) {
+			// The list is sorted by start descending, so the first past event is the most recently ended.
+			return empty( $upcoming ) ? $event : $upcoming;
+		}
+		$upcoming = $event;
+	}
+
+	return empty( $upcoming ) ? reset( $live ) : $upcoming;
+}
+
+/**
  * Render the Registrations page.
  *
  * @since 2.0
@@ -169,17 +208,17 @@ function pmpro_events_registrations_page() {
 	$all_events = pmpro_events_get_picker_events( $event_id );
 	$singular   = pmpro_events_get_label( 'singular' );
 
-	// Always show something: fall back to the most recent event.
+	// Always show something: fall back to the current or next event.
 	$event = $event_id ? new PMProEvents_Event( $event_id ) : null;
 	if ( ( empty( $event ) || ! $event->exists() ) && ! empty( $all_events ) ) {
-		$event = $all_events[0];
+		$event = pmpro_events_get_default_picker_event( $all_events );
 	}
 
 	$notice = pmpro_events_get_admin_notice();
 	?>
 	<div class="wrap pmpro_admin pmpro_admin-pmpro-event-registrations">
-		<hr class="wp-header-end">
 		<h1 class="wp-heading-inline"><?php esc_html_e( 'Registrations', 'pmpro-events' ); ?></h1>
+		<hr class="wp-header-end">
 
 		<?php if ( ! empty( $notice ) ) { ?>
 			<div class="notice notice-<?php echo esc_attr( $notice['type'] ); ?> is-dismissible">
@@ -209,23 +248,28 @@ function pmpro_events_registrations_page() {
 
 			<div class="pmpro_report-filters pmpro_events_filters">
 				<div class="tablenav top">
-					<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Event', 'pmpro-events' ); ?></span>
-					<label for="pmpro_events_event_id" class="screen-reader-text">
-						<?php
-						/* translators: %s: the singular event label, e.g. "Event". */
-						echo esc_html( sprintf( __( 'Select %s', 'pmpro-events' ), $singular ) );
-						?>
-					</label>
-					<select id="pmpro_events_event_id" name="event_id" data-url="<?php echo esc_url( pmpro_events_get_registrations_url() ); ?>">
-						<?php foreach ( $all_events as $option ) { ?>
-							<option value="<?php echo esc_attr( $option->get_id() ); ?>" <?php selected( $event->get_id(), $option->get_id() ); ?>>
-								<?php
-								$start = $option->get_formatted_date( 'start' );
-								echo esc_html( empty( $start ) ? $option->get_title() : $option->get_title() . ' — ' . $start );
-								?>
-							</option>
-						<?php } ?>
-					</select>
+					<form id="pmpro_events_event_picker" method="get" action="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">
+						<input type="hidden" name="post_type" value="<?php echo esc_attr( PMProEvents_Event::POST_TYPE ); ?>" />
+						<input type="hidden" name="page" value="pmpro-event-registrations" />
+						<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Event', 'pmpro-events' ); ?></span>
+						<label for="pmpro_events_event_id" class="screen-reader-text">
+							<?php
+							/* translators: %s: the singular event label, e.g. "Event". */
+							echo esc_html( sprintf( __( 'Select %s', 'pmpro-events' ), $singular ) );
+							?>
+						</label>
+						<select id="pmpro_events_event_id" name="event_id">
+							<?php foreach ( $all_events as $option ) { ?>
+								<option value="<?php echo esc_attr( $option->get_id() ); ?>" <?php selected( $event->get_id(), $option->get_id() ); ?>>
+									<?php
+									$start = $option->get_formatted_date( 'start' );
+									echo esc_html( empty( $start ) ? $option->get_title() : $option->get_title() . ' — ' . $start );
+									?>
+								</option>
+							<?php } ?>
+						</select>
+						<?php submit_button( __( 'View', 'pmpro-events' ), 'secondary', '', false, array( 'id' => 'pmpro_events_event_picker_submit' ) ); ?>
+					</form>
 					<a href="<?php echo esc_url( get_edit_post_link( $event->get_id() ) ); ?>" class="button pmpro-has-icon pmpro-has-icon-edit">
 						<?php
 						/* translators: %s: the singular event label, e.g. "Event". */
@@ -244,8 +288,8 @@ function pmpro_events_registrations_page() {
 						echo esc_html( sprintf( _n( '%s registered. Unlimited capacity.', '%s registered. Unlimited capacity.', $count, 'pmpro-events' ), number_format_i18n( $count ) ) );
 					} else {
 						$available = max( 0, $capacity - $count );
-						/* translators: 1: the number of spots still available, 2: the event's capacity. */
-						echo esc_html( sprintf( __( '%1$s of %2$s spots available.', 'pmpro-events' ), number_format_i18n( $available ), number_format_i18n( $capacity ) ) );
+						/* translators: 1: the number of registrations, 2: the number of spots still available, 3: the event's capacity. */
+						echo esc_html( sprintf( _n( '%1$s registered. %2$s of %3$s spots available.', '%1$s registered. %2$s of %3$s spots available.', $count, 'pmpro-events' ), number_format_i18n( $count ), number_format_i18n( $available ), number_format_i18n( $capacity ) ) );
 					}
 					?>
 					<?php if ( $event->has_registration() ) { ?>

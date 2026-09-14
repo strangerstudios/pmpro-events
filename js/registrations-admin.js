@@ -8,13 +8,16 @@
  * text field posts as before.
  */
 ( function () {
-	// Switch events as soon as one is picked.
+	// Switch events as soon as one is picked; the View button is only needed without JS.
 	var picker = document.getElementById( 'pmpro_events_event_id' );
-	if ( picker ) {
+	var pickerForm = document.getElementById( 'pmpro_events_event_picker' );
+	var pickerSubmit = document.getElementById( 'pmpro_events_event_picker_submit' );
+	if ( picker && pickerForm ) {
+		if ( pickerSubmit ) {
+			pickerSubmit.hidden = true;
+		}
 		picker.addEventListener( 'change', function () {
-			var url = new URL( picker.dataset.url, window.location.href );
-			url.searchParams.set( 'event_id', picker.value );
-			window.location.href = url.toString();
+			pickerForm.submit();
 		} );
 	}
 

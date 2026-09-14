@@ -30,6 +30,16 @@
 /**
  * Registrations page.
  */
+.pmpro_events_filters #pmpro_events_event_picker {
+	display: flex;
+	flex-wrap: wrap;
+	gap: .5em;
+}
+
+.pmpro_events_filters #pmpro_events_event_picker_submit[hidden] {
+	display: none;
+}
+
 .pmpro_events_filters .pmpro_events_filters-capacity {
 	border-top: 1px solid var(--pmpro--border--color);
 	padding-top: var(--pmpro--spacing--small);
