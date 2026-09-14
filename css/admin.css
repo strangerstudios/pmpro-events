@@ -30,15 +30,19 @@
 /**
  * Registrations page.
  */
-.pmpro_events_add_registration {
-	margin: 1em 0;
-	padding: 1em;
-	border: 1px solid #c3c4c7;
-	background: #fff;
+.pmpro_events_filters .pmpro_events_filters-capacity {
+	border-top: 1px solid var(--pmpro--border--color);
+	padding-top: var(--pmpro--spacing--small);
+	width: 100%;
 }
 
-.pmpro_events_add_registration label {
-	margin-right: 0.5em;
+.pmpro_events_add_registration {
+	width: 100%;
+	margin: 0;
+}
+
+.pmpro_events_add_registration[hidden] {
+	display: none;
 }
 
 .pmpro_events_add_registration .description {

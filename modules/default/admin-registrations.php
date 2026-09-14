@@ -165,16 +165,21 @@ function pmpro_events_registrations_page() {
 
 	require_once( PMPRO_EVENTS_DIR . '/modules/default/class-pmproevents-registrations-list-table.php' );
 
-	$event_id = isset( $_REQUEST['event_id'] ) ? (int) $_REQUEST['event_id'] : 0;
-	$event    = $event_id ? new PMProEvents_Event( $event_id ) : null;
-
+	$event_id   = isset( $_REQUEST['event_id'] ) ? (int) $_REQUEST['event_id'] : 0;
 	$all_events = pmpro_events_get_picker_events( $event_id );
 	$singular   = pmpro_events_get_label( 'singular' );
 
+	// Always show something: fall back to the most recent event.
+	$event = $event_id ? new PMProEvents_Event( $event_id ) : null;
+	if ( ( empty( $event ) || ! $event->exists() ) && ! empty( $all_events ) ) {
+		$event = $all_events[0];
+	}
+
 	$notice = pmpro_events_get_admin_notice();
 	?>
-	<div class="wrap">
-		<h1><?php esc_html_e( 'Registrations', 'pmpro-events' ); ?></h1>
+	<div class="wrap pmpro_admin pmpro_admin-pmpro-event-registrations">
+		<hr class="wp-header-end">
+		<h1 class="wp-heading-inline"><?php esc_html_e( 'Registrations', 'pmpro-events' ); ?></h1>
 
 		<?php if ( ! empty( $notice ) ) { ?>
 			<div class="notice notice-<?php echo esc_attr( $notice['type'] ); ?> is-dismissible">
@@ -182,41 +187,19 @@ function pmpro_events_registrations_page() {
 			</div>
 		<?php } ?>
 
-		<form method="get" action="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( PMProEvents_Event::POST_TYPE ); ?>" />
-			<input type="hidden" name="page" value="pmpro-event-registrations" />
-			<label for="pmpro_events_event_id" class="screen-reader-text">
-				<?php
-				/* translators: %s: the singular event label, e.g. "Event". */
-				echo esc_html( sprintf( __( '%s to show registrations for', 'pmpro-events' ), $singular ) );
-				?>
-			</label>
-			<select name="event_id" id="pmpro_events_event_id">
-				<option value="0">
-					<?php
-					/* translators: %s: the singular event label, e.g. "Event". */
-					echo esc_html( sprintf( __( '— Select %s —', 'pmpro-events' ), $singular ) );
-					?>
-				</option>
-				<?php foreach ( $all_events as $option ) { ?>
-					<option value="<?php echo esc_attr( $option->get_id() ); ?>" <?php selected( $event_id, $option->get_id() ); ?>>
-						<?php
-						$start = $option->get_formatted_date( 'start' );
-						echo esc_html( empty( $start ) ? $option->get_title() : $option->get_title() . ' — ' . $start );
-						?>
-					</option>
-				<?php } ?>
-			</select>
-			<?php submit_button( __( 'View', 'pmpro-events' ), 'secondary', '', false ); ?>
-		</form>
-
-		<?php if ( empty( $event ) || ! $event->exists() ) { ?>
+		<?php if ( empty( $event ) ) { ?>
 
 			<p>
 				<?php
 				/* translators: %s: the plural event label, lowercased, e.g. "events". */
-				echo esc_html( sprintf( __( 'Choose from the %s above to see who has registered.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ) ) );
+				echo esc_html( sprintf( __( 'No %s found.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ) ) );
 				?>
+				<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . PMProEvents_Event::POST_TYPE ) ); ?>">
+					<?php
+					/* translators: %s: the singular event label, lowercased, e.g. "event". */
+					echo esc_html( sprintf( __( 'Create an %s to get started.', 'pmpro-events' ), pmpro_events_get_label( 'singular_lowercase' ) ) );
+					?>
+				</a>
 			</p>
 
 		<?php } else {
@@ -224,51 +207,84 @@ function pmpro_events_registrations_page() {
 			$capacity = $event->get_capacity();
 			?>
 
-		<h2>
-			<?php echo esc_html( $event->get_title() ); ?>
-			<a href="<?php echo esc_url( get_edit_post_link( $event->get_id() ) ); ?>" class="page-title-action"><?php esc_html_e( 'Edit', 'pmpro-events' ); ?></a>
-			<a href="<?php echo esc_url( pmpro_events_get_registrations_export_url( $event->get_id() ) ); ?>" class="page-title-action"><?php esc_html_e( 'Export CSV', 'pmpro-events' ); ?></a>
-		</h2>
-
-		<p class="description">
-			<?php
-			if ( empty( $capacity ) ) {
-				/* translators: %s: the number of registrations. */
-				echo esc_html( sprintf( _n( '%s registration. Capacity is unlimited.', '%s registrations. Capacity is unlimited.', $count, 'pmpro-events' ), number_format_i18n( $count ) ) );
-			} else {
-				/* translators: 1: the number of registrations, 2: the event's capacity. */
-				echo esc_html( sprintf( __( '%1$s of %2$s spots filled.', 'pmpro-events' ), number_format_i18n( $count ), number_format_i18n( $capacity ) ) );
-			}
-			?>
-		</p>
-
-		<div class="pmpro_events_add_registration">
-			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
-				<input type="hidden" name="action" value="pmpro_events_add_registration" />
-				<input type="hidden" name="event_id" value="<?php echo esc_attr( $event->get_id() ); ?>" />
-				<?php wp_nonce_field( 'pmpro_events_add_registration_' . $event->get_id(), 'pmpro_events_nonce' ); ?>
-				<label for="pmpro_events_add_user"><strong><?php esc_html_e( 'Add a registration', 'pmpro-events' ); ?></strong></label>
-				<input type="hidden" name="pmpro_events_user_id" value="" />
-				<input type="text" id="pmpro_events_add_user" name="pmpro_events_user" class="regular-text" placeholder="<?php esc_attr_e( 'Search by name, username, email, or ID', 'pmpro-events' ); ?>" autocomplete="off" required />
-				<?php submit_button( __( 'Add Registration', 'pmpro-events' ), 'secondary', '', false ); ?>
-				<?php if ( ! empty( $capacity ) && $event->is_full() ) { ?>
-					<p class="description"><?php esc_html_e( 'This event is at capacity. Adding a registration here will overbook it.', 'pmpro-events' ); ?></p>
+			<div class="pmpro_report-filters pmpro_events_filters">
+				<div class="tablenav top">
+					<span class="pmpro_report-filter-text"><?php echo esc_html_x( 'Show', 'Dropdown label, e.g. Show Event', 'pmpro-events' ); ?></span>
+					<label for="pmpro_events_event_id" class="screen-reader-text">
+						<?php
+						/* translators: %s: the singular event label, e.g. "Event". */
+						echo esc_html( sprintf( __( 'Select %s', 'pmpro-events' ), $singular ) );
+						?>
+					</label>
+					<select id="pmpro_events_event_id" name="event_id" data-url="<?php echo esc_url( pmpro_events_get_registrations_url() ); ?>">
+						<?php foreach ( $all_events as $option ) { ?>
+							<option value="<?php echo esc_attr( $option->get_id() ); ?>" <?php selected( $event->get_id(), $option->get_id() ); ?>>
+								<?php
+								$start = $option->get_formatted_date( 'start' );
+								echo esc_html( empty( $start ) ? $option->get_title() : $option->get_title() . ' — ' . $start );
+								?>
+							</option>
+						<?php } ?>
+					</select>
+					<a href="<?php echo esc_url( get_edit_post_link( $event->get_id() ) ); ?>" class="button pmpro-has-icon pmpro-has-icon-edit">
+						<?php
+						/* translators: %s: the singular event label, e.g. "Event". */
+						echo esc_html( sprintf( __( 'Edit %s', 'pmpro-events' ), $singular ) );
+						?>
+					</a>
+					<a href="<?php echo esc_url( pmpro_events_get_registrations_export_url( $event->get_id() ) ); ?>" class="button pmpro-has-icon pmpro-has-icon-download"><?php esc_html_e( 'Export to CSV', 'pmpro-events' ); ?></a>
+				</div>
+				<p class="pmpro_events_filters-capacity">
+					<?php
+					if ( ! $event->has_registration() ) {
+						/* translators: 1: the number of registrations, 2: the singular event label, lowercased, e.g. "event". */
+						echo esc_html( sprintf( _n( '%1$s registered. Registration is off for this %2$s.', '%1$s registered. Registration is off for this %2$s.', $count, 'pmpro-events' ), number_format_i18n( $count ), pmpro_events_get_label( 'singular_lowercase' ) ) );
+					} elseif ( empty( $capacity ) ) {
+						/* translators: %s: the number of registrations. */
+						echo esc_html( sprintf( _n( '%s registered. Unlimited capacity.', '%s registered. Unlimited capacity.', $count, 'pmpro-events' ), number_format_i18n( $count ) ) );
+					} else {
+						$available = max( 0, $capacity - $count );
+						/* translators: 1: the number of spots still available, 2: the event's capacity. */
+						echo esc_html( sprintf( __( '%1$s of %2$s spots available.', 'pmpro-events' ), number_format_i18n( $available ), number_format_i18n( $capacity ) ) );
+					}
+					?>
+					<?php if ( $event->has_registration() ) { ?>
+						<a href="#pmpro-events-add-registration" id="pmpro_events_toggle_add_registration" aria-controls="pmpro-events-add-registration" aria-expanded="true" data-label-open="<?php esc_attr_e( 'Add Registration', 'pmpro-events' ); ?>" data-label-close="<?php esc_attr_e( 'Cancel Add Registration', 'pmpro-events' ); ?>"><?php esc_html_e( 'Add Registration', 'pmpro-events' ); ?></a>
+					<?php } ?>
+				</p>
+				<?php if ( $event->has_registration() ) { ?>
+				<form id="pmpro-events-add-registration" class="pmpro_events_add_registration" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
+					<input type="hidden" name="action" value="pmpro_events_add_registration" />
+					<input type="hidden" name="event_id" value="<?php echo esc_attr( $event->get_id() ); ?>" />
+					<?php wp_nonce_field( 'pmpro_events_add_registration_' . $event->get_id(), 'pmpro_events_nonce' ); ?>
+					<label for="pmpro_events_add_user" class="screen-reader-text"><?php esc_html_e( 'Member', 'pmpro-events' ); ?></label>
+					<input type="hidden" name="pmpro_events_user_id" value="" />
+					<input type="text" id="pmpro_events_add_user" name="pmpro_events_user" class="regular-text" placeholder="<?php esc_attr_e( 'Search by name, username, email, or ID', 'pmpro-events' ); ?>" autocomplete="off" required />
+					<?php submit_button( __( 'Add Registration', 'pmpro-events' ), 'secondary', '', false ); ?>
+					<?php if ( ! empty( $capacity ) && $event->is_full() ) { ?>
+						<p class="description">
+							<?php
+							/* translators: %s: the singular event label, lowercased, e.g. "event". */
+							echo esc_html( sprintf( __( 'This %s is at capacity. Adding a registration here will overbook it.', 'pmpro-events' ), pmpro_events_get_label( 'singular_lowercase' ) ) );
+							?>
+						</p>
+					<?php } ?>
+				</form>
 				<?php } ?>
-			</form>
-		</div>
+			</div>
 
-		<?php
-		$list_table = new PMProEvents_Registrations_List_Table( $event );
-		$list_table->prepare_items();
-		$list_table->views();
-		?>
-		<form method="get" action="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">
-			<input type="hidden" name="post_type" value="<?php echo esc_attr( PMProEvents_Event::POST_TYPE ); ?>" />
-			<input type="hidden" name="page" value="pmpro-event-registrations" />
-			<input type="hidden" name="event_id" value="<?php echo esc_attr( $event->get_id() ); ?>" />
-			<input type="hidden" name="status" value="<?php echo esc_attr( isset( $_REQUEST['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['status'] ) ) : 'active' ); ?>" />
-			<?php $list_table->display(); ?>
-		</form>
+			<form id="pmpro-event-registrations-form" method="get" action="<?php echo esc_url( admin_url( 'edit.php' ) ); ?>">
+				<input type="hidden" name="post_type" value="<?php echo esc_attr( PMProEvents_Event::POST_TYPE ); ?>" />
+				<input type="hidden" name="page" value="pmpro-event-registrations" />
+				<input type="hidden" name="event_id" value="<?php echo esc_attr( $event->get_id() ); ?>" />
+				<input type="hidden" name="status" value="<?php echo esc_attr( isset( $_REQUEST['status'] ) ? sanitize_key( wp_unslash( $_REQUEST['status'] ) ) : 'active' ); ?>" />
+				<?php
+				$list_table = new PMProEvents_Registrations_List_Table( $event );
+				$list_table->prepare_items();
+				$list_table->views();
+				$list_table->display();
+				?>
+			</form>
 
 		<?php } ?>
 	</div>
