@@ -250,7 +250,6 @@ const LocationPanel = () => {
 								/>
 								<TextareaControl
 									__nextHasNoMarginBottom
-									__next40pxDefaultSize
 									label={ __( 'Venue Address', 'pmpro-events' ) }
 									value={ meta.pmpro_event_venue_address || '' }
 									onChange={ ( value ) =>
