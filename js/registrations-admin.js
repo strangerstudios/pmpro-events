@@ -1,11 +1,51 @@
 /**
- * The user picker on the Registrations admin page.
+ * The Registrations admin page.
  *
- * Enhances the add-registration text field into a search-as-you-type picker.
+ * Handles the event picker, the add-registration toggle, and the user picker.
+ * The user picker enhances the add-registration text field into a search-as-you-type picker.
  * Matches show the member's avatar, email, and membership level; selecting one
  * fills the pmpro_events_user_id hidden field. Without JavaScript the plain
  * text field posts as before.
  */
+( function () {
+	// Switch events as soon as one is picked; the View button is only needed without JS.
+	var picker = document.getElementById( 'pmpro_events_event_id' );
+	var pickerForm = document.getElementById( 'pmpro_events_event_picker' );
+	var pickerSubmit = document.getElementById( 'pmpro_events_event_picker_submit' );
+	if ( picker && pickerForm ) {
+		if ( pickerSubmit ) {
+			pickerSubmit.hidden = true;
+		}
+		picker.addEventListener( 'change', function () {
+			pickerForm.submit();
+		} );
+	}
+
+	// The add-registration form starts hidden and opens from the text link.
+	var toggle = document.getElementById( 'pmpro_events_toggle_add_registration' );
+	var addForm = document.getElementById( 'pmpro-events-add-registration' );
+	if ( toggle && addForm ) {
+		var setOpen = function ( open ) {
+			addForm.hidden = ! open;
+			toggle.setAttribute( 'aria-expanded', open ? 'true' : 'false' );
+			toggle.textContent = open ? toggle.dataset.labelClose : toggle.dataset.labelOpen;
+		};
+
+		setOpen( false );
+
+		toggle.addEventListener( 'click', function ( event ) {
+			event.preventDefault();
+			setOpen( addForm.hidden );
+			if ( ! addForm.hidden ) {
+				var input = document.getElementById( 'pmpro_events_add_user' );
+				if ( input ) {
+					input.focus();
+				}
+			}
+		} );
+	}
+} )();
+
 ( function ( i18n ) {
 	var __ = i18n.__;
 	var settings = window.pmproEventsRegistrations || {};
