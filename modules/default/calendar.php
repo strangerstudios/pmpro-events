@@ -128,7 +128,7 @@ function pmpro_events_ics_fold( $line ) {
  * @param PMProEvents_Event $event The event.
  * @return string The ICS file contents, or an empty string if the event has no start date.
  */
-function pmpro_events_get_ics_content( $event ) {
+function pmpro_events_get_ics_content( $event, bool $single_event_output = true, int $sequence = 1 ) {
 	$dates = pmpro_events_get_calendar_dates( $event );
 
 	if ( empty( $dates ) ) {
@@ -147,16 +147,30 @@ function pmpro_events_get_ics_content( $event ) {
 		$description = trim( $description . "\n\n" . sprintf( __( 'Join here: %s', 'pmpro-events' ), $event->virtual_url ) );
 	}
 
-	$lines = array(
+
+	if ($single_event_output) {
+		$lines = array(
 		'BEGIN:VCALENDAR',
 		'VERSION:2.0',
 		'PRODID:-//Paid Memberships Pro//Events//EN',
 		'CALSCALE:GREGORIAN',
 		'METHOD:PUBLISH',
 		'BEGIN:VEVENT',
-		'UID:' . $event->get_uuid() . '@' . $host,
-		'DTSTAMP:' . gmdate( 'Ymd\THis\Z' ),
-	);
+		);
+	}
+	else {
+		$lines = array(	
+		'BEGIN:VEVENT',	
+		);
+	}
+
+	$lines[] = 	'UID:' . $event->get_uuid() . '@' . $host ;
+	$lines[] = 	'DTSTAMP:' . gmdate( 'Ymd\THis\Z' ) ;
+	
+	if ( ! empty($sequence)) {
+		$lines[] = 'SEQUENCE:'.$sequence ;
+	}
+
 
 	if ( $all_day ) {
 		// DTEND is exclusive for all-day events, so add a day.
@@ -185,9 +199,19 @@ function pmpro_events_get_ics_content( $event ) {
 		$lines[] = 'LOCATION:' . pmpro_events_ics_escape( $location );
 	}
 
+	$image = get_the_post_thumbnail_url( $event->get_id(), 'full' );
+	if ($image) {
+		$parts = explode('.',$image) ;
+        $lines[] = 'ATTACH'.(count($parts) === 2 ? ';FMTTYPE=image/'.strtolower($parts[1]):'').':'.esc_url( $image );
+    }
+
+
 	$lines[] = 'URL:' . $event->get_permalink();
 	$lines[] = 'END:VEVENT';
-	$lines[] = 'END:VCALENDAR';
+
+	if ($single_event_output) {
+		$lines[] = 'END:VCALENDAR';
+	}
 
 	/**
 	 * Filter the lines that make up an event's ICS file.
