@@ -10,6 +10,10 @@ Text Domain: pmpro-events
 Domain Path: /languages
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 define( 'PMPRO_EVENTS_BASENAME', plugin_basename( __FILE__ ) );
 
 function pmpro_events_plugin_init() {

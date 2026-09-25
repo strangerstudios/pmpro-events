@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Add Membership Levels box to The Events Calendar CPTs
  * @since 1.0
@@ -216,7 +221,7 @@ function pmpro_events_tribe_events_add_require_membership_message( $post ) {
 	if ( tribe_is_recurring_event() ) {
 		$parent_event_id = isset( tribe_get_event()->_tec_occurrence->post_id ) ? tribe_get_event()->_tec_occurrence->post_id : 0;
 
-		if ( ! empty( $_REQUEST['post'] ) && ! empty( $parent_event_id ) ) {
+		if ( ! empty( $_REQUEST['post'] ) && ! empty( $parent_event_id ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check on the post edit screen; no state change.
 
 			?>
 				<style>
@@ -248,7 +253,7 @@ function pmpro_events_tribe_get_parent_event_access( $parent_id, $user_id = NULL
 	}
 
 	// Get levels related to a post ID, and check to make sure the user has a relevant level.
-	$membership_ids = $wpdb->get_results(
+	$membership_ids = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 		$wpdb->prepare(
 			"SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %s",
 			$parent_id
@@ -367,7 +372,7 @@ function pmpro_events_tribe_events_requires_membership_columns_head( $defaults )
 function pmpro_events_tribe_events_requires_membership_columns_content( $column_name, $post_ID ) {
 	if ( $column_name == 'requires_membership' ) {
 	    global $membership_levels, $wpdb;
-		$post_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post_ID}'");
+		$post_levels = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table, admin list column.
 		$protected_levels = array();
 		foreach ( $membership_levels as $level ) {
 			if ( in_array( $level->id, $post_levels ) ) {

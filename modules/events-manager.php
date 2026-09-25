@@ -4,6 +4,10 @@
 	* Hide member events from non-members.
 */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 /**
  * Add Membership Levels box to Events Manager CPTs
  * @since 1.0
@@ -95,7 +99,7 @@ add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_output_p
 function pmpro_events_events_manager_template_redirect() {
 	global $post;	
 	if(!is_admin() && isset($post->post_type) && ($post->post_type == "event" || $post->post_type == "event-recurring") && !pmpro_has_membership_access()) {
-		wp_redirect(pmpro_url("levels"));
+		wp_redirect(pmpro_url("levels")); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite.
 		exit;
 	}
 }
@@ -214,7 +218,7 @@ function pmpro_events_events_manager_requires_membership_columns_head( $defaults
 function pmpro_events_events_manager_requires_membership_columns_content( $column_name, $post_ID ) {
 	if ( $column_name == 'requires_membership' ) {
 	    global $membership_levels, $wpdb;
-		$post_levels = $wpdb->get_col("SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = '{$post_ID}'");
+		$post_levels = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table, admin list column.
 		$protected_levels = array();
 		foreach ( $membership_levels as $level ) {
 			if ( in_array( $level->id, $post_levels ) ) {
@@ -248,7 +252,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	}
 
 	// fetch membership requirements for main event entry
-	$membership_requirements = $wpdb->get_results(
+	$membership_requirements = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 		$wpdb->prepare(
 			"SELECT * FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %s",
 			$event->post_id
@@ -261,16 +265,16 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	// remove all memberships for the individual event posts
 	$deletion_query = sprintf(
 		"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN (%s)",
-		implode( ",", $post_ids )
+		implode( ",", array_map( 'intval', $post_ids ) )
 	);
-	$wpdb->query( $deletion_query );
+	$wpdb->query( $deletion_query ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- IN list is intval-cast post IDs; PMPro custom table.
 
 	// prepare a bulk insert since we may have up to hundreds of recurring events
 	$inserts = array();
 	foreach( $post_ids as $event_post_id ) {
 		foreach( $membership_requirements as $membership_requirement ) {
 			$inserts[] = $wpdb->prepare(
-				"('%s', '%s')",
+				"(%d, %d)",
 				intval( $membership_requirement->membership_id ),
 				intval( $event_post_id )
 			);
@@ -278,7 +282,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	}
 
 	$inserts_sql = "INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $inserts );
-	$wpdb->query( $inserts_sql );
+	$wpdb->query( $inserts_sql ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- VALUES rows are each built with $wpdb->prepare() above; PMPro custom table.
 
 	return $save_ok;
 }
