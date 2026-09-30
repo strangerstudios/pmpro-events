@@ -100,7 +100,7 @@ add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_output_p
 function pmpro_events_events_manager_template_redirect() {
 	global $post;	
 	if(!is_admin() && isset($post->post_type) && ($post->post_type == "event" || $post->post_type == "event-recurring") && !pmpro_has_membership_access()) {
-		wp_safe_redirect(pmpro_url("levels"));
+		wp_redirect(pmpro_url("levels")); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect -- pmpro_url() is filterable and may point offsite.
 		exit;
 	}
 }
