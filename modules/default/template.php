@@ -361,7 +361,7 @@ function pmpro_events_get_registration_html( $event ) {
 	} elseif ( $event->has_passed() ) {
 		$state = 'passed';
 		/* translators: %s: the singular event label, lowercased, e.g. "event". */
-		$title   = sprintf( __( 'This %s has passed', 'pmpro-events' ), $singular );
+		$title   = sprintf( __( 'This %s has ended', 'pmpro-events' ), $singular );
 		$actions = '';
 	} elseif ( ! empty( $registration ) ) {
 		$state   = 'registered';
