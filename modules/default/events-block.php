@@ -207,11 +207,21 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 	$events = array_slice( pmpro_events_filter_hidden_events( $events ), 0, $limit );
 
 	if ( empty( $events ) ) {
-		return sprintf(
-			'<p class="pmpro_events_list_empty">%s</p>',
+		$label = pmpro_events_get_label( 'plural_lowercase' );
+		$term  = 1 === count( $category ) ? get_term_by( 'slug', reset( $category ), PMProEvents_Event::TAXONOMY ) : false;
+
+		if ( $term ) {
+			/* translators: %1$s: the plural event label, lowercased, e.g. "events". %2$s: the category name. */
+			$message = sprintf( __( 'There are no upcoming %1$s in %2$s.', 'pmpro-events' ), $label, $term->name );
+		} elseif ( ! empty( $category ) ) {
 			/* translators: %s: the plural event label, lowercased, e.g. "events". */
-			esc_html( sprintf( __( 'There are no upcoming %s.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ) ) )
-		);
+			$message = sprintf( __( 'There are no upcoming %s in the selected categories.', 'pmpro-events' ), $label );
+		} else {
+			/* translators: %s: the plural event label, lowercased, e.g. "events". */
+			$message = sprintf( __( 'There are no upcoming %s.', 'pmpro-events' ), $label );
+		}
+
+		return sprintf( '<p class="pmpro_events_list_empty">%s</p>', esc_html( $message ) );
 	}
 
 	return pmpro_events_get_event_cards_html( $events );
