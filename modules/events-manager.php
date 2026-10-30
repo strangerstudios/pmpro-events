@@ -219,7 +219,7 @@ function pmpro_events_events_manager_requires_membership_columns_head( $defaults
 function pmpro_events_events_manager_requires_membership_columns_content( $column_name, $post_ID ) {
 	if ( $column_name == 'requires_membership' ) {
 	    global $membership_levels, $wpdb;
-		$post_levels = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_ID ) );
+		$post_levels = $wpdb->get_col( $wpdb->prepare( "SELECT membership_id FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_ID ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table, admin list column.
 		$protected_levels = array();
 		foreach ( $membership_levels as $level ) {
 			if ( in_array( $level->id, $post_levels ) ) {
@@ -253,7 +253,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	}
 
 	// fetch membership requirements for main event entry
-	$membership_requirements = $wpdb->get_results(
+	$membership_requirements = $wpdb->get_results( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 		$wpdb->prepare(
 			"SELECT * FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d",
 			$event->post_id
@@ -269,7 +269,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 		return $save_ok;
 	}
 	$placeholders = implode( ',', array_fill( 0, count( $post_ids ), '%d' ) );
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN ($placeholders)", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $placeholders is a list of %d.
 			$post_ids
@@ -287,7 +287,7 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 		}
 	}
 
-	$wpdb->query(
+	$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- PMPro custom table.
 		$wpdb->prepare(
 			"INSERT INTO {$wpdb->pmpro_memberships_pages} (membership_id, page_id) VALUES " . implode( ',', $insert_placeholders ), // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- $insert_placeholders is a list of (%d, %d).
 			$insert_values
