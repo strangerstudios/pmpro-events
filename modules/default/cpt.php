@@ -106,10 +106,9 @@ function pmpro_events_register_post_type() {
 		// editor silently discards every meta value on save.
 		'supports'     => array( 'title', 'editor', 'thumbnail', 'excerpt', 'custom-fields' ),
 		// When an Events page is assigned under Memberships > Settings > Pages,
-		// that page is the events landing page. Drop the post type archive so
-		// the page — typically itself at /events/ — isn't shadowed by the
-		// archive rewrite rule.
-		'has_archive'  => pmpro_events_get_events_page_id() ? false : 'events',
+		// the archive moves to that page's path and serves the page there. See
+		// pmpro_events_get_archive_slug().
+		'has_archive'  => pmpro_events_get_archive_slug(),
 		'rewrite'      => array( 'slug' => 'event', 'with_front' => false ),
 		'capability_type' => 'post',
 	);

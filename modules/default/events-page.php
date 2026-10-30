@@ -33,6 +33,58 @@ function pmpro_events_get_events_page_id() {
 }
 
 /**
+ * Get the slug for the event post type archive.
+ *
+ * When an Events page is assigned, the archive takes that page's own path and
+ * pmpro_events_serve_events_page() shows the page there. Without the archive,
+ * themes and plugins that build an "Events" breadcrumb or menu link from the
+ * post type archive would drop it. Without moving it, the archive's rewrite
+ * rule would shadow a page that lives at /events/.
+ *
+ * @since TBD
+ *
+ * @return string The archive slug.
+ */
+function pmpro_events_get_archive_slug() {
+	$page_id = pmpro_events_get_events_page_id();
+
+	return empty( $page_id ) ? 'events' : get_page_uri( $page_id );
+}
+
+/**
+ * Show the Events page for requests to the event archive.
+ *
+ * Only the archive itself is swapped. Single events, the events feed, and
+ * searches keep their own handling.
+ *
+ * @since TBD
+ *
+ * @param array $query_vars The parsed query variables.
+ * @return array The filtered query variables.
+ */
+function pmpro_events_serve_events_page( $query_vars ) {
+	// The admin Events list runs through the same request parsing.
+	if ( is_admin() || empty( $query_vars['post_type'] ) || PMProEvents_Event::POST_TYPE !== $query_vars['post_type'] ) {
+		return $query_vars;
+	}
+
+	foreach ( array( PMProEvents_Event::POST_TYPE, 'name', 'p', 'feed', 's' ) as $key ) {
+		if ( isset( $query_vars[ $key ] ) && '' !== $query_vars[ $key ] ) {
+			return $query_vars;
+		}
+	}
+
+	$page_id = pmpro_events_get_events_page_id();
+
+	if ( empty( $page_id ) ) {
+		return $query_vars;
+	}
+
+	return array( 'page_id' => $page_id );
+}
+add_filter( 'request', 'pmpro_events_serve_events_page' );
+
+/**
  * Register the Events page with PMPro's page settings.
  *
  * The generated page leads with the member's own registrations, then the
