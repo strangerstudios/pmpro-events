@@ -2,8 +2,9 @@
  * The Upcoming Events block.
  *
  * A dynamic block rendered by pmpro_events_render_events(). The sidebar
- * switches between the list and calendar views, caps how many events the
- * list shows, and scopes either view to an event category.
+ * picks the view shown first, whether visitors get a List/Calendar toggle,
+ * caps how many events the list shows, and scopes either view to an event
+ * category.
  */
 ( function ( blocks, blockEditor, components, data, element, serverSideRender, i18n ) {
 	var el = element.createElement;
@@ -46,6 +47,10 @@
 				type: 'string',
 				default: '',
 			},
+			showToggle: {
+				type: 'boolean',
+				default: true,
+			},
 		},
 		edit: function ( props ) {
 			var categories = data.useSelect( function ( select ) {
@@ -87,7 +92,7 @@
 							},
 						} ),
 					el( components.SelectControl, {
-						label: __( 'View', 'pmpro-events' ),
+						label: __( 'Default view', 'pmpro-events' ),
 						value: props.attributes.view,
 						options: [
 							{ label: __( 'List', 'pmpro-events' ), value: 'list' },
@@ -97,7 +102,16 @@
 							props.setAttributes( { view: view } );
 						},
 					} ),
-					'list' === props.attributes.view &&
+					el( components.ToggleControl, {
+						label: __( 'Show List/Calendar toggle', 'pmpro-events' ),
+						help: __( 'Lets visitors switch views. The view above is shown first.', 'pmpro-events' ),
+						checked: props.attributes.showToggle,
+						onChange: function ( showToggle ) {
+							props.setAttributes( { showToggle: showToggle } );
+						},
+					} ),
+					// The toggle can reveal the list even when the calendar is shown first.
+					( 'list' === props.attributes.view || props.attributes.showToggle ) &&
 						el( components.RangeControl, {
 							label: __( 'Number of events', 'pmpro-events' ),
 							min: 1,
