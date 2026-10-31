@@ -1,0 +1,508 @@
+/**
+ * Frontend styles for the built-in events module.
+ *
+ * PMPro's own components do the heavy lifting — cards, buttons, and messages
+ * all come from the site's chosen style variation. Everything here is scoped
+ * under .pmpro to match how PMPro nests its own rules, and only covers the
+ * pieces PMPro has no component for: the event card's detail list, the
+ * summary line in the list view, and the icons.
+ */
+
+.pmpro {
+
+	/**
+	 * Feather icons.
+	 */
+	.pmpro_events_card .pmpro_icon,
+	.pmpro_events_summary .pmpro_icon {
+		display: inline-flex;
+		flex: none;
+		line-height: 0;
+	}
+
+	.pmpro_events_card .pmpro_icon svg,
+	.pmpro_events_summary .pmpro_icon svg {
+		width: 1.25em;
+		height: 1.25em;
+	}
+
+	/**
+	 * Summary line in the list view.
+	 */
+	.pmpro_events_summary {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5em 1.5em;
+	}
+
+	.pmpro_events_summary_item {
+		display: inline-flex;
+		align-items: flex-start;
+		gap: 0.5em;
+	}
+
+	.pmpro_events_summary_item .pmpro_icon {
+		margin-top: 0.15em;
+	}
+
+	.pmpro_events_summary_text {
+		font-weight: 600;
+	}
+
+	.pmpro_events_timezone {
+		font-size: 0.875em;
+		font-weight: 400;
+		opacity: 0.7;
+		white-space: nowrap;
+	}
+
+	/**
+	 * Event card under the title.
+	 */
+	.pmpro_events_header {
+		margin: 0 0 var(--pmpro--base--spacing--large, 2rem);
+	}
+
+	.pmpro_events_header .pmpro_card {
+		margin: 0;
+	}
+
+	.pmpro_events_card .pmpro_card_title + .pmpro_card_actions {
+		margin-top: var(--pmpro--base--spacing--large, 2rem);
+		border-top: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		border-bottom: 0;
+	}
+
+	.pmpro_events_card .pmpro_card_actions {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: var(--pmpro--base--spacing--small, 0.5rem);
+	}
+
+	.pmpro_events_status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35em;
+	}
+
+	.pmpro_events_status .pmpro_icon svg {
+		width: 1em;
+		height: 1em;
+		stroke: currentColor;
+	}
+
+	.pmpro_events_card .pmpro_card_actions form {
+		margin: 0;
+	}
+
+	.pmpro_events_card .pmpro_card_actions .pmpro_events_cancel_form {
+		margin-inline-start: auto;
+	}
+
+	.pmpro_events_cancel_form .pmpro_btn-plain {
+		color: inherit;
+		font-size: 0.875em;
+		opacity: 0.8;
+		text-decoration: underline;
+	}
+
+	.pmpro_events_cancel_form .pmpro_btn-plain:hover,
+	.pmpro_events_cancel_form .pmpro_btn-plain:focus {
+		opacity: 1;
+	}
+
+	/**
+	 * Detail list. Themes style dl, dt and dd globally, so every box property
+	 * is reset here.
+	 */
+	.pmpro_events_details,
+	.pmpro_events_details dt,
+	.pmpro_events_details dd {
+		margin: 0;
+		padding: 0;
+		border: 0;
+		background: none;
+	}
+
+	.pmpro_events_details {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(14em, 1fr));
+		gap: var(--pmpro--base--spacing--medium, 1rem) var(--pmpro--base--spacing--large, 2rem);
+		margin-top: var(--pmpro--base--spacing--small, 0.5rem);
+	}
+
+	.pmpro_events_details_item {
+		position: relative;
+		padding-inline-start: 2em;
+	}
+
+	.pmpro_events_details dt {
+		font-size: 0.875em;
+		font-weight: 600;
+		line-height: 1.4;
+		opacity: 0.75;
+	}
+
+	.pmpro_events_details dt .pmpro_icon {
+		position: absolute;
+		inset-inline-start: 0;
+		top: 0.1em;
+	}
+
+	.pmpro_events_details dd {
+		font-weight: 600;
+		line-height: 1.5;
+	}
+
+	.pmpro_events_add_to_calendar {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25em 1em;
+		margin: var(--pmpro--base--spacing--medium, 1rem) 0 0;
+		padding-top: var(--pmpro--base--spacing--medium, 1rem);
+		border-top: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		font-size: 0.875em;
+	}
+
+	.pmpro_events_add_to_calendar_label {
+		font-weight: 600;
+	}
+
+	/**
+	 * Upcoming Events header: the title and the List/Calendar toggle.
+	 */
+	.pmpro_events_events {
+		scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--pmpro--base--spacing--medium, 1rem));
+	}
+
+	.pmpro_events_events_header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--pmpro--base--spacing--small, 0.5rem);
+		margin: 0 0 var(--pmpro--base--spacing--medium, 1rem);
+	}
+
+	.pmpro_events_events_header .pmpro_section_title {
+		margin: 0;
+	}
+
+	.pmpro_events_view_toggle {
+		display: inline-flex;
+		margin-inline-start: auto;
+		border: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		border-radius: var(--pmpro--base--border-radius, 8px);
+		overflow: hidden;
+	}
+
+	.pmpro_events_view_toggle_link {
+		padding: 0.35em 0.9em;
+		color: var(--pmpro--color--contrast, #222222);
+		font-size: 0.875em;
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.pmpro_events_view_toggle_link + .pmpro_events_view_toggle_link {
+		border-inline-start: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+	}
+
+	.pmpro_events_view_toggle_link:hover,
+	.pmpro_events_view_toggle_link:focus {
+		background: color-mix(in srgb, var(--pmpro--color--accent, #0c3d54) 8%, var(--pmpro--color--base, #ffffff));
+		color: var(--pmpro--color--contrast, #222222);
+	}
+
+	.pmpro_events_view_toggle_link.is-current {
+		background: var(--pmpro--color--accent, #0c3d54);
+		color: var(--pmpro--color--white, #fff);
+	}
+
+	/**
+	 * The Upcoming Events list view, shared by the My Events block.
+	 */
+	.pmpro_events_list {
+		display: grid;
+		gap: var(--pmpro--base--spacing--medium, 1rem);
+	}
+
+	.pmpro_events_list .pmpro_card {
+		margin: 0;
+	}
+
+	.pmpro_events_list .pmpro_card_title a {
+		color: inherit;
+		text-decoration: none;
+	}
+
+	.pmpro_events_list .pmpro_card_title a:hover,
+	.pmpro_events_list .pmpro_card_title a:focus {
+		text-decoration: underline;
+	}
+
+	/* A card with only a title, such as an event with no date or location. */
+	.pmpro_events_list_card .pmpro_card_title:last-child {
+		padding-bottom: var(--pmpro--base--spacing--large, 2rem);
+	}
+
+	.pmpro_events_list_empty {
+		margin: 0;
+	}
+
+	/**
+	 * The Upcoming Events calendar view. Themes style tables globally, so
+	 * backgrounds and borders are set on every cell here.
+	 */
+	/* Equal outer columns keep the month centered; Today sits in the right one. */
+	.pmpro_events_calendar_nav {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: center;
+		gap: var(--pmpro--base--spacing--small, 0.5rem);
+		margin: 0 0 var(--pmpro--base--spacing--small, 0.5rem);
+	}
+
+	.pmpro_events_calendar_pager {
+		display: flex;
+		grid-column: 2;
+		align-items: center;
+		gap: 0.75em;
+	}
+
+	.pmpro_events_calendar_month {
+		min-width: 9em;
+		font-weight: 700;
+		text-align: center;
+	}
+
+	.pmpro_events_calendar_arrow {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 2.25em;
+		height: 2.25em;
+		border: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		border-radius: var(--pmpro--base--border-radius, 8px);
+		color: var(--pmpro--color--contrast, #222222);
+	}
+
+	.pmpro_events_calendar_arrow:hover,
+	.pmpro_events_calendar_arrow:focus {
+		background: color-mix(in srgb, var(--pmpro--color--accent, #0c3d54) 8%, var(--pmpro--color--base, #ffffff));
+		color: var(--pmpro--color--contrast, #222222);
+	}
+
+	.pmpro_events_calendar_arrow .pmpro_icon {
+		display: inline-flex;
+		line-height: 0;
+	}
+
+	.pmpro_events_calendar_arrow .pmpro_icon svg {
+		width: 1.1em;
+		height: 1.1em;
+		stroke: currentColor;
+	}
+
+	.pmpro_events_calendar_today {
+		justify-self: end;
+		font-size: 0.875em;
+	}
+
+	/* The bottom navigation is only for the stacked list on narrow screens. */
+	.pmpro_events_calendar_nav-bottom {
+		display: none;
+	}
+
+	.pmpro_events_calendar table {
+		width: 100%;
+		margin: 0;
+		table-layout: fixed;
+		border-collapse: collapse;
+	}
+
+	.pmpro_events_calendar th,
+	.pmpro_events_calendar td {
+		padding: 0.35em;
+		border: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		background: var(--pmpro--color--base, #ffffff);
+		vertical-align: top;
+		text-align: start;
+	}
+
+	.pmpro_events_calendar th {
+		font-size: 0.875em;
+		font-weight: 600;
+	}
+
+	.pmpro_events_calendar td {
+		height: 6em;
+	}
+
+	.pmpro_events_calendar td.pmpro_events_calendar_blank {
+		background: rgba(0, 0, 0, 0.03);
+	}
+
+	.pmpro_events_calendar td.is-today {
+		background: color-mix(in srgb, var(--pmpro--color--accent, #0c3d54) 6%, var(--pmpro--color--base, #ffffff));
+	}
+
+	.pmpro_events_calendar_day {
+		display: block;
+		font-size: 0.875em;
+		opacity: 0.7;
+	}
+
+	.pmpro_events_calendar td.is-today .pmpro_events_calendar_day {
+		color: var(--pmpro--color--accent, #0c3d54);
+		font-weight: 700;
+		opacity: 1;
+	}
+
+	.pmpro_events_calendar_date {
+		display: none;
+	}
+
+	.pmpro_events_calendar_item {
+		position: relative;
+		margin: 0.25em 0 0;
+	}
+
+	.pmpro_events_calendar_event {
+		display: block;
+		margin: 0 -0.25em;
+		padding: 0.2em 0.25em;
+		border-radius: 4px;
+		color: var(--pmpro--color--contrast, #222222);
+		font-size: 0.8em;
+		line-height: 1.3;
+		overflow-wrap: anywhere;
+		text-decoration: none;
+	}
+
+	.pmpro_events_calendar_event:hover,
+	.pmpro_events_calendar_event:focus {
+		background: color-mix(in srgb, var(--pmpro--color--accent, #0c3d54) 8%, var(--pmpro--color--base, #ffffff));
+		text-decoration: underline;
+	}
+
+	.pmpro_events_calendar_time {
+		display: block;
+		color: var(--pmpro--color--accent, #0c3d54);
+		font-size: 0.9em;
+		font-weight: 700;
+	}
+
+	/*
+	 * Hover card, shown on devices that can hover and to keyboard users on
+	 * focus. It opens beside the event so it never covers others on the same
+	 * day, and ignores the pointer so it can't block what's underneath.
+	 */
+	.pmpro_events_calendar_card {
+		display: none;
+		position: absolute;
+		top: 0;
+		inset-inline-start: calc(100% + 0.6em);
+		z-index: 10;
+		width: 17em;
+		gap: 0.5em;
+		pointer-events: none;
+		padding: var(--pmpro--base--spacing--small, 0.5rem) var(--pmpro--base--spacing--medium, 1rem);
+		border: 1px solid var(--pmpro--color--border--variation, rgba(127, 127, 127, 0.25));
+		border-radius: var(--pmpro--base--border-radius, 8px);
+		background: var(--pmpro--color--base, #ffffff);
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+		font-size: 0.875em;
+		line-height: 1.4;
+	}
+
+	.opens-toward-start .pmpro_events_calendar_card {
+		inset-inline-start: auto;
+		inset-inline-end: calc(100% + 0.6em);
+	}
+
+	@media (hover: hover) {
+		.pmpro_events_calendar_item:hover .pmpro_events_calendar_card {
+			display: grid;
+		}
+	}
+
+	.pmpro_events_calendar_item:focus-within .pmpro_events_calendar_card {
+		display: grid;
+	}
+
+	.pmpro_events_calendar_card_title {
+		font-weight: 700;
+	}
+
+	.pmpro_events_calendar_card .pmpro_events_summary {
+		flex-direction: column;
+		gap: 0.5em;
+	}
+
+	.pmpro_events_calendar_card .pmpro_events_summary_text {
+		font-weight: 400;
+	}
+
+	.pmpro_events_calendar_card .pmpro_events_status {
+		justify-self: start;
+	}
+
+	.pmpro_events_calendar_empty {
+		margin: var(--pmpro--base--spacing--small, 0.5rem) 0 0;
+		opacity: 0.75;
+	}
+
+	/* Narrow screens stack the month into a list of the days that have events. */
+	@media (max-width: 600px) {
+
+		.pmpro_events_calendar_nav-bottom {
+			display: grid;
+			margin: var(--pmpro--base--spacing--small, 0.5rem) 0 0;
+		}
+
+		.pmpro_events_calendar table,
+		.pmpro_events_calendar tbody,
+		.pmpro_events_calendar tr,
+		.pmpro_events_calendar td {
+			display: block;
+			width: auto;
+			height: auto;
+		}
+
+		.pmpro_events_calendar thead,
+		.pmpro_events_calendar td:not(.has-events) {
+			display: none;
+		}
+
+		.pmpro_events_calendar td.has-events {
+			margin: 0 0 var(--pmpro--base--spacing--small, 0.5rem);
+			padding: var(--pmpro--base--spacing--small, 0.5rem);
+			border-radius: var(--pmpro--base--border-radius, 8px);
+		}
+
+		.pmpro_events_calendar_day {
+			display: none;
+		}
+
+		.pmpro_events_calendar_date {
+			display: block;
+			font-weight: 700;
+		}
+
+		.pmpro_events_calendar_event {
+			font-size: 0.9em;
+		}
+
+		.pmpro_events_calendar_time {
+			display: inline;
+			margin-inline-end: 0.35em;
+		}
+
+		.pmpro_events_calendar_item:focus-within .pmpro_events_calendar_card,
+		.pmpro_events_calendar_item:hover .pmpro_events_calendar_card {
+			display: none;
+		}
+	}
+}
