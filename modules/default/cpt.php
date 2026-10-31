@@ -320,6 +320,25 @@ function pmpro_events_restrictable_post_types( $post_types ) {
 add_filter( 'pmpro_restrictable_post_types', 'pmpro_events_restrictable_post_types' );
 
 /**
+ * Add the event post type to the post types PMPro filters from searches and archives.
+ *
+ * When PMPro's "Filter searches and archives?" setting is on, this hides
+ * restricted events from site search and the events feed, the same way PMPro
+ * hides restricted posts and pages.
+ *
+ * @since TBD
+ *
+ * @param array $post_types The post types to filter.
+ * @return array The filtered post types.
+ */
+function pmpro_events_search_filter_post_types( $post_types ) {
+	$post_types[] = PMProEvents_Event::POST_TYPE;
+
+	return $post_types;
+}
+add_filter( 'pmpro_search_filter_post_types', 'pmpro_events_search_filter_post_types' );
+
+/**
  * Add the event post type to the list of post types treated as events.
  *
  * Used by the no-access message so that native events get event-specific

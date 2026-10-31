@@ -252,8 +252,10 @@ function pmpro_events_get_view_toggle_html( $current, $anchor ) {
  * Hide events the visitor can't access when PMPro is filtering queries.
  *
  * PMPro's "Filter searches and archives?" advanced setting hides restricted
- * content from every list it controls. Our queries don't run through PMPro,
- * so the same rule is applied here.
+ * content from every list it controls. PMPro's query filter already drops
+ * events restricted by level or category; this re-checks each event with
+ * user_can_access() so events denied through pmpro_has_membership_access_filter
+ * are hidden too.
  *
  * @since 2.0
  *
