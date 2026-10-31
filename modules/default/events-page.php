@@ -80,7 +80,11 @@ function pmpro_events_serve_events_page( $query_vars ) {
 		return $query_vars;
 	}
 
-	return array( 'page_id' => $page_id );
+	// Keep other request vars, such as a multilingual plugin's language.
+	unset( $query_vars['post_type'], $query_vars['paged'] );
+	$query_vars['page_id'] = $page_id;
+
+	return $query_vars;
 }
 add_filter( 'request', 'pmpro_events_serve_events_page' );
 
