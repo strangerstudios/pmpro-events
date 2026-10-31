@@ -121,18 +121,24 @@ function pmpro_events_ics_fold( $line ) {
 }
 
 /**
- * Build the ICS file contents for an event.
+ * Build the VEVENT lines for an event.
  *
- * @since 2.0
+ * Returns just the event, without the VCALENDAR wrapper, so several events can
+ * share one calendar: pmpro_events_get_ics_content() wraps a single event, and
+ * a feed can loop over events and wrap them once.
  *
- * @param PMProEvents_Event $event The event.
- * @return string The ICS file contents, or an empty string if the event has no start date.
+ * @since TBD
+ *
+ * @param PMProEvents_Event $event    The event.
+ * @param int               $sequence Optional. The RFC 5545 SEQUENCE, the event's revision
+ *                                    number. Left out when 0, the default.
+ * @return array The unfolded VEVENT lines, or an empty array if the event has no start date.
  */
-function pmpro_events_get_ics_content( $event ) {
+function pmpro_events_get_ics_event_lines( $event, $sequence = 0 ) {
 	$dates = pmpro_events_get_calendar_dates( $event );
 
 	if ( empty( $dates ) ) {
-		return '';
+		return array();
 	}
 
 	$all_day = (bool) $event->all_day;
@@ -148,15 +154,14 @@ function pmpro_events_get_ics_content( $event ) {
 	}
 
 	$lines = array(
-		'BEGIN:VCALENDAR',
-		'VERSION:2.0',
-		'PRODID:-//Paid Memberships Pro//Events//EN',
-		'CALSCALE:GREGORIAN',
-		'METHOD:PUBLISH',
 		'BEGIN:VEVENT',
 		'UID:' . $event->get_uuid() . '@' . $host,
 		'DTSTAMP:' . gmdate( 'Ymd\THis\Z' ),
 	);
+
+	if ( (int) $sequence > 0 ) {
+		$lines[] = 'SEQUENCE:' . (int) $sequence;
+	}
 
 	if ( $all_day ) {
 		// DTEND is exclusive for all-day events, so add a day.
@@ -185,9 +190,64 @@ function pmpro_events_get_ics_content( $event ) {
 		$lines[] = 'LOCATION:' . pmpro_events_ics_escape( $location );
 	}
 
+	// The featured image, for calendar apps that show one.
+	$thumbnail_id = get_post_thumbnail_id( $event->get_id() );
+	$image        = empty( $thumbnail_id ) ? '' : wp_get_attachment_url( $thumbnail_id );
+	if ( ! empty( $image ) ) {
+		$mime = get_post_mime_type( $thumbnail_id );
+
+		// A URI value, so it is not TEXT-escaped like the properties above.
+		$lines[] = 'ATTACH' . ( empty( $mime ) ? '' : ';FMTTYPE=' . $mime ) . ':' . esc_url_raw( $image );
+	}
+
 	$lines[] = 'URL:' . $event->get_permalink();
+
+	/**
+	 * Filter the lines for a single event, before END:VEVENT is added.
+	 *
+	 * Runs for every event, whether it is downloaded on its own or included in
+	 * a calendar with other events, so this is the place to add per-event
+	 * properties.
+	 *
+	 * @since TBD
+	 *
+	 * @param array             $lines    The unfolded VEVENT lines, starting with BEGIN:VEVENT.
+	 * @param PMProEvents_Event $event    The event.
+	 * @param int               $sequence The SEQUENCE passed in, or 0 when it was left out.
+	 */
+	$lines = apply_filters( 'pmpro_events_ics_event_lines', $lines, $event, (int) $sequence );
+
 	$lines[] = 'END:VEVENT';
-	$lines[] = 'END:VCALENDAR';
+
+	return $lines;
+}
+
+/**
+ * Build the ICS file contents for an event.
+ *
+ * @since 2.0
+ *
+ * @param PMProEvents_Event $event The event.
+ * @return string The ICS file contents, or an empty string if the event has no start date.
+ */
+function pmpro_events_get_ics_content( $event ) {
+	$event_lines = pmpro_events_get_ics_event_lines( $event );
+
+	if ( empty( $event_lines ) ) {
+		return '';
+	}
+
+	$lines = array_merge(
+		array(
+			'BEGIN:VCALENDAR',
+			'VERSION:2.0',
+			'PRODID:-//Paid Memberships Pro//Events//EN',
+			'CALSCALE:GREGORIAN',
+			'METHOD:PUBLISH',
+		),
+		$event_lines,
+		array( 'END:VCALENDAR' )
+	);
 
 	/**
 	 * Filter the lines that make up an event's ICS file.
