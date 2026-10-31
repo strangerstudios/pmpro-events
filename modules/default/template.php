@@ -7,11 +7,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * The single event template output.
  *
- * The page is laid out in two tiers, following the pattern used by mature
- * events plugins: a compact schedule and location summary directly under the
- * title so the logistics are visible without scrolling, and then a full detail
- * list repeated alongside the registration button so the member can confirm
- * what they are signing up for at the moment they decide.
+ * A single "at a glance" card sits directly under the title, before the event
+ * description: the schedule, location and availability, with the registration
+ * action right beside them. The logistics and the button are visible without
+ * scrolling, and nothing is repeated further down the page.
  *
  * Markup uses PMPro's own components — pmpro_card, pmpro_btn, pmpro_message —
  * so the event page inherits whichever style variation the site has chosen.
@@ -22,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 /**
- * Add the event summary above the content and the registration card below it.
+ * Add the event card above the content.
  *
  * @since 2.0
  *
@@ -47,15 +46,15 @@ function pmpro_events_the_content( $content ) {
 		return $content;
 	}
 
-	return pmpro_events_get_event_header_html( $event ) . $content . pmpro_events_get_registration_html( $event );
+	return pmpro_events_get_event_header_html( $event ) . $content;
 }
 add_filter( 'the_content', 'pmpro_events_the_content', 20 );
 
 /**
- * Build the summary shown directly under the event title.
+ * Build the header shown directly under the event title.
  *
- * Deliberately terse — when and where, and nothing else. Capacity belongs with
- * the registration button rather than up here.
+ * Holds the result message after a register or cancel action, then the event
+ * card.
  *
  * @since 2.0
  *
@@ -63,10 +62,10 @@ add_filter( 'the_content', 'pmpro_events_the_content', 20 );
  * @return string The markup.
  */
 function pmpro_events_get_event_header_html( $event ) {
-	$summary = pmpro_events_get_event_summary_html( $event );
+	$card    = pmpro_events_get_registration_html( $event );
 	$message = pmpro_events_get_status_message( $event );
 
-	if ( empty( $summary ) && empty( $message ) ) {
+	if ( empty( $card ) && empty( $message ) ) {
 		return '';
 	}
 
@@ -80,7 +79,7 @@ function pmpro_events_get_event_header_html( $event ) {
 				</div>
 			<?php } ?>
 
-			<?php echo $summary; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			<?php echo $card; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		</div>
 	</div>
 	<?php
@@ -88,7 +87,7 @@ function pmpro_events_get_event_header_html( $event ) {
 	$html = ob_get_clean();
 
 	/**
-	 * Filter the event summary shown under the title.
+	 * Filter the header shown under the event title.
 	 *
 	 * @since 2.0
 	 *
@@ -101,7 +100,7 @@ function pmpro_events_get_event_header_html( $event ) {
 /**
  * Build the when/where summary line for an event.
  *
- * Shown under the single event title and for each event in the list view.
+ * Shown for each event in the list view.
  *
  * @since 2.0
  *
@@ -121,17 +120,19 @@ function pmpro_events_get_event_summary_html( $event ) {
 	<div class="pmpro_events_summary">
 		<?php if ( ! empty( $schedule ) ) { ?>
 			<span class="pmpro_events_summary_item pmpro_events_summary_item-when">
-				<span class="pmpro_events_summary_icon" aria-hidden="true">&#128197;</span>
-				<span class="pmpro_events_summary_text"><?php echo esc_html( $schedule ); ?></span>
-				<?php if ( ! $event->all_day ) { ?>
-					<span class="pmpro_events_timezone"><?php echo esc_html( pmpro_events_get_timezone_abbreviation( $event ) ); ?></span>
-				<?php } ?>
+				<?php echo pmpro_events_get_icon( 'calendar' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<span class="pmpro_events_summary_text">
+					<?php echo esc_html( $schedule ); ?>
+					<?php if ( ! $event->all_day ) { ?>
+						<span class="pmpro_events_timezone"><?php echo esc_html( pmpro_events_get_timezone_abbreviation( $event ) ); ?></span>
+					<?php } ?>
+				</span>
 			</span>
 		<?php } ?>
 
 		<?php if ( ! empty( $location ) ) { ?>
 			<span class="pmpro_events_summary_item pmpro_events_summary_item-where">
-				<span class="pmpro_events_summary_icon" aria-hidden="true">&#128205;</span>
+				<?php echo pmpro_events_get_icon( $event->is_virtual() ? 'video' : 'map-pin' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				<span class="pmpro_events_summary_text"><?php echo esc_html( $location ); ?></span>
 			</span>
 		<?php } ?>
@@ -139,6 +140,42 @@ function pmpro_events_get_event_summary_html( $event ) {
 	<?php
 
 	return ob_get_clean();
+}
+
+/**
+ * Get a Feather icon, wrapped the way PMPro core wraps its icons.
+ *
+ * Icons are decorative and hidden from assistive technology; the text next to
+ * each one carries the meaning.
+ *
+ * @since TBD
+ *
+ * @link https://feathericons.com/
+ *
+ * @param string $name The Feather icon name.
+ * @return string The markup, or an empty string for an unknown icon.
+ */
+function pmpro_events_get_icon( $name ) {
+	$paths = array(
+		'calendar'      => '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>',
+		'check'         => '<polyline points="20 6 9 17 4 12"></polyline>',
+		'chevron-left'  => '<polyline points="15 18 9 12 15 6"></polyline>',
+		'chevron-right' => '<polyline points="9 18 15 12 9 6"></polyline>',
+		'clock'         => '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>',
+		'map-pin'       => '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle>',
+		'users'         => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path>',
+		'video'         => '<polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>',
+	);
+
+	if ( empty( $paths[ $name ] ) ) {
+		return '';
+	}
+
+	return sprintf(
+		'<span class="pmpro_icon pmpro_icon-%1$s" aria-hidden="true"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--pmpro--color--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-%1$s">%2$s</svg></span>',
+		esc_attr( $name ),
+		$paths[ $name ]
+	);
 }
 
 /**
@@ -200,7 +237,9 @@ function pmpro_events_get_timezone_abbreviation( $event ) {
  * @since 2.0
  *
  * @param PMProEvents_Event $event The event.
- * @return array Rows of 'label' and 'value'.
+ * @return array Rows keyed by name, each with a 'label', a 'value', an
+ *               optional Feather 'icon' name and an optional 'link' array of
+ *               'url' and 'label'.
  */
 function pmpro_events_get_event_detail_rows( $event ) {
 	$rows = array();
@@ -218,26 +257,30 @@ function pmpro_events_get_event_detail_rows( $event ) {
 
 		if ( $all_day ) {
 			if ( empty( $end ) || $same_day ) {
-				$rows[] = array(
+				$rows['date'] = array(
 					'label' => __( 'Date', 'pmpro-events' ),
 					'value' => wp_date( $date_format, $start->getTimestamp(), $timezone ),
+					'icon'  => 'calendar',
 				);
 			} else {
-				$rows[] = array(
+				$rows['start'] = array(
 					'label' => __( 'Start', 'pmpro-events' ),
 					'value' => wp_date( $date_format, $start->getTimestamp(), $timezone ),
+					'icon'  => 'calendar',
 				);
-				$rows[] = array(
+				$rows['end'] = array(
 					'label' => __( 'End', 'pmpro-events' ),
 					'value' => wp_date( $date_format, $end->getTimestamp(), $timezone ),
+					'icon'  => 'calendar',
 				);
 			}
 		} elseif ( $same_day ) {
-			$rows[] = array(
+			$rows['date'] = array(
 				'label' => __( 'Date', 'pmpro-events' ),
 				'value' => wp_date( $date_format, $start->getTimestamp(), $timezone ),
+				'icon'  => 'calendar',
 			);
-			$rows[] = array(
+			$rows['time'] = array(
 				'label' => __( 'Time', 'pmpro-events' ),
 				'value' => sprintf(
 					/* translators: 1: start time, 2: end time, 3: timezone abbreviation. */
@@ -246,48 +289,60 @@ function pmpro_events_get_event_detail_rows( $event ) {
 					wp_date( $time_format, $end->getTimestamp(), $timezone ),
 					pmpro_events_get_timezone_abbreviation( $event )
 				),
+				'icon'  => 'clock',
 			);
 		} else {
-			$rows[] = array(
+			$rows['start'] = array(
 				'label' => __( 'Start', 'pmpro-events' ),
 				'value' => wp_date( $date_format . ' ' . $time_format, $start->getTimestamp(), $timezone ) . ' ' . pmpro_events_get_timezone_abbreviation( $event ),
+				'icon'  => 'calendar',
 			);
 
 			if ( ! empty( $end ) ) {
-				$rows[] = array(
+				$rows['end'] = array(
 					'label' => __( 'End', 'pmpro-events' ),
 					'value' => wp_date( $date_format . ' ' . $time_format, $end->getTimestamp(), $timezone ) . ' ' . pmpro_events_get_timezone_abbreviation( $event ),
+					'icon'  => 'calendar',
 				);
 			}
 		}
 	}
 
 	if ( $event->is_virtual() ) {
-		$rows[] = array(
+		$rows['location'] = array(
 			'label' => __( 'Location', 'pmpro-events' ),
 			'value' => __( 'Online', 'pmpro-events' ),
+			'icon'  => 'video',
 		);
+
+		// The meeting URL is the attendee's ticket, so only show it to people allowed to see it.
+		if ( ! empty( $event->virtual_url ) && ! $event->has_passed() && $event->user_can_view_links() ) {
+			$rows['location']['link'] = array(
+				'url'   => $event->virtual_url,
+				/* translators: %s: the singular event label, lowercased, e.g. "event". */
+				'label' => sprintf( __( 'Join the %s', 'pmpro-events' ), pmpro_events_get_label( 'singular_lowercase' ) ),
+			);
+		}
 	} elseif ( $event->is_in_person() ) {
 		$location = array_filter( array( $event->venue_name, $event->venue_address ) );
 
 		if ( ! empty( $location ) ) {
-			$rows[] = array(
+			$rows['location'] = array(
 				'label' => __( 'Location', 'pmpro-events' ),
 				'value' => implode( "\n", $location ),
+				'icon'  => 'map-pin',
 			);
 		}
 	}
 
-	// Only meaningful when the event caps attendance.
-	if ( $event->has_registration() && ! $event->has_passed() ) {
-		$remaining = $event->get_seats_remaining();
-
-		if ( null !== $remaining ) {
-			$rows[] = array(
-				'label' => __( 'Spots remaining', 'pmpro-events' ),
-				'value' => number_format_i18n( $remaining ),
-			);
-		}
+	// Left off for members already registered.
+	$availability = pmpro_events_get_availability_text( $event );
+	if ( '' !== $availability && empty( $event->get_registration_for_user() ) ) {
+		$rows['availability'] = array(
+			'label' => __( 'Availability', 'pmpro-events' ),
+			'value' => $availability,
+			'icon'  => 'users',
+		);
 	}
 
 	/**
@@ -295,14 +350,52 @@ function pmpro_events_get_event_detail_rows( $event ) {
 	 *
 	 * @since 2.0
 	 *
-	 * @param array             $rows  Rows of 'label' and 'value'.
+	 * @param array             $rows  Rows keyed by name (date, time, start, end,
+	 *                                 location, availability), each with a 'label',
+	 *                                 a 'value', an optional Feather 'icon' name and
+	 *                                 an optional 'link' array of 'url' and 'label'.
 	 * @param PMProEvents_Event $event The event.
 	 */
 	return apply_filters( 'pmpro_events_event_detail_rows', $rows, $event );
 }
 
 /**
+ * Get the "X of Y spots remaining" text for an event.
+ *
+ * Only meaningful while someone could still take a spot, so it's empty once
+ * the event has passed or filled, and for events without registration or a
+ * capacity.
+ *
+ * @since TBD
+ *
+ * @param PMProEvents_Event $event The event.
+ * @return string The availability text, or an empty string.
+ */
+function pmpro_events_get_availability_text( $event ) {
+	if ( ! $event->has_registration() || $event->has_passed() ) {
+		return '';
+	}
+
+	$capacity  = $event->get_capacity();
+	$remaining = $event->get_seats_remaining();
+
+	if ( empty( $capacity ) || empty( $remaining ) ) {
+		return '';
+	}
+
+	return sprintf(
+		/* translators: 1: number of spots remaining, 2: total number of spots. */
+		_n( '%1$s of %2$s spot remaining', '%1$s of %2$s spots remaining', $capacity, 'pmpro-events' ),
+		number_format_i18n( $remaining ),
+		number_format_i18n( $capacity )
+	);
+}
+
+/**
  * Build the event detail list.
+ *
+ * Each label and value pair is wrapped in a div, which HTML allows inside a
+ * dl, so the pairs can be laid out as a grid.
  *
  * @since 2.0
  *
@@ -319,9 +412,30 @@ function pmpro_events_get_event_details_html( $event ) {
 	ob_start();
 	?>
 	<dl class="pmpro_events_details">
-		<?php foreach ( $rows as $row ) { ?>
-			<dt><?php echo esc_html( $row['label'] ); ?></dt>
-			<dd><?php echo nl2br( esc_html( $row['value'] ) ); ?></dd>
+		<?php foreach ( $rows as $key => $row ) { ?>
+			<div class="pmpro_events_details_item pmpro_events_details_item-<?php echo esc_attr( $key ); ?>">
+				<dt>
+					<?php
+					if ( ! empty( $row['icon'] ) ) {
+						echo pmpro_events_get_icon( $row['icon'] ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+					}
+					echo esc_html( $row['label'] );
+					?>
+				</dt>
+				<dd>
+					<?php
+					echo nl2br( esc_html( $row['value'] ) );
+					if ( ! empty( $row['link'] ) ) {
+						printf(
+							' <span class="pmpro_card_action_separator">&middot;</span> <a href="%s" target="_blank" rel="noopener noreferrer">%s%s</a>',
+							esc_url( $row['link']['url'] ),
+							esc_html( $row['link']['label'] ),
+							pmpro_events_get_new_tab_text() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						);
+					}
+					?>
+				</dd>
+			</div>
 		<?php } ?>
 	</dl>
 	<?php
@@ -330,11 +444,13 @@ function pmpro_events_get_event_details_html( $event ) {
 }
 
 /**
- * Build the registration card shown after the event content.
+ * Build the event card shown under the event title.
  *
- * The card repeats the event details and then renders exactly one state: the
- * event has passed, the member is already registered, the event is full, the
- * visitor needs to log in, or the member can register.
+ * The card is always titled with the event label, lists the event details,
+ * and then renders exactly one state in its actions: the event has passed,
+ * the member is already registered, the event is full, the visitor needs to
+ * log in, the member can register, or the event doesn't take registrations at
+ * all.
  *
  * @since 2.0
  *
@@ -345,37 +461,37 @@ function pmpro_events_get_registration_html( $event ) {
 	$singular = pmpro_events_get_label( 'singular_lowercase' );
 	$details  = pmpro_events_get_event_details_html( $event );
 
+	/* translators: %s: the singular event label, e.g. "Event". */
+	$title = sprintf( __( '%s Details', 'pmpro-events' ), pmpro_events_get_label( 'singular' ) );
+
 	$registration = $event->has_registration() && ! $event->has_passed() ? $event->get_registration_for_user() : null;
+	$calendar     = '';
 
 	if ( ! $event->has_registration() && ! $event->has_passed() ) {
 		// No registration to gate anything behind, so the card is purely
-		// informational: the details plus the meeting link and calendar links
-		// for everyone who can view the event.
-		$state   = 'details';
-		$title   = '';
-		$actions = pmpro_events_get_event_links_html( $event );
+		// informational: the details, with the meeting link, plus calendar
+		// links for everyone who can view the event.
+		$state    = 'details';
+		$calendar = pmpro_events_get_add_to_calendar_html( $event );
+		$actions  = '';
 
-		if ( empty( $details ) && empty( $actions ) ) {
+		if ( empty( $details ) && empty( $calendar ) ) {
 			return '';
 		}
 	} elseif ( $event->has_passed() ) {
 		$state = 'passed';
 		/* translators: %s: the singular event label, lowercased, e.g. "event". */
-		$title   = sprintf( __( 'This %s has ended', 'pmpro-events' ), $singular );
-		$actions = '';
+		$actions = pmpro_events_get_status_tag_html( sprintf( __( 'This %s has ended', 'pmpro-events' ), $singular ) );
 	} elseif ( ! empty( $registration ) ) {
-		$state   = 'registered';
-		$title   = __( "You're registered", 'pmpro-events' );
-		$actions = pmpro_events_get_registered_state_html( $event );
+		$state    = 'registered';
+		$calendar = pmpro_events_get_add_to_calendar_html( $event );
+		$actions  = pmpro_events_get_registered_state_html( $event );
 	} elseif ( $event->is_full() ) {
 		$state = 'full';
 		/* translators: %s: the singular event label, lowercased, e.g. "event". */
-		$title   = sprintf( __( 'This %s is full', 'pmpro-events' ), $singular );
-		$actions = '';
+		$actions = pmpro_events_get_status_tag_html( sprintf( __( 'This %s is full', 'pmpro-events' ), $singular ), 'alert' );
 	} elseif ( ! is_user_logged_in() ) {
 		$state = 'login';
-		/* translators: %s: the singular event label, lowercased, e.g. "event". */
-		$title = sprintf( __( 'Register for this %s', 'pmpro-events' ), $singular );
 
 		// Registering needs an account, so the footer offers both ways to get
 		// one: a primary button to check out for the sign-up level, and a
@@ -402,41 +518,36 @@ function pmpro_events_get_registration_html( $event ) {
 			);
 		}
 	} else {
-		$state = 'register';
-		/* translators: %s: the singular event label, lowercased, e.g. "event". */
-		$title   = sprintf( __( 'Register for this %s', 'pmpro-events' ), $singular );
+		$state   = 'register';
 		$actions = pmpro_events_get_register_form_html( $event );
 	}
 
 	ob_start();
 	?>
-	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro' ) ); ?>">
-		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card', 'pmpro_events_card' ) ); ?> pmpro_events_card-<?php echo esc_attr( $state ); ?>">
-			<?php if ( ! empty( $title ) ) { ?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>">
-					<?php echo esc_html( $title ); ?>
-				</div>
-			<?php } ?>
-
-			<?php if ( ! empty( $details ) ) { ?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-					<?php echo $details; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				</div>
-			<?php } ?>
-
-			<?php if ( ! empty( $actions ) ) { ?>
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
-					<?php echo $actions; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				</div>
-			<?php } ?>
+	<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card pmpro_events_card', 'pmpro_events_card' ) ); ?> pmpro_events_card-<?php echo esc_attr( $state ); ?>">
+		<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>">
+			<?php echo esc_html( $title ); ?>
 		</div>
+
+		<?php if ( ! empty( $details ) || ! empty( $calendar ) ) { ?>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
+				<?php echo $details; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+				<?php echo $calendar; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</div>
+		<?php } ?>
+
+		<?php if ( ! empty( $actions ) ) { ?>
+			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_actions' ) ); ?>">
+				<?php echo $actions; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+			</div>
+		<?php } ?>
 	</div>
 	<?php
 
 	$html = ob_get_clean();
 
 	/**
-	 * Filter the registration card shown after the event content.
+	 * Filter the event card shown under the event title.
 	 *
 	 * @since 2.0
 	 *
@@ -531,55 +642,80 @@ function pmpro_events_get_register_form_html( $event ) {
 }
 
 /**
- * Build the meeting link and Add-to-Calendar links for an event.
+ * Build the Add-to-Calendar links for an event.
  *
- * These reveal the meeting URL, so they are only shown to a registered
- * attendee — or, when the event isn't taking registrations, to everyone who
- * can view the event.
+ * The calendar entries include the meeting URL, and this function does not
+ * check access. Callers must only show it to people
+ * PMProEvents_Event::user_can_view_links() allows.
  *
- * @since 2.0
+ * @since TBD
  *
  * @param PMProEvents_Event $event The event.
+ * @return string The markup, or an empty string when there are no links.
+ */
+function pmpro_events_get_add_to_calendar_html( $event ) {
+	$links = pmpro_events_get_add_to_calendar_links( $event );
+
+	if ( empty( $links ) ) {
+		return '';
+	}
+
+	$rendered = array();
+	foreach ( $links as $key => $link ) {
+		$rendered[] = sprintf(
+			'<a href="%s" class="pmpro_events_add_to_calendar-%s"%s>%s%s</a>',
+			esc_url( $link['url'] ),
+			esc_attr( $key ),
+			'ics' === $key ? '' : ' target="_blank" rel="noopener noreferrer"',
+			esc_html( $link['label'] ),
+			'ics' === $key ? '' : pmpro_events_get_new_tab_text()
+		);
+	}
+
+	return sprintf(
+		'<div class="pmpro_events_add_to_calendar"><span class="pmpro_events_add_to_calendar_label">%s</span> %s</div>',
+		esc_html__( 'Add to calendar:', 'pmpro-events' ),
+		wp_kses_post( implode( ' ', $rendered ) )
+	);
+}
+
+/**
+ * Build a status bubble for the card actions.
+ *
+ * @since TBD
+ *
+ * @param string $text  The status text.
+ * @param string $style Optional. A PMPro tag style, such as success or alert.
+ * @param string $icon  Optional. A Feather icon name to show before the text.
  * @return string The markup.
  */
-function pmpro_events_get_event_links_html( $event ) {
-	ob_start();
+function pmpro_events_get_status_tag_html( $text, $style = '', $icon = '' ) {
+	$class = empty( $style ) ? 'pmpro_tag' : 'pmpro_tag pmpro_tag-' . $style;
 
-	if ( $event->is_virtual() && ! empty( $event->virtual_url ) ) {
-		?>
-		<p class="pmpro_events_meeting_url">
-			<a href="<?php echo esc_url( $event->virtual_url ); ?>" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn' ) ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Join the meeting', 'pmpro-events' ); ?></a>
-		</p>
-		<?php
-	}
+	return sprintf(
+		'<span class="%s">%s%s</span>',
+		esc_attr( pmpro_get_element_class( $class . ' pmpro_events_status', 'pmpro_events_status' ) ),
+		empty( $icon ) ? '' : pmpro_events_get_icon( $icon ),
+		esc_html( $text )
+	);
+}
 
-	$links = pmpro_events_get_add_to_calendar_links( $event );
-	if ( ! empty( $links ) ) {
-		?>
-		<p class="pmpro_events_add_to_calendar">
-			<strong><?php esc_html_e( 'Add to calendar:', 'pmpro-events' ); ?></strong>
-			<?php
-			$rendered = array();
-			foreach ( $links as $key => $link ) {
-				$rendered[] = sprintf(
-					'<a href="%s" class="pmpro_events_add_to_calendar-%s"%s>%s</a>',
-					esc_url( $link['url'] ),
-					esc_attr( $key ),
-					'ics' === $key ? '' : ' target="_blank" rel="noopener noreferrer"',
-					esc_html( $link['label'] )
-				);
-			}
-			echo wp_kses_post( implode( ' <span class="pmpro_card_action_separator">&middot;</span> ', $rendered ) );
-			?>
-		</p>
-		<?php
-	}
-
-	return ob_get_clean();
+/**
+ * Get the screen reader note for links that open in a new tab.
+ *
+ * @since TBD
+ *
+ * @return string The markup.
+ */
+function pmpro_events_get_new_tab_text() {
+	return ' <span class="screen-reader-text">' . esc_html__( '(opens in a new tab)', 'pmpro-events' ) . '</span>';
 }
 
 /**
  * Build the card actions for a member who is already registered.
+ *
+ * A status bubble in place of the Register button, with a plain text button
+ * to cancel.
  *
  * @since 2.0
  *
@@ -589,14 +725,13 @@ function pmpro_events_get_event_links_html( $event ) {
 function pmpro_events_get_registered_state_html( $event ) {
 	ob_start();
 
-	echo pmpro_events_get_event_links_html( $event ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	echo pmpro_events_get_status_tag_html( __( "You're registered", 'pmpro-events' ), 'success', 'check' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	?>
-
-	<form action="<?php echo esc_url( pmpro_events_get_form_action() ); ?>" method="post" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form' ) ); ?>">
+	<form action="<?php echo esc_url( pmpro_events_get_form_action() ); ?>" method="post" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_form pmpro_events_cancel_form', 'pmpro_events_cancel_form' ) ); ?>">
 		<input type="hidden" name="action" value="pmpro_events_cancel" />
 		<input type="hidden" name="event_id" value="<?php echo esc_attr( $event->get_id() ); ?>" />
 		<?php wp_nonce_field( 'pmpro_events_cancel_' . $event->get_id(), 'pmpro_events_nonce' ); ?>
-		<button type="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-cancel' ) ); ?>"><?php esc_html_e( 'Cancel my registration', 'pmpro-events' ); ?></button>
+		<button type="submit" class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_btn pmpro_btn-plain' ) ); ?>"><?php esc_html_e( 'Cancel my registration', 'pmpro-events' ); ?></button>
 	</form>
 	<?php
 

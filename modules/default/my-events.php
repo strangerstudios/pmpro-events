@@ -159,16 +159,10 @@ function pmpro_events_get_my_events_html( $title = '' ) {
 		<?php } ?>
 
 		<?php if ( empty( $events ) ) { ?>
-			<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card' ) ); ?>">
-				<div class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_content' ) ); ?>">
-					<p>
-						<?php
-						/* translators: %s: the plural event label, lowercased, e.g. "events". */
-						echo esc_html( sprintf( __( 'You are not registered for any upcoming %s.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ) ) );
-						?>
-					</p>
-				</div> <!-- end pmpro_card_content -->
-			</div> <!-- end pmpro_card -->
+			<?php
+			/* translators: %s: the plural event label, lowercased, e.g. "events". */
+			echo pmpro_events_get_empty_card_html( sprintf( __( 'You are not registered for any upcoming %s.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			?>
 		<?php } else { ?>
 			<?php // The same cards as the Upcoming Events list, so a member's own events don't look like a footnote. ?>
 			<?php echo pmpro_events_get_event_cards_html( $events ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
