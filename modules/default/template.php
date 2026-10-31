@@ -335,24 +335,14 @@ function pmpro_events_get_event_detail_rows( $event ) {
 		}
 	}
 
-	// Only meaningful while someone could still take a spot, so it's left off
-	// once the event has passed or filled and for members already registered.
-	if ( $event->has_registration() && ! $event->has_passed() && ! $event->is_full() && empty( $event->get_registration_for_user() ) ) {
-		$remaining = $event->get_seats_remaining();
-		$capacity  = $event->get_capacity();
-
-		if ( null !== $remaining && ! empty( $capacity ) ) {
-			$rows['availability'] = array(
-				'label' => __( 'Availability', 'pmpro-events' ),
-				'value' => sprintf(
-					/* translators: 1: number of spots remaining, 2: total number of spots. */
-					_n( '%1$s of %2$s spot remaining', '%1$s of %2$s spots remaining', $capacity, 'pmpro-events' ),
-					number_format_i18n( $remaining ),
-					number_format_i18n( $capacity )
-				),
-				'icon'  => 'users',
-			);
-		}
+	// Left off for members already registered.
+	$availability = pmpro_events_get_availability_text( $event );
+	if ( '' !== $availability && empty( $event->get_registration_for_user() ) ) {
+		$rows['availability'] = array(
+			'label' => __( 'Availability', 'pmpro-events' ),
+			'value' => $availability,
+			'icon'  => 'users',
+		);
 	}
 
 	/**
@@ -367,6 +357,38 @@ function pmpro_events_get_event_detail_rows( $event ) {
 	 * @param PMProEvents_Event $event The event.
 	 */
 	return apply_filters( 'pmpro_events_event_detail_rows', $rows, $event );
+}
+
+/**
+ * Get the "X of Y spots remaining" text for an event.
+ *
+ * Only meaningful while someone could still take a spot, so it's empty once
+ * the event has passed or filled, and for events without registration or a
+ * capacity.
+ *
+ * @since TBD
+ *
+ * @param PMProEvents_Event $event The event.
+ * @return string The availability text, or an empty string.
+ */
+function pmpro_events_get_availability_text( $event ) {
+	if ( ! $event->has_registration() || $event->has_passed() ) {
+		return '';
+	}
+
+	$capacity  = $event->get_capacity();
+	$remaining = $event->get_seats_remaining();
+
+	if ( empty( $capacity ) || empty( $remaining ) ) {
+		return '';
+	}
+
+	return sprintf(
+		/* translators: 1: number of spots remaining, 2: total number of spots. */
+		_n( '%1$s of %2$s spot remaining', '%1$s of %2$s spots remaining', $capacity, 'pmpro-events' ),
+		number_format_i18n( $remaining ),
+		number_format_i18n( $capacity )
+	);
 }
 
 /**
@@ -622,8 +644,9 @@ function pmpro_events_get_register_form_html( $event ) {
 /**
  * Build the Add-to-Calendar links for an event.
  *
- * The calendar entries include the meeting URL, so the card only shows these
- * to people PMProEvents_Event::user_can_view_links() allows.
+ * The calendar entries include the meeting URL, and this function does not
+ * check access. Callers must only show it to people
+ * PMProEvents_Event::user_can_view_links() allows.
  *
  * @since TBD
  *

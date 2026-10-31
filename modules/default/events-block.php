@@ -417,12 +417,13 @@ function pmpro_events_get_calendar_nav_html( $first, $hash, $position ) {
  *
  * @since TBD
  *
- * @param PMProEvents_Event $event The event.
+ * @param PMProEvents_Event $event      The event.
+ * @param bool              $registered Whether the current user holds an active registration for the event.
  * @return string The markup.
  */
-function pmpro_events_get_calendar_card_html( $event ) {
-	$rows         = pmpro_events_get_event_detail_rows( $event );
-	$registration = $event->has_registration() && ! $event->has_passed() ? $event->get_registration_for_user() : null;
+function pmpro_events_get_calendar_card_html( $event, $registered = false ) {
+	$registered   = $registered && $event->has_registration() && ! $event->has_passed();
+	$availability = $registered ? '' : pmpro_events_get_availability_text( $event );
 
 	ob_start();
 	?>
@@ -430,13 +431,13 @@ function pmpro_events_get_calendar_card_html( $event ) {
 		<span class="pmpro_events_calendar_card_title"><?php echo esc_html( $event->get_title() ); ?></span>
 		<?php echo pmpro_events_get_event_summary_html( $event ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<?php
-		if ( ! empty( $registration ) ) {
+		if ( $registered ) {
 			echo pmpro_events_get_status_tag_html( __( "You're registered", 'pmpro-events' ), 'success', 'check' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		} elseif ( ! empty( $rows['availability'] ) ) {
+		} elseif ( '' !== $availability ) {
 			?>
 			<span class="pmpro_events_summary_item pmpro_events_summary_item-availability">
 				<?php echo pmpro_events_get_icon( 'users' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-				<span class="pmpro_events_summary_text"><?php echo esc_html( $rows['availability']['value'] ); ?></span>
+				<span class="pmpro_events_summary_text"><?php echo esc_html( $availability ); ?></span>
 			</span>
 			<?php
 		}
@@ -496,6 +497,19 @@ function pmpro_events_get_events_calendar_html( $category = array(), $anchor = '
 		$by_day[ substr( (string) $event->start, 0, 10 ) ][] = $event;
 	}
 
+	// The month's registrations for the current user, in one query.
+	$registered_ids = array();
+	if ( is_user_logged_in() && ! empty( $events ) ) {
+		$registrations = PMProEvents_Event_Registration::get_registrations( array(
+			'event_id' => wp_list_pluck( $events, 'id' ),
+			'user_id'  => get_current_user_id(),
+			'status'   => 'active',
+		) );
+		foreach ( $registrations as $registration ) {
+			$registered_ids[] = (int) $registration->event_id;
+		}
+	}
+
 	// Lay out the weeks the way the site starts them.
 	$start_of_week = (int) get_option( 'start_of_week', 0 );
 	$lead_blanks   = ( (int) $first->format( 'w' ) - $start_of_week + 7 ) % 7;
@@ -533,8 +547,8 @@ function pmpro_events_get_events_calendar_html( $category = array(), $anchor = '
 						$classes = array_filter( array(
 							$date === $today ? 'is-today' : '',
 							isset( $by_day[ $date ] ) ? 'has-events' : '',
-							// Event cards in the last two columns open leftward to stay on screen.
-							$cell % 7 >= 5 ? 'opens-left' : '',
+							// Event cards in the last three columns open back toward the row's start to stay on screen.
+							$cell % 7 >= 4 ? 'opens-toward-start' : '',
 						) );
 						?>
 						<td<?php echo empty( $classes ) ? '' : ' class="' . esc_attr( implode( ' ', $classes ) ) . '"'; ?>>
@@ -552,7 +566,7 @@ function pmpro_events_get_events_calendar_html( $category = array(), $anchor = '
 										echo esc_html( $event->get_title() );
 										?>
 									</a>
-									<?php echo pmpro_events_get_calendar_card_html( $event ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+									<?php echo pmpro_events_get_calendar_card_html( $event, in_array( (int) $event->id, $registered_ids, true ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 								</div>
 							<?php } ?>
 						</td>
@@ -568,9 +582,6 @@ function pmpro_events_get_events_calendar_html( $category = array(), $anchor = '
 			</tbody>
 		</table>
 
-		<?php // Repeated after the stacked day list on narrow screens, where the top is far away. ?>
-		<?php echo pmpro_events_get_calendar_nav_html( $first, $hash, 'bottom' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-
 		<?php if ( empty( $by_day ) ) { ?>
 			<p class="pmpro_events_calendar_empty">
 				<?php
@@ -578,6 +589,9 @@ function pmpro_events_get_events_calendar_html( $category = array(), $anchor = '
 				echo esc_html( sprintf( __( 'There are no %1$s in %2$s.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ), wp_date( 'F Y', $first->getTimestamp(), $timezone ) ) );
 				?>
 			</p>
+		<?php } else { ?>
+			<?php // Repeated after the stacked day list on narrow screens, where the top is far away. ?>
+			<?php echo pmpro_events_get_calendar_nav_html( $first, $hash, 'bottom' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<?php } ?>
 	</div>
 	<?php
