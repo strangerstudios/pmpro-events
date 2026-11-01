@@ -298,7 +298,7 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 
 		if ( $term ) {
 			/* translators: %1$s: the plural event label, lowercased, e.g. "events". %2$s: the category name. */
-			$message = sprintf( __( 'There are no upcoming %1$s in %2$s.', 'pmpro-events' ), $label, $term->name );
+			$message = sprintf( __( 'There are no upcoming %1$s in the %2$s category.', 'pmpro-events' ), $label, $term->name );
 		} elseif ( ! empty( $category ) ) {
 			/* translators: %s: the plural event label, lowercased, e.g. "events". */
 			$message = sprintf( __( 'There are no upcoming %s in the selected categories.', 'pmpro-events' ), $label );
@@ -306,6 +306,16 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 			/* translators: %s: the plural event label, lowercased, e.g. "events". */
 			$message = sprintf( __( 'There are no upcoming %s.', 'pmpro-events' ), $label );
 		}
+
+		/**
+		 * Filter the message shown when the Upcoming Events list has no events.
+		 *
+		 * @since TBD
+		 *
+		 * @param string   $message  The message.
+		 * @param string[] $category The category slugs the list is limited to, if any.
+		 */
+		$message = apply_filters( 'pmpro_events_upcoming_events_empty_message', $message, $category );
 
 		return pmpro_events_get_empty_card_html( $message );
 	}

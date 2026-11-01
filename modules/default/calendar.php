@@ -259,6 +259,29 @@ function pmpro_events_get_ics_content( $event ) {
 	 */
 	$lines = apply_filters( 'pmpro_events_ics_lines', $lines, $event );
 
+	return pmpro_events_ics_implode( $lines );
+}
+
+/**
+ * Fold ICS lines and join them into ICS text.
+ *
+ * Each line is folded to 75 octets and ends with CRLF, as RFC 5545 requires.
+ * Works on a whole calendar or on the VEVENT lines from
+ * pmpro_events_get_ics_event_lines(), so a feed that wraps several events in
+ * its own VCALENDAR can build each event with:
+ *
+ *     $ics .= pmpro_events_ics_implode( pmpro_events_get_ics_event_lines( $event ) );
+ *
+ * @since TBD
+ *
+ * @param array $lines The unfolded ICS lines.
+ * @return string The ICS text, or an empty string when there are no lines.
+ */
+function pmpro_events_ics_implode( $lines ) {
+	if ( empty( $lines ) ) {
+		return '';
+	}
+
 	return implode( "\r\n", array_map( 'pmpro_events_ics_fold', $lines ) ) . "\r\n";
 }
 
