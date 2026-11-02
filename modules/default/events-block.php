@@ -5,7 +5,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * The Upcoming Events block and shortcode, with a list view and a calendar view.
+ * The Events block and shortcode, with a list view and a calendar view.
  *
  * Restricted events are listed by default — their single pages show PMPro's
  * no-access message and a join prompt, which is the teaser behavior PMPro uses
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 
 /**
- * Register the Upcoming Events block.
+ * Register the Events block.
  *
  * @since 2.0
  */
@@ -128,7 +128,7 @@ function pmpro_events_resolve_block_title( $attributes, $default ) {
 }
 
 /**
- * Render the Upcoming Events block and shortcode.
+ * Render the Events block and shortcode.
  *
  * @since 2.0
  *
@@ -316,7 +316,7 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 /**
  * Build a card holding an empty-state message.
  *
- * Shared by the Upcoming Events list and the My Events block, so an empty list
+ * Shared by the Events block list and the My Events block, so an empty list
  * looks the same in both.
  *
  * @since TBD
@@ -336,7 +336,7 @@ function pmpro_events_get_empty_card_html( $message ) {
 /**
  * Build a list of event cards, each linking to its event.
  *
- * Shared by the Upcoming Events list view and the My Events block, so a
+ * Shared by the Events block list view and the My Events block, so a
  * member's own events look the same as the site-wide list.
  *
  * @since 2.0

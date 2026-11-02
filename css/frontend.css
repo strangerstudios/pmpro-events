@@ -170,7 +170,7 @@
 	}
 
 	/**
-	 * Upcoming Events header: the title and the List/Calendar toggle.
+	 * Events block header: the title and the List/Calendar toggle.
 	 */
 	.pmpro_events_events {
 		scroll-margin-top: calc(var(--wp-admin--admin-bar--height, 0px) + var(--pmpro--base--spacing--medium, 1rem));
@@ -221,7 +221,7 @@
 	}
 
 	/**
-	 * The Upcoming Events list view, shared by the My Events block.
+	 * The Events block list view, shared by the My Events block.
 	 */
 	.pmpro_events_list {
 		display: grid;
@@ -252,7 +252,7 @@
 	}
 
 	/**
-	 * The Upcoming Events calendar view. Themes style tables globally, so
+	 * The Events block calendar view. Themes style tables globally, so
 	 * backgrounds and borders are set on every cell here.
 	 */
 	/* Equal outer columns keep the month centered; Today sits in the right one. */

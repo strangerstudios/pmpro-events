@@ -164,7 +164,7 @@ function pmpro_events_get_my_events_html( $title = '' ) {
 			echo pmpro_events_get_empty_card_html( sprintf( __( 'You are not registered for any upcoming %s.', 'pmpro-events' ), pmpro_events_get_label( 'plural_lowercase' ) ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			?>
 		<?php } else { ?>
-			<?php // The same cards as the Upcoming Events list, so a member's own events don't look like a footnote. ?>
+			<?php // The same cards as the Events block list, so a member's own events don't look like a footnote. ?>
 			<?php echo pmpro_events_get_event_cards_html( $events ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 		<?php } ?>
 	</section> <!-- end pmpro_events_my_events -->
