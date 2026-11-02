@@ -109,7 +109,7 @@ function pmpro_events_extra_page_settings( $pages ) {
 	$pages['events'] = array(
 		'title'   => $plural,
 		'content' => "<!-- wp:pmpro-events/my-events /-->\n\n<!-- wp:pmpro-events/events {$list_attributes} /-->",
-		'hint'    => __( 'Include the Upcoming Events block or the [pmpro_events] shortcode. The My Events block shows logged-in members their own registrations.', 'pmpro-events' ),
+		'hint'    => __( 'Include the Events block or the [pmpro_events] shortcode. The My Events block shows logged-in members their own registrations.', 'pmpro-events' ),
 	);
 
 	return $pages;

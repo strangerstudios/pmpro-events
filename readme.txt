@@ -142,8 +142,8 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 * FEATURE: Registered attendees can add an event to Google Calendar, Outlook 365, Outlook.com, or download an .ics file.
 * FEATURE: Added registration confirmation and cancellation emails for members, plus admin notification emails for both, all editable under Memberships > Email Templates.
 * FEATURE: Added an Events panel to the Edit Member screen listing all of a member's registrations.
-* FEATURE: Added an Upcoming Events block and [pmpro_events] shortcode with a list view and a monthly calendar view. Restricted events are hidden when Paid Memberships Pro's "Filter searches and archives?" setting is enabled.
-* FEATURE: Added event categories for organizing events and scoping the Upcoming Events block or shortcode to a series.
+* FEATURE: Added an Events block and [pmpro_events] shortcode with a list view and a monthly calendar view. Restricted events are hidden when Paid Memberships Pro's "Filter searches and archives?" setting is enabled.
+* FEATURE: Added event categories for organizing events and scoping the Events block or shortcode to a series.
 * FEATURE: Added a My Events block and [pmpro_events_my_events] shortcode that list a member's upcoming events.
 * FEATURE: Added a Registrations admin page with a per-event registrant list and CSV export.
 * FEATURE: Added a settings page under Memberships > Events for enabling the built-in module and renaming "Event" throughout the plugin.

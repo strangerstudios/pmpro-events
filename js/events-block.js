@@ -1,5 +1,5 @@
 /**
- * The Upcoming Events block.
+ * The Events block.
  *
  * A dynamic block rendered by pmpro_events_render_events(). The sidebar
  * picks the view shown first, whether visitors get a List/Calendar toggle,
@@ -11,7 +11,7 @@
 	var __ = i18n.__;
 
 	blocks.registerBlockType( 'pmpro-events/events', {
-		title: __( 'Upcoming Events', 'pmpro-events' ),
+		title: __( 'Events', 'pmpro-events' ),
 		description: __(
 			'A list or monthly calendar of upcoming events.',
 			'pmpro-events'
@@ -22,6 +22,7 @@
 			__( 'events', 'pmpro-events' ),
 			__( 'calendar', 'pmpro-events' ),
 			__( 'schedule', 'pmpro-events' ),
+			__( 'upcoming', 'pmpro-events' ),
 		],
 		supports: {
 			html: false,

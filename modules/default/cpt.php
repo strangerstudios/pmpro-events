@@ -130,7 +130,7 @@ add_action( 'init', 'pmpro_events_register_post_type' );
  * Register the event category taxonomy.
  *
  * Deliberately not public: categories exist to organize events in the admin
- * and to scope the Upcoming Events block to a series, not to create term
+ * and to scope the Events block to a series, not to create term
  * archive pages. Frontend archives can be enabled later without breaking
  * anything; taking them away again couldn't be.
  *
