@@ -308,14 +308,14 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 		}
 
 		/**
-		 * Filter the message shown when the Upcoming Events list has no events.
+		 * Filter the message shown when the events list has no events.
 		 *
 		 * @since TBD
 		 *
 		 * @param string   $message  The message.
 		 * @param string[] $category The category slugs the list is limited to, if any.
 		 */
-		$message = apply_filters( 'pmpro_events_upcoming_events_empty_message', $message, $category );
+		$message = apply_filters( 'pmpro_events_list_empty_message', $message, $category );
 
 		return pmpro_events_get_empty_card_html( $message );
 	}
