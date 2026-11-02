@@ -312,7 +312,7 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 		 *
 		 * @since TBD
 		 *
-		 * @param string   $message  The message.
+		 * @param string   $message  The message. Plain text; escaped with esc_html() on output.
 		 * @param string[] $category The category slugs the list is limited to, if any.
 		 */
 		$message = apply_filters( 'pmpro_events_list_empty_message', $message, $category );
