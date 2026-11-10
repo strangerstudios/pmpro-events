@@ -52,6 +52,10 @@
 				type: 'boolean',
 				default: true,
 			},
+			showImages: {
+				type: 'boolean',
+				default: false,
+			},
 		},
 		edit: function ( props ) {
 			var categories = data.useSelect( function ( select ) {
@@ -120,6 +124,15 @@
 							value: props.attributes.limit,
 							onChange: function ( limit ) {
 								props.setAttributes( { limit: limit } );
+							},
+						} ),
+					( 'list' === props.attributes.view || props.attributes.showToggle ) &&
+						el( components.ToggleControl, {
+							label: __( 'Show event images', 'pmpro-events' ),
+							help: __( "Shows each event's featured image in the list view.", 'pmpro-events' ),
+							checked: props.attributes.showImages,
+							onChange: function ( showImages ) {
+								props.setAttributes( { showImages: showImages } );
 							},
 						} ),
 					categoryOptions.length > 1 &&
