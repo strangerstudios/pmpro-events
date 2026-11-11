@@ -252,8 +252,8 @@
 	}
 
 	/*
-	 * A card with a featured image: the whole image, inset on the left, with the
-	 * title and summary beside it. Event images often carry text, so they aren't cropped.
+	 * A card with a featured image: the image, cropped to 16:9 and inset on the
+	 * left, with the title and summary beside it.
 	 */
 	.pmpro_events_list_card-has-image {
 		display: grid;
