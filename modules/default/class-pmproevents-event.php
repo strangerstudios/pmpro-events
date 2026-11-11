@@ -540,11 +540,12 @@ class PMProEvents_Event {
 	}
 
 	/**
-	 * Whether a user has access to this event under PMPro's content restrictions.
+	 * Whether a user has access to this event under PMPro's content restrictions
+	 * and, when no user ID is passed, the current visitor's password for the event.
 	 *
 	 * @since 2.0
 	 *
-	 * @param int $user_id The user ID to check. Defaults to the current user.
+	 * @param int $user_id The user ID to check. Defaults to the current visitor, who must also have entered the event's password.
 	 * @return bool Whether the user has access.
 	 */
 	public function user_can_access( $user_id = null ) {
@@ -552,7 +553,14 @@ class PMProEvents_Event {
 			return false;
 		}
 
+		// A password-protected event stays hidden until the visitor enters the password. The password is
+		// only known for the visitor making this request, so checks for a specific user (such as cancelling
+		// registrations when a membership level changes) only check membership access.
 		if ( null === $user_id ) {
+			if ( post_password_required( $this->post ) ) {
+				return false;
+			}
+
 			$user_id = get_current_user_id();
 		}
 

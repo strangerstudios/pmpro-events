@@ -262,7 +262,8 @@ function pmpro_events_get_view_toggle_html( $current, $anchor ) {
  * content from every list it controls. PMPro's query filter already drops
  * events restricted by level or category; this re-checks each event with
  * user_can_access() so events denied through pmpro_has_membership_access_filter
- * are hidden too.
+ * are hidden too. Password-protected events stay listed, since they aren't
+ * membership restrictions.
  *
  * @since 2.0
  *
@@ -275,7 +276,9 @@ function pmpro_events_filter_hidden_events( $events ) {
 	}
 
 	return array_values( array_filter( $events, function( $event ) {
-		return $event->user_can_access();
+		// Pass the user ID so only membership access is checked. Password-protected events
+		// stay listed, the same way WordPress lists password-protected posts.
+		return $event->user_can_access( get_current_user_id() );
 	} ) );
 }
 
