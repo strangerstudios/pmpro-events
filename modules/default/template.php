@@ -197,6 +197,11 @@ function pmpro_events_get_short_location( $event ) {
 		return $event->venue_name;
 	}
 
+	// A restricted event only teases its venue name. The address stays behind the membership requirement.
+	if ( ! $event->user_can_access() ) {
+		return '';
+	}
+
 	return $event->get_location_summary();
 }
 
@@ -372,7 +377,8 @@ function pmpro_events_get_event_detail_rows( $event ) {
  * @return string The availability text, or an empty string.
  */
 function pmpro_events_get_availability_text( $event ) {
-	if ( ! $event->has_registration() || $event->has_passed() ) {
+	// Visitors who can't register for a restricted event don't need to know how full it is.
+	if ( ! $event->has_registration() || $event->has_passed() || ! $event->user_can_access() ) {
 		return '';
 	}
 
