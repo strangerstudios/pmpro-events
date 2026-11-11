@@ -251,6 +251,65 @@
 		margin: 0;
 	}
 
+	/*
+	 * A card with a featured image: the image, cropped to 16:9 and inset on the
+	 * left, with the title and summary beside it.
+	 */
+	.pmpro_events_list_card-has-image {
+		display: grid;
+		grid-template-columns: minmax(0, 16rem) minmax(0, 1fr);
+		/* Flexible rows above and below the text keep it centered beside a taller image. */
+		grid-template-rows: 1fr auto auto 1fr;
+	}
+
+	.pmpro_events_list_card_image {
+		display: block;
+		grid-row: 1 / -1;
+		align-self: center;
+		padding: var(--pmpro--base--spacing--large, 2rem) 0 var(--pmpro--base--spacing--large, 2rem) var(--pmpro--base--spacing--large, 2rem);
+	}
+
+	.pmpro_events_list_card_image img {
+		display: block;
+		width: 100%;
+		height: auto;
+		/* Themes often add a bottom margin to images in post content. */
+		margin: 0;
+		aspect-ratio: 16 / 9;
+		object-fit: cover;
+		border-radius: var(--pmpro--base--border-radius, 0.25rem);
+	}
+
+	.pmpro_events_list_card-has-image .pmpro_card_title {
+		grid-column: 2;
+		grid-row: 2;
+	}
+
+	.pmpro_events_list_card-has-image .pmpro_card_content {
+		grid-column: 2;
+		grid-row: 3;
+	}
+
+	/* Narrow screens stack the image above the title. */
+	@media (max-width: 600px) {
+
+		.pmpro_events_list_card-has-image {
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-rows: auto;
+		}
+
+		.pmpro_events_list_card_image {
+			grid-row: auto;
+			padding: var(--pmpro--base--spacing--large, 2rem) var(--pmpro--base--spacing--large, 2rem) 0;
+		}
+
+		.pmpro_events_list_card-has-image .pmpro_card_title,
+		.pmpro_events_list_card-has-image .pmpro_card_content {
+			grid-column: auto;
+			grid-row: auto;
+		}
+	}
+
 	/**
 	 * The Events block calendar view. Themes style tables globally, so
 	 * backgrounds and borders are set on every cell here.

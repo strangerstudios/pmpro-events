@@ -73,6 +73,10 @@ function pmpro_events_register_events_block() {
 					'type'    => 'boolean',
 					'default' => true,
 				),
+				'showImages' => array(
+					'type'    => 'boolean',
+					'default' => false,
+				),
 			),
 		)
 	);
@@ -95,11 +99,13 @@ function pmpro_events_shortcode( $atts ) {
 		'title'       => '',
 		'show_title'  => true,
 		'show_toggle' => true,
+		'show_images' => false,
 	), $atts, 'pmpro_events' );
 
 	// The block attribute names, so both spellings resolve the same way.
 	$atts['showTitle']  = $atts['show_title'];
 	$atts['showToggle'] = $atts['show_toggle'];
+	$atts['showImages'] = $atts['show_images'];
 
 	return pmpro_events_render_events( $atts );
 }
@@ -143,6 +149,7 @@ function pmpro_events_render_events( $attributes ) {
 	$anchor = 'pmpro_events-' . $instance;
 
 	$show_toggle = isset( $attributes['showToggle'] ) ? filter_var( $attributes['showToggle'], FILTER_VALIDATE_BOOLEAN ) : true;
+	$show_images = isset( $attributes['showImages'] ) ? filter_var( $attributes['showImages'], FILTER_VALIDATE_BOOLEAN ) : false;
 
 	$view = isset( $attributes['view'] ) && 'calendar' === $attributes['view'] ? 'calendar' : 'list';
 	if ( $show_toggle ) {
@@ -162,7 +169,7 @@ function pmpro_events_render_events( $attributes ) {
 
 	$content = 'calendar' === $view
 		? pmpro_events_get_events_calendar_html( $category, $anchor )
-		: pmpro_events_get_events_list_html( $limit, $category );
+		: pmpro_events_get_events_list_html( $limit, $category, $show_images );
 
 	// PMPro nests all of its styles under the .pmpro class, so the output has
 	// to be wrapped in that container to pick them up.
@@ -277,11 +284,12 @@ function pmpro_events_filter_hidden_events( $events ) {
  *
  * @since 2.0
  *
- * @param int      $limit    The number of events to show.
- * @param string[] $category Optional category slugs to limit the list to.
+ * @param int      $limit       The number of events to show.
+ * @param string[] $category    Optional category slugs to limit the list to.
+ * @param bool     $show_images Optional. Whether to show each event's featured image. Default false. Since TBD.
  * @return string The markup.
  */
-function pmpro_events_get_events_list_html( $limit, $category = array() ) {
+function pmpro_events_get_events_list_html( $limit, $category = array(), $show_images = false ) {
 	// Query without a limit so that access filtering doesn't leave the list
 	// short, then cut it down after.
 	$events = PMProEvents_Event::get_events( array(
@@ -320,7 +328,7 @@ function pmpro_events_get_events_list_html( $limit, $category = array() ) {
 		return pmpro_events_get_empty_card_html( $message );
 	}
 
-	return pmpro_events_get_event_cards_html( $events );
+	return pmpro_events_get_event_cards_html( $events, $show_images );
 }
 
 /**
@@ -351,18 +359,30 @@ function pmpro_events_get_empty_card_html( $message ) {
  *
  * @since 2.0
  *
- * @param PMProEvents_Event[] $events The events to list.
+ * @param PMProEvents_Event[] $events      The events to list.
+ * @param bool                $show_images Optional. Whether to show each event's featured image. Default false. Since TBD.
  * @return string The markup.
  */
-function pmpro_events_get_event_cards_html( $events ) {
+function pmpro_events_get_event_cards_html( $events, $show_images = false ) {
 	ob_start();
 	?>
 	<div class="pmpro_events_list">
 		<?php
 		foreach ( $events as $event ) {
 			$summary = pmpro_events_get_event_summary_html( $event );
+
+			// The title links to the event, so the image link is hidden from assistive technology.
+			$image = $show_images ? get_the_post_thumbnail( $event->get_id(), 'medium_large', array( 'alt' => '' ) ) : '';
+
+			$card_class = empty( $image ) ? 'pmpro_card pmpro_events_list_card' : 'pmpro_card pmpro_events_list_card pmpro_events_list_card-has-image';
 			?>
-			<article class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card pmpro_events_list_card', 'pmpro_events_list_card' ) ); ?>">
+			<article class="<?php echo esc_attr( pmpro_get_element_class( $card_class, 'pmpro_events_list_card' ) ); ?>">
+				<?php if ( ! empty( $image ) ) { ?>
+					<a class="pmpro_events_list_card_image" href="<?php echo esc_url( $event->get_permalink() ); ?>" tabindex="-1" aria-hidden="true">
+						<?php echo $image; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+					</a>
+				<?php } ?>
+
 				<h3 class="<?php echo esc_attr( pmpro_get_element_class( 'pmpro_card_title pmpro_font-large' ) ); ?>">
 					<a href="<?php echo esc_url( $event->get_permalink() ); ?>"><?php echo esc_html( $event->get_title() ); ?></a>
 				</h3>
