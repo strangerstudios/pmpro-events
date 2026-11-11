@@ -540,7 +540,8 @@ class PMProEvents_Event {
 	}
 
 	/**
-	 * Whether a user has access to this event under PMPro's content restrictions.
+	 * Whether a user has access to this event under PMPro's content restrictions
+	 * and, for the current visitor, the event's password.
 	 *
 	 * @since 2.0
 	 *
@@ -554,6 +555,12 @@ class PMProEvents_Event {
 
 		if ( null === $user_id ) {
 			$user_id = get_current_user_id();
+		}
+
+		// A password-protected event stays hidden until the visitor enters the password.
+		// Only the current visitor's password is known, so other users aren't checked against it.
+		if ( (int) $user_id === get_current_user_id() && post_password_required( $this->post ) ) {
+			return false;
 		}
 
 		if ( ! function_exists( 'pmpro_has_membership_access' ) ) {
