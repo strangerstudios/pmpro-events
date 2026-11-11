@@ -19,13 +19,10 @@ function pmpro_events_events_manager_page_meta_wrapper() {
  */
 function pmpro_events_events_manager_init() {
 	/*
-		Filter searches and redirect single event page if PMPro Option to filter is set.
+		Filter searches if PMPro Option to filter is set, and lists of events at a location.
 	*/
 	if(function_exists('pmpro_init')) {
-		$filterqueries = get_option("pmpro_filterqueries");
-		if(!empty($filterqueries)) {
-			add_filter('em_events_get','pmpro_events_events_manager_em_events_get', 10, 2);
-		}
+		add_filter('em_events_get','pmpro_events_events_manager_em_events_get', 10, 2);
 	}
 	
 	/*
@@ -105,8 +102,8 @@ function pmpro_events_events_manager_template_redirect() {
  * @since 1.0
  */
 function pmpro_events_events_manager_em_events_get($events, $args) {
-	//don't do anything in the admin
-	if(is_admin()) {
+	//don't do anything in the admin, but do filter AJAX requests
+	if( is_admin() && ! wp_doing_ajax() ) {
 		return $events;
 	}
 	
@@ -114,10 +111,15 @@ function pmpro_events_events_manager_em_events_get($events, $args) {
 	if( !function_exists( 'pmpro_hasMembershipLevel' ) ) {
 		return $events;
 	}
+
+	// Unless PMPro is set to filter searches, only filter lists of events at a location, which would reveal a restricted event's location.
+	if ( ! get_option( 'pmpro_filterqueries' ) && empty( $args['location'] ) && empty( $args['has_location'] ) ) {
+		return $events;
+	}
 	   
 	$newevents = array();
 	foreach($events as $event) {
-		 if( pmpro_has_membership_access( $event->post_id ) ) {
+		 if( pmpro_events_events_manager_can_view_details( $event ) ) {
 			$newevents[] = $event;
 		}
 	}	
@@ -132,7 +134,8 @@ function pmpro_events_events_manager_em_events_get($events, $args) {
  */
 function pmpro_events_events_manager_has_access( $hasaccess, $post, $user, $levels ) {
 
-	if ( ! is_admin() && is_single() && ! $hasaccess ) {
+	// Only change the page when checking the event being viewed, not other events listed on it.
+	if ( ! is_admin() && is_single() && ! $hasaccess && $post->ID == get_queried_object_id() ) {
 		remove_filter( 'the_content', array( 'EM_Event_Post','the_content' ) );
 		add_filter( 'em_event_output', 'pmpro_events_events_manager_event_output', 10, 4);
 	}
@@ -283,3 +286,195 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	return $save_ok;
 }
 add_filter( 'em_event_save_events', 'pmpro_events_events_manager_em_event_save_events', 10, 4 );
+
+/**
+ * Check whether the current user can see the protected details of an event.
+ *
+ * @since TBD
+ *
+ * @param EM_Event $EM_Event The event.
+ * @return bool True if the user can see the event's details.
+ */
+function pmpro_events_events_manager_can_view_details( $EM_Event ) {
+	static $cache = array();
+
+	if ( ! function_exists( 'pmpro_has_membership_access' ) || empty( $EM_Event->post_id ) ) {
+		return true;
+	}
+
+	$user_id = get_current_user_id();
+	if ( ! isset( $cache[ $user_id ][ $EM_Event->post_id ] ) ) {
+		// Users who can edit the event can already see its details in the admin.
+		$cache[ $user_id ][ $EM_Event->post_id ] = current_user_can( 'edit_post', $EM_Event->post_id ) || pmpro_has_membership_access( $EM_Event->post_id );
+	}
+
+	return $cache[ $user_id ][ $EM_Event->post_id ];
+}
+
+/**
+ * Hide the protected details of restricted events everywhere Events Manager outputs them:
+ * lists, calendars, search results, widgets, the events page, RSS and iCal feeds.
+ *
+ * @since TBD
+ *
+ * @param string   $replace          The placeholder's output.
+ * @param EM_Event $EM_Event         The event.
+ * @param string   $full_result      The full placeholder, including any arguments.
+ * @param string   $target           The output target, such as html, rss, ical or email.
+ * @param array    $placeholder_atts The placeholder name and its arguments.
+ * @return string The filtered placeholder output.
+ */
+function pmpro_events_events_manager_hide_placeholders( $replace, $EM_Event, $full_result, $target = 'html', $placeholder_atts = array() ) {
+	// Skip admin screens and booking emails (raw is used for email subjects). Emails go to people who already booked, and reminders are sent by cron without a logged-in user.
+	if ( ( is_admin() && ! wp_doing_ajax() ) || in_array( $target, array( 'email', 'raw' ), true ) || wp_doing_cron() || ! $EM_Event instanceof EM_Event || pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		return $replace;
+	}
+
+	$placeholder = ! empty( $placeholder_atts[0] ) ? $placeholder_atts[0] : $full_result;
+
+	// Never show the full event notes. Show a trimmed excerpt only if PMPro is set to show excerpts.
+	if ( in_array( $placeholder, array( '#_EVENTNOTES', '#_NOTES' ), true ) ) {
+		return '';
+	}
+	if ( in_array( $placeholder, array( '#_EVENTEXCERPT', '#_EVENTEXCERPTCUT', '#_EXCERPT' ), true ) ) {
+		if ( ! get_option( 'pmpro_showexcerpts' ) ) {
+			return '';
+		}
+
+		$excerpt_args   = ! empty( $placeholder_atts[1] ) ? explode( ',', $placeholder_atts[1] ) : array();
+		$excerpt_length = ! empty( $excerpt_args[0] ) && is_numeric( $excerpt_args[0] ) ? (int) $excerpt_args[0] : 55;
+		$excerpt_more   = ! empty( $excerpt_args[1] ) ? $excerpt_args[1] : apply_filters( 'em_excerpt_more', ' [...]' );
+		return $EM_Event->output_excerpt( $excerpt_length, $excerpt_more, true );
+	}
+
+	// Hide the location, contact, custom attributes, attendees, prices, bookings and calendar links (which include the event's details).
+	$hidden_prefixes = array( '#_LOCATION', '#_EVENTLOCATION', '#_ADDRESS', '#_TOWN', '#_MAP', '#_CONTACT', '#_ATT', '#_BOOK', '#_ADDBOOKING', '#_REMOVEBOOKING', '#_EVENTPRICE', '#_AVAILABLE', '#_RESERVED', '#_UNAVAILABLE', '#_PENDING', '#_SPACES', '#_SEATS', '#_EVENTGCAL', '#_EVENTOUTLOOK', '#_EVENTOFFICE365', '#_EVENTADDTOCALENDAR' );
+	foreach ( $hidden_prefixes as $hidden_prefix ) {
+		if ( 0 === strpos( $placeholder, $hidden_prefix ) ) {
+			return '';
+		}
+	}
+
+	return $replace;
+}
+add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_hide_placeholders', 999, 5 );
+
+/**
+ * Remove the location and organizer of restricted events from iCal feeds.
+ *
+ * @since TBD
+ *
+ * @param string   $output   The iCal output for the event.
+ * @param EM_Event $EM_Event The event.
+ * @return string The filtered iCal output.
+ */
+function pmpro_events_events_manager_ical_event_output( $output, $EM_Event ) {
+	if ( pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		return $output;
+	}
+
+	// Remove each line along with any folded continuation lines, which start with a space.
+	return preg_replace( '/\r?\n(LOCATION|GEO|X-APPLE-STRUCTURED-LOCATION|ORGANIZER)[;:][^\r\n]*(\r?\n [^\r\n]*)*/', '', $output );
+}
+add_filter( 'em_ical_event_output_content', 'pmpro_events_events_manager_ical_event_output', 10, 2 );
+
+/**
+ * Don't load the booking form of a restricted event via AJAX for non-members.
+ *
+ * @since TBD
+ *
+ * @param EM_Event $EM_Event The event.
+ */
+function pmpro_events_events_manager_ajax_output_booking_form( $EM_Event ) {
+	if ( ! pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		wp_die( esc_html__( 'You must be a member to access this event.', 'pmpro-events' ), '', array( 'response' => 403 ) );
+	}
+}
+add_action( 'em_ajax_output_booking_form', 'pmpro_events_events_manager_ajax_output_booking_form' );
+
+/**
+ * Don't let non-members book restricted events.
+ *
+ * @since TBD
+ *
+ * @param bool       $valid      Whether the booking is valid.
+ * @param EM_Booking $EM_Booking The booking.
+ * @return bool Whether the booking is valid.
+ */
+function pmpro_events_events_manager_booking_validate( $valid, $EM_Booking ) {
+	// Let booking managers add bookings for others.
+	if ( ! $valid || current_user_can( 'manage_others_bookings' ) ) {
+		return $valid;
+	}
+
+	if ( ! pmpro_events_events_manager_can_view_details( $EM_Booking->get_event() ) ) {
+		$EM_Booking->add_error( __( 'You must be a member to access this event.', 'pmpro-events' ) );
+		return false;
+	}
+
+	return $valid;
+}
+add_filter( 'em_booking_validate', 'pmpro_events_events_manager_booking_validate', 10, 2 );
+
+/**
+ * Hide the protected details of restricted events in the Events Manager API.
+ *
+ * @since TBD
+ *
+ * @param array    $api      The event data.
+ * @param EM_Event $EM_Event The event.
+ * @param string   $context  The request context.
+ * @return array The filtered event data.
+ */
+function pmpro_events_events_manager_api_prepare_event( $api, $EM_Event, $context = 'view' ) {
+	if ( 'edit' === $context || pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		return $api;
+	}
+
+	$api['content']  = '';
+	$api['location'] = false;
+	unset( $api['owner'], $api['bookings'] );
+
+	return $api;
+}
+add_filter( 'em_api_prepare_event', 'pmpro_events_events_manager_api_prepare_event', 10, 3 );
+
+/**
+ * Hide the tickets of restricted events in the Events Manager API availability data.
+ *
+ * @since TBD
+ *
+ * @param array    $availability The availability data.
+ * @param EM_Event $EM_Event     The event.
+ * @return array The filtered availability data.
+ */
+function pmpro_events_events_manager_api_event_availability( $availability, $EM_Event ) {
+	if ( ! pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		$availability['tickets'] = array();
+	}
+
+	return $availability;
+}
+add_filter( 'em_api_event_availability', 'pmpro_events_events_manager_api_event_availability', 10, 2 );
+
+/**
+ * Hide the price and description of tickets for restricted events in the Events Manager API.
+ *
+ * @since TBD
+ *
+ * @param array     $api       The ticket data.
+ * @param EM_Ticket $EM_Ticket The ticket.
+ * @param string    $context   The request context.
+ * @return array The filtered ticket data.
+ */
+function pmpro_events_events_manager_api_prepare_ticket( $api, $EM_Ticket, $context = 'view' ) {
+	if ( 'edit' === $context || pmpro_events_events_manager_can_view_details( $EM_Ticket->get_event() ) ) {
+		return $api;
+	}
+
+	$api['description'] = '';
+	unset( $api['price'] );
+
+	return $api;
+}
+add_filter( 'em_api_prepare_ticket', 'pmpro_events_events_manager_api_prepare_ticket', 10, 3 );

@@ -168,7 +168,9 @@ function pmpro_events_tribe_events_get_current_month_day($day) {
  */
 function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels ){
 	global $wpdb;
-	if ( ! is_admin() && is_single() && ! $hasaccess ) {
+
+	// Only hide sections of the page when checking the event being viewed, not other events listed on it.
+	if ( ! is_admin() && is_single() && ! $hasaccess && $post->ID == get_queried_object_id() ) {
 
 		// remove sections of single event if the user doesn't have access.
 		add_filter( 'tribe_get_template_part_templates', 'pmpro_events_tribe_events_remove_post_meta_section', 10, 3 );
@@ -193,8 +195,8 @@ function pmpro_events_tribe_events_has_access( $hasaccess, $post, $user, $levels
 				return $hasaccess;
 			}
 
-			$main_post_id = $post->_tec_occurrence->post_id;
-			if ( ! pmpro_events_tribe_get_parent_event_access( $main_post_id ) ) {
+			$main_post_id = isset( $post->_tec_occurrence->post_id ) ? $post->_tec_occurrence->post_id : 0;
+			if ( ! empty( $main_post_id ) && ! pmpro_events_tribe_get_parent_event_access( $main_post_id ) ) {
 				$hasaccess = false;
 			}
 		}
@@ -383,3 +385,231 @@ function pmpro_events_tribe_events_requires_membership_columns_content( $column_
 }
 add_filter( 'manage_tribe_events_posts_columns', 'pmpro_events_tribe_events_requires_membership_columns_head' );
 add_action( 'manage_tribe_events_posts_custom_column', 'pmpro_events_tribe_events_requires_membership_columns_content', 10, 2 );
+
+/**
+ * Check whether the current user can see the protected details of an event.
+ *
+ * Recurring event occurrences are checked against the event that holds the restriction.
+ *
+ * @since TBD
+ *
+ * @param int|WP_Post $event The event ID or post object.
+ * @return bool True if the user can see the event's details.
+ */
+function pmpro_events_tribe_events_can_view_details( $event ) {
+	static $cache = array();
+
+	if ( ! function_exists( 'pmpro_has_membership_access' ) ) {
+		return true;
+	}
+
+	$event_id = $event instanceof WP_Post ? $event->ID : (int) $event;
+	$event_id = (int) apply_filters( 'tec_events_custom_tables_v1_normalize_occurrence_id', $event_id );
+	$user_id  = get_current_user_id();
+
+	if ( ! isset( $cache[ $user_id ][ $event_id ] ) ) {
+		// Users who can edit the event can already see its details in the admin.
+		$cache[ $user_id ][ $event_id ] = current_user_can( 'edit_post', $event_id ) || pmpro_has_membership_access( $event_id );
+	}
+
+	return $cache[ $user_id ][ $event_id ];
+}
+
+/**
+ * Check whether excerpts of restricted events should be shown.
+ *
+ * @since TBD
+ *
+ * @param WP_Post|null $post The event post object.
+ * @return bool True if excerpts should be shown.
+ */
+function pmpro_events_tribe_events_show_excerpts( $post = null ) {
+	return (bool) apply_filters( 'pmpro_events_tribe_events_show_excerpts', get_option( 'pmpro_showexcerpts' ), $post );
+}
+
+/**
+ * Hide the cost, venue, organizer and excerpt of restricted events in calendar views, widgets and blocks.
+ *
+ * @since TBD
+ *
+ * @param WP_Post $event The event post object, decorated by tribe_get_event().
+ * @return WP_Post The filtered event post object.
+ */
+function pmpro_events_tribe_events_hide_event_properties( $event ) {
+	if ( ! $event instanceof WP_Post || ( is_admin() && ! wp_doing_ajax() ) || pmpro_events_tribe_events_can_view_details( $event ) ) {
+		return $event;
+	}
+
+	// Clone the event so that the object TEC caches for this request is not changed.
+	$event = clone $event;
+
+	$event->cost            = '';
+	$event->venues          = new Tribe\Events\Collections\Lazy_Post_Collection( '__return_empty_array' );
+	$event->organizers      = new Tribe\Events\Collections\Lazy_Post_Collection( '__return_empty_array' );
+	$event->organizer_names = new Tribe\Utils\Lazy_Collection( '__return_empty_array' );
+
+	if ( ! pmpro_events_tribe_events_show_excerpts( $event ) ) {
+		$event->excerpt = new Tribe\Utils\Lazy_String( '__return_empty_string' );
+	}
+
+	return $event;
+}
+add_filter( 'tribe_get_event_after', 'pmpro_events_tribe_events_hide_event_properties', 20 );
+
+/**
+ * Don't cache calendar view HTML for logged-in users, since restricted event details differ by user.
+ *
+ * @since TBD
+ *
+ * @param bool $should_cache Whether the view HTML should be cached.
+ * @return bool Whether the view HTML should be cached.
+ */
+function pmpro_events_tribe_events_should_cache_html( $should_cache ) {
+	return $should_cache && ! is_user_logged_in();
+}
+add_filter( 'tribe_events_views_v2_should_cache_html', 'pmpro_events_tribe_events_should_cache_html' );
+
+/**
+ * Change the calendar view HTML cache key so that HTML cached before restricted event details were hidden is not reused.
+ *
+ * @since TBD
+ *
+ * @param string $cache_key The cache key.
+ * @return string The filtered cache key.
+ */
+function pmpro_events_tribe_events_cache_html_key( $cache_key ) {
+	return $cache_key . 'pmpro';
+}
+add_filter( 'tribe_events_views_v2_cache_html_key', 'pmpro_events_tribe_events_cache_html_key' );
+
+/**
+ * Hide the protected details of restricted events in the TEC REST API.
+ *
+ * @since TBD
+ *
+ * @param array   $data  The event data.
+ * @param WP_Post $event The event post object.
+ * @return array The filtered event data.
+ */
+function pmpro_events_tribe_events_rest_event_data( $data, $event ) {
+	if ( pmpro_events_tribe_events_can_view_details( $event ) ) {
+		return $data;
+	}
+
+	$data['description']   = '';
+	$data['cost']          = '';
+	$data['website']       = '';
+	$data['venue']         = array();
+	$data['organizer']     = array();
+	$data['custom_fields'] = array();
+
+	if ( isset( $data['cost_details'] ) ) {
+		$data['cost_details']['values'] = array();
+	}
+
+	if ( isset( $data['virtual_url'] ) ) {
+		$data['virtual_url'] = '';
+	}
+
+	if ( ! pmpro_events_tribe_events_show_excerpts( $event ) ) {
+		$data['excerpt'] = '';
+	}
+
+	unset( $data['json_ld'] );
+
+	return $data;
+}
+add_filter( 'tribe_rest_event_data', 'pmpro_events_tribe_events_rest_event_data', 10, 2 );
+
+/**
+ * Remove restricted events from the TEC REST API event list if PMPro is set to filter searches and archives.
+ *
+ * @since TBD
+ *
+ * @param array $data The event list data.
+ * @return array The filtered event list data.
+ */
+function pmpro_events_tribe_events_rest_events_archive_data( $data ) {
+	if ( empty( $data['events'] ) || ! get_option( 'pmpro_filterqueries' ) ) {
+		return $data;
+	}
+
+	foreach ( $data['events'] as $key => $event ) {
+		if ( ! pmpro_events_tribe_events_can_view_details( $event['id'] ) ) {
+			unset( $data['events'][ $key ] );
+		}
+	}
+	$data['events'] = array_values( $data['events'] );
+
+	return $data;
+}
+add_filter( 'tribe_rest_events_archive_data', 'pmpro_events_tribe_events_rest_events_archive_data' );
+
+/**
+ * Don't let the TEC REST API venue and organizer lists reveal which venue or organizer a restricted event uses.
+ *
+ * @since TBD
+ *
+ * @param WP_REST_Response|WP_Error|mixed $response The response to send. Usually empty at this point.
+ * @param array                           $handler  The route handler.
+ * @param WP_REST_Request                 $request  The request.
+ * @return WP_REST_Response|WP_Error|mixed The response, or an error if the event is restricted.
+ */
+function pmpro_events_tribe_events_rest_linked_posts_by_event( $response, $handler, $request ) {
+	$event_id = $request->get_param( 'event' );
+	if ( empty( $event_id ) || ! is_numeric( $event_id ) || ! preg_match( '#^/(tribe/events/v1|tec/v1)/(venues|organizers)#i', $request->get_route() ) ) {
+		return $response;
+	}
+
+	if ( ! pmpro_events_tribe_events_can_view_details( (int) $event_id ) ) {
+		return new WP_Error( 'rest_forbidden', __( 'You must be a member to access this event.', 'pmpro-events' ), array( 'status' => rest_authorization_required_code() ) );
+	}
+
+	return $response;
+}
+add_filter( 'rest_request_before_callbacks', 'pmpro_events_tribe_events_rest_linked_posts_by_event', 10, 3 );
+
+/**
+ * Hide the protected details of restricted events in JSON-LD structured data.
+ *
+ * @since TBD
+ *
+ * @param object  $data The JSON-LD object for the event.
+ * @param array   $args The arguments used to build the data.
+ * @param WP_Post $post The event post object.
+ * @return object The filtered JSON-LD object.
+ */
+function pmpro_events_tribe_events_json_ld_event_object( $data, $args, $post ) {
+	if ( pmpro_events_tribe_events_can_view_details( $post ) ) {
+		return $data;
+	}
+
+	unset( $data->location, $data->organizer, $data->offers );
+
+	if ( ! pmpro_events_tribe_events_show_excerpts( $post ) ) {
+		unset( $data->description );
+	}
+
+	return $data;
+}
+add_filter( 'tribe_json_ld_event_object', 'pmpro_events_tribe_events_json_ld_event_object', 10, 3 );
+
+/**
+ * Hide the protected details of restricted events in iCal exports.
+ *
+ * @since TBD
+ *
+ * @param array   $item       The iCal lines for the event.
+ * @param WP_Post $event_post The event post object.
+ * @return array The filtered iCal lines.
+ */
+function pmpro_events_tribe_events_ical_feed_item( $item, $event_post ) {
+	if ( pmpro_events_tribe_events_can_view_details( $event_post ) ) {
+		return $item;
+	}
+
+	unset( $item['DESCRIPTION'], $item['LOCATION'], $item['GEO'], $item['X-APPLE-STRUCTURED-LOCATION'], $item['ORGANIZER'] );
+
+	return $item;
+}
+add_filter( 'tribe_ical_feed_item', 'pmpro_events_tribe_events_ical_feed_item', 20, 2 );
