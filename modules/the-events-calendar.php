@@ -537,6 +537,8 @@ function pmpro_events_tribe_events_rest_events_archive_data( $data, $request = n
 		return $data;
 	}
 
+	// Events are removed after the query runs, so the list's total and page counts may still include them.
+	// This reveals how many restricted events match, but not which ones.
 	foreach ( $data['events'] as $key => $event ) {
 		if ( ! pmpro_events_tribe_events_can_view_details( $event['id'] ) ) {
 			unset( $data['events'][ $key ] );
@@ -568,6 +570,8 @@ function pmpro_events_tribe_events_tec_rest_events_by_linked_post( $response, $h
 	if ( ! is_array( $data ) ) {
 		return $response;
 	}
+
+	// As in the tribe/events/v1 list, total and page counts may still include the removed events.
 
 	foreach ( $data as $key => $event ) {
 		if ( ! empty( $event['id'] ) && ! pmpro_events_tribe_events_can_view_details( (int) $event['id'] ) ) {
@@ -689,6 +693,9 @@ add_filter( 'tribe_tickets_rest_api_ticket_data', 'pmpro_events_tribe_tickets_re
  */
 function pmpro_events_tribe_tickets_rest_create_order( $response, $handler, $request ) {
 	$route = $request->get_route();
+
+	// Only check the routes that create orders. Routes that update or capture payment for an order (.../order/<id>)
+	// act on an order that one of these routes already created, so this check doesn't need to be widened to them.
 	if ( is_wp_error( $response ) || ! preg_match( '#^/tribe/tickets/v1/(commerce/[a-z_-]+/order|rsvp/v2/order)$#i', $route ) ) {
 		return $response;
 	}
