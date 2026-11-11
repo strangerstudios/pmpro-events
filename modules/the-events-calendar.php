@@ -436,7 +436,7 @@ function pmpro_events_tribe_events_show_excerpts( $post = null ) {
  * @return WP_Post The filtered event post object.
  */
 function pmpro_events_tribe_events_hide_event_properties( $event ) {
-	if ( ! $event instanceof WP_Post || ( is_admin() && ! wp_doing_ajax() ) || pmpro_events_tribe_events_can_view_details( $event ) ) {
+	if ( ! $event instanceof WP_Post || ( is_admin() && ! wp_doing_ajax() ) || ! class_exists( 'Tribe\\Events\\Collections\\Lazy_Post_Collection' ) || pmpro_events_tribe_events_can_view_details( $event ) ) {
 		return $event;
 	}
 
@@ -522,15 +522,18 @@ function pmpro_events_tribe_events_rest_event_data( $data, $event ) {
 add_filter( 'tribe_rest_event_data', 'pmpro_events_tribe_events_rest_event_data', 10, 2 );
 
 /**
- * Remove restricted events from the TEC REST API event list if PMPro is set to filter searches and archives.
+ * Remove restricted events from the TEC REST API event list if PMPro is set to filter searches and archives,
+ * or if the list is for a venue or organizer, which would reveal the restricted event's venue or organizer.
  *
  * @since TBD
  *
- * @param array $data The event list data.
+ * @param array           $data    The event list data.
+ * @param WP_REST_Request $request The request.
  * @return array The filtered event list data.
  */
-function pmpro_events_tribe_events_rest_events_archive_data( $data ) {
-	if ( empty( $data['events'] ) || ! get_option( 'pmpro_filterqueries' ) ) {
+function pmpro_events_tribe_events_rest_events_archive_data( $data, $request = null ) {
+	$by_linked_post = $request instanceof WP_REST_Request && ( ! empty( $request['venue'] ) || ! empty( $request['organizer'] ) );
+	if ( empty( $data['events'] ) || ( ! get_option( 'pmpro_filterqueries' ) && ! $by_linked_post ) ) {
 		return $data;
 	}
 
@@ -543,7 +546,39 @@ function pmpro_events_tribe_events_rest_events_archive_data( $data ) {
 
 	return $data;
 }
-add_filter( 'tribe_rest_events_archive_data', 'pmpro_events_tribe_events_rest_events_archive_data' );
+add_filter( 'tribe_rest_events_archive_data', 'pmpro_events_tribe_events_rest_events_archive_data', 10, 2 );
+
+/**
+ * Remove restricted events from the tec/v1 REST API event list when it is for a venue or organizer,
+ * which would reveal the restricted event's venue or organizer.
+ *
+ * @since TBD
+ *
+ * @param WP_REST_Response|WP_Error|mixed $response The response.
+ * @param array                           $handler  The route handler.
+ * @param WP_REST_Request                 $request  The request.
+ * @return WP_REST_Response|WP_Error|mixed The filtered response.
+ */
+function pmpro_events_tribe_events_tec_rest_events_by_linked_post( $response, $handler, $request ) {
+	if ( ! $response instanceof WP_REST_Response || ( empty( $request['venue'] ) && empty( $request['organizer'] ) ) || ! preg_match( '#^/tec/v1/events/?$#i', $request->get_route() ) ) {
+		return $response;
+	}
+
+	$data = $response->get_data();
+	if ( ! is_array( $data ) ) {
+		return $response;
+	}
+
+	foreach ( $data as $key => $event ) {
+		if ( ! empty( $event['id'] ) && ! pmpro_events_tribe_events_can_view_details( (int) $event['id'] ) ) {
+			unset( $data[ $key ] );
+		}
+	}
+	$response->set_data( array_values( $data ) );
+
+	return $response;
+}
+add_filter( 'rest_request_after_callbacks', 'pmpro_events_tribe_events_tec_rest_events_by_linked_post', 10, 3 );
 
 /**
  * Don't let the TEC REST API venue and organizer lists reveal which venue or organizer a restricted event uses.
@@ -613,3 +648,117 @@ function pmpro_events_tribe_events_ical_feed_item( $item, $event_post ) {
 	return $item;
 }
 add_filter( 'tribe_ical_feed_item', 'pmpro_events_tribe_events_ical_feed_item', 20, 2 );
+
+/**
+ * Hide the price, description and attendees of tickets for restricted events in the Event Tickets REST API.
+ *
+ * @since TBD
+ *
+ * @param array $data      The ticket data.
+ * @param int   $ticket_id The ticket ID.
+ * @return array The filtered ticket data.
+ */
+function pmpro_events_tribe_tickets_rest_api_ticket_data( $data, $ticket_id ) {
+	if ( empty( $data['post_id'] ) || pmpro_events_tribe_events_can_view_details( (int) $data['post_id'] ) ) {
+		return $data;
+	}
+
+	$data['description'] = '';
+	$data['cost']        = '';
+	if ( isset( $data['cost_details'] ) ) {
+		$data['cost_details'] = array();
+	}
+	if ( isset( $data['attendees'] ) ) {
+		$data['attendees'] = array();
+	}
+
+	return $data;
+}
+add_filter( 'tribe_tickets_rest_api_ticket_data', 'pmpro_events_tribe_tickets_rest_api_ticket_data', 10, 2 );
+
+/**
+ * Don't let non-members create Tickets Commerce orders or RSVPs for restricted events.
+ * Orders are created before payment is taken, and the ticket forms can be submitted without visiting the event page.
+ *
+ * @since TBD
+ *
+ * @param WP_REST_Response|WP_Error|mixed $response The response to send. Usually empty at this point.
+ * @param array                           $handler  The route handler.
+ * @param WP_REST_Request                 $request  The request.
+ * @return WP_REST_Response|WP_Error|mixed The response, or an error if a ticket is for a restricted event.
+ */
+function pmpro_events_tribe_tickets_rest_create_order( $response, $handler, $request ) {
+	$route = $request->get_route();
+	if ( is_wp_error( $response ) || ! preg_match( '#^/tribe/tickets/v1/(commerce/[a-z_-]+/order|rsvp/v2/order)$#i', $route ) ) {
+		return $response;
+	}
+
+	// RSVPs pass the ticket ID. Other orders are created from the cart.
+	$event_ids = array();
+	if ( false !== stripos( $route, '/rsvp/v2/' ) ) {
+		$event = tribe_events_get_ticket_event( absint( $request->get_param( 'ticket_id' ) ) );
+		if ( ! empty( $event->ID ) ) {
+			$event_ids[] = $event->ID;
+		}
+	} elseif ( class_exists( 'TEC\Tickets\Commerce\Cart' ) ) {
+		foreach ( tribe( 'TEC\Tickets\Commerce\Cart' )->get_items_in_cart( true ) as $item ) {
+			if ( ! empty( $item['event_id'] ) ) {
+				$event_ids[] = (int) $item['event_id'];
+			}
+		}
+	}
+
+	foreach ( $event_ids as $event_id ) {
+		if ( ! pmpro_events_tribe_events_can_view_details( $event_id ) ) {
+			return new WP_Error( 'pmpro_events_restricted', __( 'You must be a member to access this event.', 'pmpro-events' ), array( 'status' => rest_authorization_required_code() ) );
+		}
+	}
+
+	return $response;
+}
+add_filter( 'rest_request_before_callbacks', 'pmpro_events_tribe_tickets_rest_create_order', 10, 3 );
+
+/**
+ * Don't let non-members RSVP to restricted events through the RSVP form or its AJAX handlers.
+ *
+ * @since TBD
+ *
+ * @param int $event_id The ID of the event being RSVPed to.
+ */
+function pmpro_events_tribe_tickets_rsvp_before_attendee_ticket_creation( $event_id ) {
+	if ( pmpro_events_tribe_events_can_view_details( $event_id ) ) {
+		return;
+	}
+
+	$message = __( 'You must be a member to access this event.', 'pmpro-events' );
+	if ( wp_doing_ajax() ) {
+		wp_send_json_error( array( 'html' => esc_html( $message ) ) );
+	}
+	wp_die( esc_html( $message ), '', array( 'response' => 403, 'back_link' => true ) );
+}
+add_action( 'tribe_tickets_rsvp_before_attendee_ticket_creation', 'pmpro_events_tribe_tickets_rsvp_before_attendee_ticket_creation' );
+
+/**
+ * Don't let non-members buy tickets for restricted events through the legacy Tribe Commerce PayPal gateway.
+ *
+ * @since TBD
+ *
+ * @param array $post_data The submitted form data.
+ */
+function pmpro_events_tribe_tickets_paypal_pre_add_to_cart( $post_data ) {
+	$ticket_ids = array();
+	if ( ! empty( $post_data['product_id'] ) ) {
+		$ticket_ids = (array) $post_data['product_id'];
+	}
+	if ( ! empty( $post_data['tribe_tickets'] ) && is_array( $post_data['tribe_tickets'] ) ) {
+		$ticket_ids = array_merge( $ticket_ids, wp_list_pluck( $post_data['tribe_tickets'], 'ticket_id' ) );
+	}
+
+	foreach ( $ticket_ids as $ticket_id ) {
+		$event = tribe_events_get_ticket_event( absint( $ticket_id ) );
+		if ( ! empty( $event->ID ) && ! pmpro_events_tribe_events_can_view_details( $event->ID ) ) {
+			wp_die( esc_html__( 'You must be a member to access this event.', 'pmpro-events' ), '', array( 'response' => 403, 'back_link' => true ) );
+		}
+	}
+}
+add_action( 'tribe_tickets_commerce_paypal_gateway_pre_add_to_cart', 'pmpro_events_tribe_tickets_paypal_pre_add_to_cart' );

@@ -76,8 +76,8 @@ function pmpro_events_sc_filter_events_archive( $events ) {
 		return $events;
 	}
 
-	// Don't do anything in the admin, but do filter AJAX requests.
-	if ( is_admin() && ! wp_doing_ajax() ) {
+	// Don't do anything in the admin or in scheduled tasks, but do filter AJAX requests.
+	if ( ( is_admin() && ! wp_doing_ajax() ) || wp_doing_cron() ) {
 		return $events;
 	}
 

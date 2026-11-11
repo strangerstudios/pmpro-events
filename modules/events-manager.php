@@ -113,7 +113,7 @@ function pmpro_events_events_manager_em_events_get($events, $args) {
 	}
 
 	// Unless PMPro is set to filter searches, only filter lists of events at a location, which would reveal a restricted event's location.
-	if ( ! get_option( 'pmpro_filterqueries' ) && empty( $args['location'] ) && empty( $args['has_location'] ) ) {
+	if ( ! get_option( 'pmpro_filterqueries' ) && ! array_filter( array_intersect_key( (array) $args, array_flip( array( 'location', 'location_id', 'has_location', 'town', 'state', 'country', 'region', 'near', 'geo' ) ) ) ) ) {
 		return $events;
 	}
 	   
@@ -348,7 +348,8 @@ function pmpro_events_events_manager_hide_placeholders( $replace, $EM_Event, $fu
 	}
 
 	// Hide the location, contact, custom attributes, attendees, prices, bookings and calendar links (which include the event's details).
-	$hidden_prefixes = array( '#_LOCATION', '#_EVENTLOCATION', '#_ADDRESS', '#_TOWN', '#_MAP', '#_CONTACT', '#_ATT', '#_BOOK', '#_ADDBOOKING', '#_REMOVEBOOKING', '#_EVENTPRICE', '#_AVAILABLE', '#_RESERVED', '#_UNAVAILABLE', '#_PENDING', '#_SPACES', '#_SEATS', '#_EVENTGCAL', '#_EVENTOUTLOOK', '#_EVENTOFFICE365', '#_EVENTADDTOCALENDAR' );
+	// Location placeholders that don't start with #_LOCATION are also passed to the location's output, such as #_LATT and #_NEXTEVENTS.
+	$hidden_prefixes = array( '#_LOCATION', '#_EVENTLOCATION', '#_ADDRESS', '#_TOWN', '#_MAP', '#_LATT', '#_DESCRIPTION', '#_NEXTEVENTS', '#_PASTEVENTS', '#_ALLEVENTS', '#_CONTACT', '#_ATT', '#_BOOK', '#_ADDBOOKING', '#_REMOVEBOOKING', '#_EVENTPRICE', '#_AVAILABLE', '#_RESERVED', '#_UNAVAILABLE', '#_PENDING', '#_SPACES', '#_SEATS', '#_EVENTGCAL', '#_EVENTOUTLOOK', '#_EVENTOFFICE365', '#_EVENTADDTOCALENDAR' );
 	foreach ( $hidden_prefixes as $hidden_prefix ) {
 		if ( 0 === strpos( $placeholder, $hidden_prefix ) ) {
 			return '';
@@ -358,6 +359,32 @@ function pmpro_events_events_manager_hide_placeholders( $replace, $EM_Event, $fu
 	return $replace;
 }
 add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_hide_placeholders', 999, 5 );
+
+/**
+ * Hide conditional sections that depend on the protected details of restricted events,
+ * such as {has_location}, {fully_booked}, {is_free} or {has_att_name}, along with their opposites.
+ *
+ * @since TBD
+ *
+ * @param bool     $show_condition Whether to show the conditional section.
+ * @param string   $condition      The condition name.
+ * @param string   $full_match     The full conditional section.
+ * @param EM_Event $EM_Event       The event.
+ * @return bool Whether to show the conditional section.
+ */
+function pmpro_events_events_manager_hide_conditions( $show_condition, $condition, $full_match, $EM_Event ) {
+	if ( ! $show_condition || ( is_admin() && ! wp_doing_ajax() ) || wp_doing_cron() || ! $EM_Event instanceof EM_Event || pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		return $show_condition;
+	}
+
+	$hidden_conditions = array( 'has_bookings', 'no_bookings', 'has_spaces', 'fully_booked', 'bookings_open', 'bookings_closed', 'is_free', 'is_free_now', 'not_free', 'not_free_now', 'has_location', 'no_location', 'has_location_venue', 'no_location_venue', 'has_event_location', 'no_event_location' );
+	if ( in_array( $condition, $hidden_conditions, true ) || 0 === strpos( $condition, 'has_att_' ) || 0 === strpos( $condition, 'no_att_' ) ) {
+		return false;
+	}
+
+	return $show_condition;
+}
+add_filter( 'em_event_output_show_condition', 'pmpro_events_events_manager_hide_conditions', 10, 4 );
 
 /**
  * Remove the location and organizer of restricted events from iCal feeds.
@@ -427,13 +454,14 @@ add_filter( 'em_booking_validate', 'pmpro_events_events_manager_booking_validate
  * @return array The filtered event data.
  */
 function pmpro_events_events_manager_api_prepare_event( $api, $EM_Event, $context = 'view' ) {
-	if ( 'edit' === $context || pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+	// Don't trust the edit context here, since event lists accept it from anyone. Users who can edit the event can view its details.
+	if ( pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
 		return $api;
 	}
 
 	$api['content']  = '';
 	$api['location'] = false;
-	unset( $api['owner'], $api['bookings'] );
+	unset( $api['owner'], $api['bookings'], $api['location_type'] );
 
 	return $api;
 }
@@ -468,7 +496,7 @@ add_filter( 'em_api_event_availability', 'pmpro_events_events_manager_api_event_
  * @return array The filtered ticket data.
  */
 function pmpro_events_events_manager_api_prepare_ticket( $api, $EM_Ticket, $context = 'view' ) {
-	if ( 'edit' === $context || pmpro_events_events_manager_can_view_details( $EM_Ticket->get_event() ) ) {
+	if ( pmpro_events_events_manager_can_view_details( $EM_Ticket->get_event() ) ) {
 		return $api;
 	}
 
@@ -478,3 +506,22 @@ function pmpro_events_events_manager_api_prepare_ticket( $api, $EM_Ticket, $cont
 	return $api;
 }
 add_filter( 'em_api_prepare_ticket', 'pmpro_events_events_manager_api_prepare_ticket', 10, 3 );
+
+/**
+ * Hide the tickets, prices and spaces of restricted events in the Events Manager API booking requirements.
+ *
+ * @since TBD
+ *
+ * @param array    $payload  The booking requirements.
+ * @param EM_Event $EM_Event The event.
+ * @return array The filtered booking requirements.
+ */
+function pmpro_events_events_manager_api_booking_requirements( $payload, $EM_Event ) {
+	if ( ! pmpro_events_events_manager_can_view_details( $EM_Event ) ) {
+		$payload['tickets'] = array();
+		unset( $payload['spaces_available'], $payload['payment'] );
+	}
+
+	return $payload;
+}
+add_filter( 'em_api_booking_requirements', 'pmpro_events_events_manager_api_booking_requirements', 10, 2 );
