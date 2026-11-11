@@ -182,11 +182,13 @@ function pmpro_events_get_icon( $name ) {
  * Get a short location label for the summary line.
  *
  * The full address is saved for the detail list further down the page.
+ * Visitors who can't access a restricted event only see its venue name, so
+ * this is empty for an in-person event without a venue name.
  *
  * @since 2.0
  *
  * @param PMProEvents_Event $event The event.
- * @return string The short location.
+ * @return string The short location, or an empty string.
  */
 function pmpro_events_get_short_location( $event ) {
 	if ( $event->is_virtual() ) {
@@ -195,6 +197,11 @@ function pmpro_events_get_short_location( $event ) {
 
 	if ( ! empty( $event->venue_name ) ) {
 		return $event->venue_name;
+	}
+
+	// A restricted event only teases its venue name. The address stays behind the membership requirement.
+	if ( ! $event->user_can_access() ) {
+		return '';
 	}
 
 	return $event->get_location_summary();
@@ -363,8 +370,8 @@ function pmpro_events_get_event_detail_rows( $event ) {
  * Get the "X of Y spots remaining" text for an event.
  *
  * Only meaningful while someone could still take a spot, so it's empty once
- * the event has passed or filled, and for events without registration or a
- * capacity.
+ * the event has passed or filled, for events without registration or a
+ * capacity, and when the current user can't access the event.
  *
  * @since TBD
  *
@@ -372,7 +379,8 @@ function pmpro_events_get_event_detail_rows( $event ) {
  * @return string The availability text, or an empty string.
  */
 function pmpro_events_get_availability_text( $event ) {
-	if ( ! $event->has_registration() || $event->has_passed() ) {
+	// Visitors who can't register for a restricted event don't need to know how full it is.
+	if ( ! $event->has_registration() || $event->has_passed() || ! $event->user_can_access() ) {
 		return '';
 	}
 
