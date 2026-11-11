@@ -43,7 +43,7 @@ add_filter( 'pmpro_has_membership_access_filter', 'pmpro_events_sugar_calendar_h
 /**
  * Check whether the current user can see the protected details of an event.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param int $post_id The event's post ID.
  * @return bool True if the user can see the event's details.
@@ -107,7 +107,7 @@ add_action( 'sc_the_events', 'pmpro_events_sc_filter_events_archive' );
 /**
  * Hide the excerpt of restricted posts in calendar popovers and event lists, unless PMPro is set to show excerpts.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param string $excerpt The excerpt.
  * @param int    $post_id The post ID.
@@ -125,7 +125,7 @@ add_filter( 'sugar_calendar_helpers_get_event_excerpt', 'pmpro_events_sc_get_eve
 /**
  * Don't output structured data for restricted events, since it includes the description, price and join link.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param bool   $enabled Whether to output structured data.
  * @param object $event   The event.
@@ -139,7 +139,7 @@ add_filter( 'sugar_calendar_structured_data_enabled', 'pmpro_events_sc_structure
 /**
  * Hide the protected details of restricted events in Sugar Calendar abilities.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array  $out   The event data.
  * @param object $event The event.
@@ -165,7 +165,7 @@ add_filter( 'sugar_calendar_integrations_abilities_formatter_event', 'pmpro_even
 /**
  * Don't let non-members get ticket prices or buy tickets for restricted events.
  *
- * @since TBD
+ * @since 1.6.2
  */
 function pmpro_events_sc_block_ticket_checkout() {
 	// phpcs:disable WordPress.Security.NonceVerification.Missing -- Only reading the event ID to block the request.

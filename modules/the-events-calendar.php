@@ -391,7 +391,7 @@ add_action( 'manage_tribe_events_posts_custom_column', 'pmpro_events_tribe_event
  *
  * Recurring event occurrences are checked against the event that holds the restriction.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param int|WP_Post $event The event ID or post object.
  * @return bool True if the user can see the event's details.
@@ -418,7 +418,7 @@ function pmpro_events_tribe_events_can_view_details( $event ) {
 /**
  * Check whether excerpts of restricted events should be shown.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param WP_Post|null $post The event post object.
  * @return bool True if excerpts should be shown.
@@ -430,7 +430,7 @@ function pmpro_events_tribe_events_show_excerpts( $post = null ) {
 /**
  * Hide the cost, venue, organizer and excerpt of restricted events in calendar views, widgets and blocks.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param WP_Post $event The event post object, decorated by tribe_get_event().
  * @return WP_Post The filtered event post object.
@@ -459,7 +459,7 @@ add_filter( 'tribe_get_event_after', 'pmpro_events_tribe_events_hide_event_prope
 /**
  * Don't cache calendar view HTML for logged-in users, since restricted event details differ by user.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param bool $should_cache Whether the view HTML should be cached.
  * @return bool Whether the view HTML should be cached.
@@ -472,7 +472,7 @@ add_filter( 'tribe_events_views_v2_should_cache_html', 'pmpro_events_tribe_event
 /**
  * Change the calendar view HTML cache key so that HTML cached before restricted event details were hidden is not reused.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param string $cache_key The cache key.
  * @return string The filtered cache key.
@@ -485,7 +485,7 @@ add_filter( 'tribe_events_views_v2_cache_html_key', 'pmpro_events_tribe_events_c
 /**
  * Hide the protected details of restricted events in the TEC REST API.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array   $data  The event data.
  * @param WP_Post $event The event post object.
@@ -525,7 +525,7 @@ add_filter( 'tribe_rest_event_data', 'pmpro_events_tribe_events_rest_event_data'
  * Remove restricted events from the TEC REST API event list if PMPro is set to filter searches and archives,
  * or if the list is for a venue or organizer, which would reveal the restricted event's venue or organizer.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array           $data    The event list data.
  * @param WP_REST_Request $request The request.
@@ -554,7 +554,7 @@ add_filter( 'tribe_rest_events_archive_data', 'pmpro_events_tribe_events_rest_ev
  * Remove restricted events from the tec/v1 REST API event list when it is for a venue or organizer,
  * which would reveal the restricted event's venue or organizer.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param WP_REST_Response|WP_Error|mixed $response The response.
  * @param array                           $handler  The route handler.
@@ -587,7 +587,7 @@ add_filter( 'rest_request_after_callbacks', 'pmpro_events_tribe_events_tec_rest_
 /**
  * Don't let the TEC REST API venue and organizer lists reveal which venue or organizer a restricted event uses.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param WP_REST_Response|WP_Error|mixed $response The response to send. Usually empty at this point.
  * @param array                           $handler  The route handler.
@@ -611,7 +611,7 @@ add_filter( 'rest_request_before_callbacks', 'pmpro_events_tribe_events_rest_lin
 /**
  * Hide the protected details of restricted events in JSON-LD structured data.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param object  $data The JSON-LD object for the event.
  * @param array   $args The arguments used to build the data.
@@ -636,7 +636,7 @@ add_filter( 'tribe_json_ld_event_object', 'pmpro_events_tribe_events_json_ld_eve
 /**
  * Hide the protected details of restricted events in iCal exports.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array   $item       The iCal lines for the event.
  * @param WP_Post $event_post The event post object.
@@ -656,7 +656,7 @@ add_filter( 'tribe_ical_feed_item', 'pmpro_events_tribe_events_ical_feed_item', 
 /**
  * Hide the price, description and attendees of tickets for restricted events in the Event Tickets REST API.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array $data      The ticket data.
  * @param int   $ticket_id The ticket ID.
@@ -684,7 +684,7 @@ add_filter( 'tribe_tickets_rest_api_ticket_data', 'pmpro_events_tribe_tickets_re
  * Don't let non-members create Tickets Commerce orders or RSVPs for restricted events.
  * Orders are created before payment is taken, and the ticket forms can be submitted without visiting the event page.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param WP_REST_Response|WP_Error|mixed $response The response to send. Usually empty at this point.
  * @param array                           $handler  The route handler.
@@ -728,7 +728,7 @@ add_filter( 'rest_request_before_callbacks', 'pmpro_events_tribe_tickets_rest_cr
 /**
  * Don't let non-members RSVP to restricted events through the RSVP form or its AJAX handlers.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param int $event_id The ID of the event being RSVPed to.
  */
@@ -748,7 +748,7 @@ add_action( 'tribe_tickets_rsvp_before_attendee_ticket_creation', 'pmpro_events_
 /**
  * Don't let non-members buy tickets for restricted events through the legacy Tribe Commerce PayPal gateway.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array $post_data The submitted form data.
  */

@@ -290,7 +290,7 @@ add_filter( 'em_event_save_events', 'pmpro_events_events_manager_em_event_save_e
 /**
  * Check whether the current user can see the protected details of an event.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param EM_Event $EM_Event The event.
  * @return bool True if the user can see the event's details.
@@ -315,7 +315,7 @@ function pmpro_events_events_manager_can_view_details( $EM_Event ) {
  * Hide the protected details of restricted events everywhere Events Manager outputs them:
  * lists, calendars, search results, widgets, the events page, RSS and iCal feeds.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param string   $replace          The placeholder's output.
  * @param EM_Event $EM_Event         The event.
@@ -364,7 +364,7 @@ add_filter( 'em_event_output_placeholder', 'pmpro_events_events_manager_hide_pla
  * Hide conditional sections that depend on the protected details of restricted events,
  * such as {has_location}, {fully_booked}, {is_free} or {has_att_name}, along with their opposites.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param bool     $show_condition Whether to show the conditional section.
  * @param string   $condition      The condition name.
@@ -389,7 +389,7 @@ add_filter( 'em_event_output_show_condition', 'pmpro_events_events_manager_hide_
 /**
  * Remove the location and organizer of restricted events from iCal feeds.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param string   $output   The iCal output for the event.
  * @param EM_Event $EM_Event The event.
@@ -408,7 +408,7 @@ add_filter( 'em_ical_event_output_content', 'pmpro_events_events_manager_ical_ev
 /**
  * Don't load the booking form of a restricted event via AJAX for non-members.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param EM_Event $EM_Event The event.
  */
@@ -422,7 +422,7 @@ add_action( 'em_ajax_output_booking_form', 'pmpro_events_events_manager_ajax_out
 /**
  * Don't let non-members book restricted events.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param bool       $valid      Whether the booking is valid.
  * @param EM_Booking $EM_Booking The booking.
@@ -446,7 +446,7 @@ add_filter( 'em_booking_validate', 'pmpro_events_events_manager_booking_validate
 /**
  * Hide the protected details of restricted events in the Events Manager API.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array    $api      The event data.
  * @param EM_Event $EM_Event The event.
@@ -470,7 +470,7 @@ add_filter( 'em_api_prepare_event', 'pmpro_events_events_manager_api_prepare_eve
 /**
  * Hide the tickets of restricted events in the Events Manager API availability data.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array    $availability The availability data.
  * @param EM_Event $EM_Event     The event.
@@ -488,7 +488,7 @@ add_filter( 'em_api_event_availability', 'pmpro_events_events_manager_api_event_
 /**
  * Hide the price and description of tickets for restricted events in the Events Manager API.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array     $api       The ticket data.
  * @param EM_Ticket $EM_Ticket The ticket.
@@ -510,7 +510,7 @@ add_filter( 'em_api_prepare_ticket', 'pmpro_events_events_manager_api_prepare_ti
 /**
  * Hide the tickets, prices and spaces of restricted events in the Events Manager API booking requirements.
  *
- * @since TBD
+ * @since 1.6.2
  *
  * @param array    $payload  The booking requirements.
  * @param EM_Event $EM_Event The event.

@@ -2,9 +2,9 @@
 Contributors: strangerstudios, paidmembershipspro
 Tags: calendar, events, private event, tickets, paid memberships pro
 Requires at least: 5.2
-Tested up to: 6.8
+Tested up to: 7.1
 Requires PHP: 7.2
-Stable tag: 1.6.1
+Stable tag: 1.6.2
 
 Create private events, hide event details, & restrict event registration for members-only using popular events calendar plugins with PMPro.
 
@@ -114,6 +114,15 @@ Please visit our premium support site at [https://www.paidmembershipspro.com](ht
 2. Event information is hidden on the site.
 
 == Changelog ==
+= 1.6.2 - 2026-11-11 =
+* SECURITY: Restricted event details (description, venue, organizer, cost and tickets) are now hidden from non-members in The Events Calendar's REST APIs, structured data, iCal exports and calendar views. Thanks to @kta1kri for reporting. #86 (@dparker1005)
+* SECURITY: Non-members can no longer get tickets or RSVP for restricted events through Event Tickets, and ticket details for restricted events are hidden in the Event Tickets REST API. #86 (@dparker1005)
+* SECURITY: Restricted event details are now hidden from non-members in Events Manager lists, calendars, searches, feeds, iCal exports, REST API and abilities, and non-members can no longer book restricted events. #86 (@dparker1005)
+* SECURITY: Restricted event details are now hidden from non-members in Sugar Calendar blocks, popovers and event downloads, and non-members can no longer buy tickets for restricted events. #86 (@dparker1005)
+* BUG FIX: Fixed The Events Calendar month view cache showing one visitor's view of restricted events to other visitors. #86 (@dparker1005)
+* BUG FIX: The "Filter searches and archives" setting now also applies to The Events Calendar's REST API event list and to Events Manager and Sugar Calendar calendar updates loaded in the background. #86 (@dparker1005)
+* BUG FIX: Fixed a restricted event shown in a widget or list on another event's page hiding parts of that page. #86 (@dparker1005)
+
 = 1.6.1 - 2025-11-25 =
 * BUG FIX: Resolve a PHP warning for Events Manager that occurs when event content is retrieved via AJAX. #56 (@dwanjuki)
 
