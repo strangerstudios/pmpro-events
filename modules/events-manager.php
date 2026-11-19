@@ -250,6 +250,16 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 		return $save_ok;
 	}
 
+	// Remember the occurrences so that they can be synced again after PMPro saves the event's levels.
+	if ( ! empty( $post_ids ) ) {
+		global $pmpro_events_em_saved_occurrences;
+		$previous_post_ids = isset( $pmpro_events_em_saved_occurrences[ $event->post_id ] ) ? $pmpro_events_em_saved_occurrences[ $event->post_id ]['post_ids'] : array();
+		$pmpro_events_em_saved_occurrences[ $event->post_id ] = array(
+			'event'    => $event,
+			'post_ids' => array_unique( array_merge( $previous_post_ids, array_map( 'intval', $post_ids ) ) ),
+		);
+	}
+
 	// fetch membership requirements for main event entry
 	$membership_requirements = $wpdb->get_results(
 		$wpdb->prepare(
@@ -286,6 +296,57 @@ function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $eve
 	return $save_ok;
 }
 add_filter( 'em_event_save_events', 'pmpro_events_events_manager_em_event_save_events', 10, 4 );
+
+/**
+ * Remember whether a repeating event required membership before PMPro saves its levels.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The ID of the post being saved.
+ */
+function pmpro_events_events_manager_save_post_before_levels( $post_id ) {
+	global $wpdb, $pmpro_events_em_had_levels;
+
+	// PMPro only saves a post's levels when its Require Membership meta box was submitted.
+	if ( ! isset( $_POST['pmpro_noncename'] ) || 'event-recurring' !== get_post_type( $post_id ) ) {
+		return;
+	}
+
+	$pmpro_events_em_had_levels[ $post_id ] = (bool) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_id ) );
+}
+add_action( 'save_post', 'pmpro_events_events_manager_save_post_before_levels', 0 );
+
+/**
+ * Sync the membership requirements of a repeating event to its occurrences after PMPro saves the event's levels.
+ *
+ * Events Manager 7.0+ saves the occurrences at save_post priority 1, before PMPro
+ * saves the event's levels at priority 10. Without this, the occurrences get the
+ * levels that the event had before the save.
+ *
+ * @since TBD
+ *
+ * @param int $post_id The ID of the post being saved.
+ */
+function pmpro_events_events_manager_save_post_after_levels( $post_id ) {
+	global $wpdb, $pmpro_events_em_saved_occurrences, $pmpro_events_em_had_levels;
+
+	// Only continue if Events Manager saved occurrences for this event during this request.
+	if ( empty( $pmpro_events_em_saved_occurrences[ $post_id ] ) ) {
+		return;
+	}
+	$saved = $pmpro_events_em_saved_occurrences[ $post_id ];
+
+	$has_levels = (bool) $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->pmpro_memberships_pages} WHERE page_id = %d", $post_id ) );
+	if ( $has_levels ) {
+		// Copy the event's current levels to its occurrences.
+		pmpro_events_events_manager_em_event_save_events( true, $saved['event'], array(), $saved['post_ids'] );
+	} elseif ( ! empty( $pmpro_events_em_had_levels[ $post_id ] ) ) {
+		// All levels were just removed from the event, so remove them from its occurrences too.
+		// If the event had no levels before this save, leave any levels set on individual occurrences alone.
+		$wpdb->query( "DELETE FROM {$wpdb->pmpro_memberships_pages} WHERE page_id IN (" . implode( ',', array_map( 'intval', $saved['post_ids'] ) ) . ")" );
+	}
+}
+add_action( 'save_post', 'pmpro_events_events_manager_save_post_after_levels', 20000 );
 
 /**
  * Check whether the current user can see the protected details of an event.
