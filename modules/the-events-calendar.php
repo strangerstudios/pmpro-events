@@ -218,7 +218,8 @@ function pmpro_events_tribe_events_add_require_membership_message( $post ) {
 	if ( tribe_is_recurring_event() ) {
 		$parent_event_id = isset( tribe_get_event()->_tec_occurrence->post_id ) ? tribe_get_event()->_tec_occurrence->post_id : 0;
 
-		if ( ! empty( $_REQUEST['post'] ) && ! empty( $parent_event_id ) ) {
+		// Only hide the checkboxes on an occurrence, not on the parent event itself.
+		if ( ! empty( $_REQUEST['post'] ) && ! empty( $parent_event_id ) && (int) $parent_event_id !== (int) $post->ID ) {
 
 			?>
 				<style>
