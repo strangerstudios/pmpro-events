@@ -60,7 +60,7 @@ function pmpro_events_no_access_message_body( $body, $level_ids ) {
 	remove_filter( 'pmpro_not_logged_in_text_filter', 'pmpro_events_pmpro_text_filter' );
 
 	// If this is not an event, return the default message.
-	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event' ) );
+	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event', 'tribe_events', 'sc_event', 'ai1ec_event' ) );
 	if ( ! is_singular( $event_slugs ) ) {
 		return $body;
 	}
@@ -83,7 +83,7 @@ add_filter( 'pmpro_no_access_message_body', 'pmpro_events_no_access_message_body
  * @since 1.0
  */
 function pmpro_events_pmpro_text_filter( $text ) {
-	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event' ) );
+	$event_slugs = apply_filters( 'pmpro_events_supports_event_slug', array( 'event', 'tribe_events', 'sc_event', 'ai1ec_event' ) );
 
 	if( is_singular( $event_slugs ) ) {
 		$text = str_replace( 'content', 'event', $text );
