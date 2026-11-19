@@ -40,7 +40,7 @@ function pmpro_events_ai1ec_filter_archives( $args ) {
 	$events_query_args = apply_filters( 'pmpro_events_ai1ec_query_args', 
 		array(
 			'post_type' => 'ai1ec_event',
-			'limit' => '50'
+			'numberposts' => -1
 		)
 	);
 	$events = get_posts( $events_query_args );
