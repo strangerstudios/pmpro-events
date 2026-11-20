@@ -246,7 +246,8 @@ add_action( 'manage_event_posts_custom_column', 'pmpro_events_events_manager_req
 function pmpro_events_events_manager_em_event_save_events($save_ok, $event, $event_ids, $post_ids) {
 	global $wpdb;
 
-	if ( empty ( $event->post_id ) ) {
+	// Events Manager 7 "recurring" events have no post for each occurrence, so there may be no post IDs to update.
+	if ( empty ( $event->post_id ) || empty( $post_ids ) ) {
 		return $save_ok;
 	}
 
