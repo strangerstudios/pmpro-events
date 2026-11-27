@@ -217,7 +217,7 @@
 
 	.pmpro_events_view_toggle_link.is-current {
 		background: var(--pmpro--color--accent, #0c3d54);
-		color: var(--pmpro--color--white, #fff);
+		color: var(--pmpro--color--base, #ffffff);
 	}
 
 	/**
